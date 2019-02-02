@@ -8,6 +8,8 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
+import com.intellij.psi.impl.source.PsiClassReferenceType;
+import com.intellij.psi.impl.source.PsiImmediateClassType;
 import com.intellij.psi.impl.source.PsiJavaFileImpl;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -197,7 +199,14 @@ public class BuildJsonForYapi{
                     jsonObject.addProperty("description", remark);
                 }
                 kv.set(name, jsonObject);
-            } else if(fieldTypeName.equals("T")) {
+            }else if(((PsiClassReferenceType) type).resolve().isEnum()) {
+                JsonObject jsonObject=new JsonObject();
+                jsonObject.addProperty("type","enum");
+                if(!Strings.isNullOrEmpty(remark)) {
+                    jsonObject.addProperty("description", remark);
+                }
+                kv.set(name, jsonObject);
+            }else if(fieldTypeName.equals("T")) {
                 String child=childType[index].split(">")[0];
                 if(child.contains("List") || child.contains("Set") ||child.contains("HashSet") ){
                     PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childType[index+1].split(">")[0], GlobalSearchScope.allScope(project));
