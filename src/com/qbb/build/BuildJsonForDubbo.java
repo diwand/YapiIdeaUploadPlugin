@@ -169,7 +169,7 @@ public class BuildJsonForDubbo{
                 return BuildJsonForYapi.trimFirstAndLastChar(psiDocTag.getText().replace("@description","").replace("@Description","").replace(":","").replace("*","").replace("\n"," "),' ');
             }
         }
-        return null;
+       return BuildJsonForYapi.trimFirstAndLastChar(psiMethodTarget.getDocComment().getText().split("@")[0].replace("@description","").replace("@Description","").replace(":","").replace("*","").replace("/","").replace("\n"," "),' ');
     }
 
 
