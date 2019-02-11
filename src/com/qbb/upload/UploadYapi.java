@@ -1,6 +1,8 @@
 package com.qbb.upload;
 
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
+import com.google.gson.reflect.TypeToken;
 import com.qbb.constant.YapiConstant;
 import com.qbb.dto.YapiCatMenuParam;
 import com.qbb.dto.YapiCatResponse;
@@ -97,6 +99,8 @@ public class UploadYapi {
             YapiResponse yapiResponse=gson.fromJson(response,YapiResponse.class);
             if(yapiResponse.getErrcode().equals(0)) {
                 List<YapiCatResponse> list = (List<YapiCatResponse>) yapiResponse.getData();
+                list=gson.fromJson(gson.toJson(list),new TypeToken<List<YapiCatResponse>>() {
+                }.getType());
                 for (YapiCatResponse yapiCatResponse : list) {
                     if (yapiCatResponse.getName().equals("tool-temp")) {
                         return yapiCatResponse.get_id();
