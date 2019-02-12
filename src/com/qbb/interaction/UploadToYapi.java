@@ -67,7 +67,8 @@ public class UploadToYapi extends AnAction {
                     Notification error = notificationGroup.createNotification("sorry ,upload api error cause:"+yapiResponse.getErrmsg(), NotificationType.ERROR);
                     Notifications.Bus.notify(error, project);
                 }else{
-                    Notification error = notificationGroup.createNotification("success ,info: "+gson.toJson(yapiResponse.getData()), NotificationType.INFORMATION);
+                    String url=yapiUrl+"/project/"+projectId+"/interface/api/cat_"+UploadYapi.catMap.get(projectId);
+                    Notification error = notificationGroup.createNotification("success ,url: "+url, NotificationType.INFORMATION);
                     Notifications.Bus.notify(error, project);
                 }
             } catch (Exception e1) {
@@ -85,7 +86,8 @@ public class UploadToYapi extends AnAction {
                     Notification error = notificationGroup.createNotification("sorry ,upload api error cause:"+yapiResponse.getErrmsg(), NotificationType.ERROR);
                     Notifications.Bus.notify(error, project);
                 }else{
-                    Notification error = notificationGroup.createNotification("success ,info: "+gson.toJson(yapiResponse.getData()), NotificationType.INFORMATION);
+                    String url=yapiUrl+"/project/"+projectId+"/interface/api/cat_"+UploadYapi.catMap.get(projectId);
+                    Notification error = notificationGroup.createNotification("success ,url:  "+url, NotificationType.INFORMATION);
                     Notifications.Bus.notify(error, project);
                 }
             } catch (Exception e1) {

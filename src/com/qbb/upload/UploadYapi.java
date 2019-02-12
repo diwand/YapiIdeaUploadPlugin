@@ -33,7 +33,7 @@ public class UploadYapi {
 
     private Gson gson=new Gson();
 
-    private static Map<String,Integer> catMap=new HashMap<>();
+    public static Map<String,Integer> catMap=new HashMap<>();
 
 
     public YapiResponse  uploadSave(YapiSaveParam yapiSaveParam) throws IOException {
