@@ -307,5 +307,20 @@ public class YapiSaveParam implements Serializable{
     }
 
 
+    public YapiSaveParam(String token, String title, String path,List req_query,String req_body_other ,String res_body,Integer projectId,String yapiUrl,Integer uid,boolean req_body_is_json_schema) {
+        this.token = token;
+        this.title = title;
+        this.path = path;
+        this.req_query=req_query;
+        this.res_body = res_body;
+        this.req_body_other=req_body_other;
+        this.projectId=projectId;
+        this.yapiUrl=yapiUrl;
+        this.uid=uid;
+        this.req_body_is_json_schema=req_body_is_json_schema;
+    }
+
+
+
 
 }

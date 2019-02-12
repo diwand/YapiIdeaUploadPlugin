@@ -12,7 +12,9 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.xml.config.ConfigFileSearcher;
 import com.qbb.build.BuildJsonForDubbo;
+import com.qbb.build.BuildJsonForYapi;
 import com.qbb.constant.ProjectTypeConstant;
+import com.qbb.dto.YapiApiDTO;
 import com.qbb.dto.YapiDubboDTO;
 import com.qbb.dto.YapiResponse;
 import com.qbb.dto.YapiSaveParam;
@@ -65,6 +67,24 @@ public class UploadToYapi extends AnAction {
             BuildJsonForDubbo buildJsonForDubbo=new BuildJsonForDubbo();
             YapiDubboDTO yapiDubboDTO=buildJsonForDubbo.actionPerformed(e);
             YapiSaveParam yapiSaveParam=new YapiSaveParam(projectToken,yapiDubboDTO.getTitle(),yapiDubboDTO.getPath(),yapiDubboDTO.getParams(),yapiDubboDTO.getResponse(),Integer.valueOf(projectId),yapiUrl,Integer.valueOf(editId));
+            UploadYapi uploadYapi=new UploadYapi();
+            try {
+                YapiResponse yapiResponse=uploadYapi.uploadSave(yapiSaveParam);
+                if(yapiResponse.getErrcode()!=0){
+                    Notification error = notificationGroup.createNotification("sorry ,upload api error cause:"+yapiResponse.getErrmsg(), NotificationType.ERROR);
+                    Notifications.Bus.notify(error, project);
+                }else{
+                    Notification error = notificationGroup.createNotification("success ,info: "+gson.toJson(yapiResponse.getData()), NotificationType.INFORMATION);
+                    Notifications.Bus.notify(error, project);
+                }
+            } catch (Exception e1) {
+                Notification error = notificationGroup.createNotification("sorry ,upload api error cause:"+e1.getMessage(), NotificationType.ERROR);
+                Notifications.Bus.notify(error, project);
+            }
+        }else if(ProjectTypeConstant.api.equals(projectType)){
+            BuildJsonForYapi buildJsonForYapi=new BuildJsonForYapi();
+            YapiApiDTO yapiApiDTO=buildJsonForYapi.actionPerformed(e);
+            YapiSaveParam yapiSaveParam=new YapiSaveParam(projectToken,yapiApiDTO.getTitle(),yapiApiDTO.getPath(),yapiApiDTO.getParams(),yapiApiDTO.getRequestBody(),yapiApiDTO.getResponse(),Integer.valueOf(projectId),yapiUrl,Integer.valueOf(editId),true);
             UploadYapi uploadYapi=new UploadYapi();
             try {
                 YapiResponse yapiResponse=uploadYapi.uploadSave(yapiSaveParam);

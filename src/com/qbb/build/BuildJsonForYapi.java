@@ -11,9 +11,15 @@ import com.intellij.psi.*;
 import com.intellij.psi.impl.source.PsiClassReferenceType;
 import com.intellij.psi.impl.source.PsiImmediateClassType;
 import com.intellij.psi.impl.source.PsiJavaFileImpl;
+import com.intellij.psi.impl.source.tree.java.PsiNameValuePairImpl;
+import com.intellij.psi.javadoc.PsiDocTag;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtil;
+import com.qbb.constant.SpringMVCConstant;
+import com.qbb.dto.YapiApiDTO;
+import com.qbb.dto.YapiQueryDTO;
+import com.qbb.util.PsiAnnotationSearchUtil;
 import com.yourkit.util.Strings;
 import org.codehaus.jettison.json.JSONException;
 import org.jetbrains.annotations.NonNls;
@@ -44,21 +50,99 @@ public class BuildJsonForYapi{
 
 
 
-    public String actionPerformed(AnActionEvent e) {
+    public YapiApiDTO actionPerformed(AnActionEvent e) {
+        YapiApiDTO yapiApiDTO=new YapiApiDTO();
         Editor editor = (Editor) e.getDataContext().getData(CommonDataKeys.EDITOR);
         PsiFile psiFile = (PsiFile) e.getDataContext().getData(CommonDataKeys.PSI_FILE);
         Project project = editor.getProject();
         PsiElement referenceAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
         PsiClass selectedClass = (PsiClass) PsiTreeUtil.getContextOfType(referenceAt, new Class[]{PsiClass.class});
+        String selectedText=e.getRequiredData(CommonDataKeys.EDITOR).getSelectionModel().getSelectedText();
+        if(Strings.isNullOrEmpty(selectedText)){
+            Notification error = notificationGroup.createNotification("please select method", NotificationType.ERROR);
+            Notifications.Bus.notify(error, project);
+            return null;
+        }
+
+        // 获得路径
+        StringBuilder path=new StringBuilder();
+
+        // 获取类上面的RequestMapping 中的value
+        PsiAnnotation psiAnnotation= PsiAnnotationSearchUtil.findAnnotation(selectedClass, SpringMVCConstant.RequestMapping);
+        if(psiAnnotation!=null){
+            PsiNameValuePair[] psiNameValuePairs= psiAnnotation.getParameterList().getAttributes();
+            if(psiNameValuePairs.length>0){
+                path.append(psiNameValuePairs[0].getLiteralValue());
+            }
+        }
+
+        PsiMethod[] psiMethods =selectedClass.getAllMethods();
+        //寻找目标Method
+        PsiMethod psiMethodTarget=null;
+        for(PsiMethod psiMethod:psiMethods){
+            if(psiMethod.getName().equals(selectedText)){
+                psiMethodTarget=psiMethod;
+                break;
+            }
+        }
+        PsiAnnotation psiAnnotationMethod= PsiAnnotationSearchUtil.findAnnotation(psiMethodTarget,SpringMVCConstant.RequestMapping);
+        if(psiAnnotationMethod!=null){
+            PsiNameValuePair[] psiNameValuePairs= psiAnnotationMethod.getParameterList().getAttributes();
+            if(psiNameValuePairs!=null && psiNameValuePairs.length>0){
+                for(PsiNameValuePair psiNameValuePair:psiNameValuePairs){
+                    //获得方法上的路径
+                    if("value".equals(psiNameValuePair.getName())){
+                        PsiReference psiReference= psiNameValuePair.getDetachedValue().getReference();
+                        if(psiReference==null){
+                            path.append(psiNameValuePair.getValue());
+                        }else{
+                            path.append(psiReference.resolve().getText().split("=")[1].split(";")[0].replace("\"",""));
+                            yapiApiDTO.setTitle(BuildJsonForYapi.trimFirstAndLastChar(psiReference.resolve().getText().split("@")[0].replace("@description","").replace("@Description","").replace(":","").replace("*","").replace("/","").replace("\n"," "),' '));
+                        }
+                        yapiApiDTO.setPath(path.toString());
+                    }else if("method".equals(psiNameValuePair.getName()) && psiNameValuePair.getValue().toString().toUpperCase().contains("GET")){
+                        // 判断是否为Get 请求
+                        yapiApiDTO.setMethod("GET");
+                    }else if("method".equals(psiNameValuePair.getName()) && psiNameValuePair.getValue().toString().toUpperCase().contains("POST")){
+                        // 判断是否为Post 请求
+                        yapiApiDTO.setMethod("POST");
+                    }
+                }
+            }
+        }else{
+            PsiAnnotation psiAnnotationMethodSemple= PsiAnnotationSearchUtil.findAnnotation(psiMethodTarget,SpringMVCConstant.GetMapping);
+            if(psiAnnotationMethodSemple!=null){
+                yapiApiDTO.setMethod("GET");
+            }else{
+                psiAnnotationMethodSemple= PsiAnnotationSearchUtil.findAnnotation(psiMethodTarget,SpringMVCConstant.PostMapping);
+                if(psiAnnotationMethodSemple!=null){
+                    yapiApiDTO.setMethod("POST");
+                }
+            }
+            if(psiAnnotationMethodSemple!=null) {
+                PsiNameValuePair[] psiNameValuePairs = psiAnnotationMethodSemple.getParameterList().getAttributes();
+                for (PsiNameValuePair psiNameValuePair : psiNameValuePairs) {
+                    //获得方法上的路径
+                    if (psiNameValuePair.getName().equals("value")) {
+                        PsiReference psiReference = psiNameValuePair.getDetachedValue().getReference();
+                        if (psiReference == null) {
+                            path.append(psiNameValuePair.getValue());
+                        } else {
+                            path.append(psiReference.resolve().getText().split("=")[1].split(";")[0].replace("\"", ""));
+                            yapiApiDTO.setTitle(BuildJsonForYapi.trimFirstAndLastChar(psiReference.resolve().getText().split("@")[0].replace("@description","").replace("@Description","").replace(":","").replace("*","").replace("/","").replace("\n"," "),' '));
+                        }
+                        yapiApiDTO.setPath(path.toString());
+                    }
+                }
+            }
+        }
         try {
-            KV result=new KV();
-            KV kv = getFields(selectedClass,project,null,null);
-            result.set("type","object");
-            result.set("title",selectedClass.getName());
-            result.set("description",selectedClass.getName());
-            result.set("properties",kv);
-            String json = result.toPrettyJson();
-            return json;
+            yapiApiDTO.setResponse(getResponse(project,psiMethodTarget.getReturnType()));
+            getRequest(project,yapiApiDTO,psiMethodTarget);
+            if(Strings.isNullOrEmpty(yapiApiDTO.getTitle())) {
+                yapiApiDTO.setTitle(getDescription(psiMethodTarget));
+            }
+            return yapiApiDTO;
         } catch (Exception ex) {
             Notification error = notificationGroup.createNotification("Convert to JSON failed.", NotificationType.ERROR);
             Notifications.Bus.notify(error, project);
@@ -67,7 +151,66 @@ public class BuildJsonForYapi{
     }
 
 
+    /**
+     * @description: 获得描述
+     * @param: [psiMethodTarget]
+     * @return: java.lang.String
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/2/2
+     */
+    public String getDescription(PsiMethod psiMethodTarget){
+        PsiDocTag[] psiDocTags=psiMethodTarget.getDocComment().getTags();
+        for (PsiDocTag psiDocTag:psiDocTags){
+            if(psiDocTag.getText().contains("@description") || psiDocTag.getText().contains("@Description")){
+                return BuildJsonForYapi.trimFirstAndLastChar(psiDocTag.getText().replace("@description","").replace("@Description","").replace(":","").replace("*","").replace("\n"," "),' ');
+            }
+        }
+        return BuildJsonForYapi.trimFirstAndLastChar(psiMethodTarget.getDocComment().getText().split("@")[0].replace("@description","").replace("@Description","").replace(":","").replace("*","").replace("/","").replace("\n"," "),' ');
+    }
+
+
+    public static void getRequest(Project project,YapiApiDTO yapiApiDTO,PsiMethod psiMethodTarget) throws JSONException{
+        PsiParameter[] psiParameters= psiMethodTarget.getParameterList().getParameters();
+        if(psiParameters.length>0) {
+            ArrayList list=new ArrayList<YapiQueryDTO>();
+            for(PsiParameter psiParameter:psiParameters){
+                PsiAnnotation psiAnnotation= PsiAnnotationSearchUtil.findAnnotation(psiParameter,SpringMVCConstant.RequestBody);
+                if(psiAnnotation!=null){
+                    yapiApiDTO.setRequestBody(getResponse(project,psiParameter.getType()));
+                }else{
+                    psiAnnotation= PsiAnnotationSearchUtil.findAnnotation(psiParameter,SpringMVCConstant.RequestParam);
+                    PsiNameValuePair[] psiNameValuePairs=psiAnnotation.getParameterList().getAttributes();
+
+                    for(PsiNameValuePair psiNameValuePair:psiNameValuePairs){
+                        YapiQueryDTO yapiQueryDTO=new YapiQueryDTO();
+                        if("name".equals(psiNameValuePair.getName())){
+                            yapiQueryDTO.setName(psiNameValuePair.getValue().getText());
+                        }else if("value".equals(psiNameValuePair.getName())){
+                            yapiQueryDTO.setName(psiNameValuePair.getValue().getText());
+                        }else if("required".equals(psiNameValuePair.getName())){
+                            yapiQueryDTO.setRequired(psiNameValuePair.getValue().getText());
+                        }else if("defaultValue".equals(psiNameValuePair.getName())){
+                            yapiQueryDTO.setExample(psiNameValuePair.getValue().getText());
+                        }else{
+                            yapiQueryDTO.setName(psiNameValuePair.getLiteralValue());
+                            yapiQueryDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
+                            yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
+                        }
+                        list.add(yapiQueryDTO);
+                    }
+                }
+            }
+            yapiApiDTO.setParams(list);
+        }
+    }
+
+
     public static String getResponse(Project project,PsiType psiType) throws JSONException{
+        return getPojoJson(project, psiType);
+    }
+
+
+    public static String getPojoJson(Project project,PsiType psiType) throws JSONException{
         if(psiType instanceof PsiPrimitiveType){
             //如果是基本类型
             KV kvClass=KV.create();

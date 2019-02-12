@@ -103,6 +103,7 @@ public class UploadYapi {
                 }.getType());
                 for (YapiCatResponse yapiCatResponse : list) {
                     if (yapiCatResponse.getName().equals("tool-temp")) {
+                        catMap.put(yapiSaveParam.getProjectId().toString(),yapiCatResponse.get_id());
                         return yapiCatResponse.get_id();
                     }
                 }
