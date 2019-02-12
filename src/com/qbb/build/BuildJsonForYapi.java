@@ -159,13 +159,16 @@ public class BuildJsonForYapi{
      * @date: 2019/2/2
      */
     public String getDescription(PsiMethod psiMethodTarget){
-        PsiDocTag[] psiDocTags=psiMethodTarget.getDocComment().getTags();
-        for (PsiDocTag psiDocTag:psiDocTags){
-            if(psiDocTag.getText().contains("@description") || psiDocTag.getText().contains("@Description")){
-                return BuildJsonForYapi.trimFirstAndLastChar(psiDocTag.getText().replace("@description","").replace("@Description","").replace(":","").replace("*","").replace("\n"," "),' ');
+        if(psiMethodTarget.getDocComment()!=null) {
+            PsiDocTag[] psiDocTags = psiMethodTarget.getDocComment().getTags();
+            for (PsiDocTag psiDocTag : psiDocTags) {
+                if (psiDocTag.getText().contains("@description") || psiDocTag.getText().contains("@Description")) {
+                    return BuildJsonForYapi.trimFirstAndLastChar(psiDocTag.getText().replace("@description", "").replace("@Description", "").replace(":", "").replace("*", "").replace("\n", " "), ' ');
+                }
             }
+            return BuildJsonForYapi.trimFirstAndLastChar(psiMethodTarget.getDocComment().getText().split("@")[0].replace("@description", "").replace("@Description", "").replace(":", "").replace("*", "").replace("/", "").replace("\n", " "), ' ');
         }
-        return BuildJsonForYapi.trimFirstAndLastChar(psiMethodTarget.getDocComment().getText().split("@")[0].replace("@description","").replace("@Description","").replace(":","").replace("*","").replace("/","").replace("\n"," "),' ');
+        return null;
     }
 
 
@@ -460,7 +463,10 @@ public class BuildJsonForYapi{
         boolean beginIndexFlag = true;
         boolean endIndexFlag = true;
         do {
-            if(Strings.isNullOrEmpty(source)){break;}
+            if(Strings.isNullOrEmpty(source.trim())){
+                source=null;
+                break;
+            }
             int beginIndex = source.indexOf(element) == 0 ? 1 : 0;
             int endIndex = source.lastIndexOf(element) + 1 == source.length() ? source.lastIndexOf(element) : source.length();
             source = source.substring(beginIndex, endIndex);

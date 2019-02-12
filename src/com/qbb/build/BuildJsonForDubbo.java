@@ -2,6 +2,7 @@ package com.qbb.build;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.intellij.notification.*;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -9,6 +10,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
+import com.intellij.psi.impl.source.PsiClassReferenceType;
 import com.intellij.psi.impl.source.PsiJavaFileImpl;
 import com.intellij.psi.javadoc.PsiDocTag;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -163,13 +165,16 @@ public class BuildJsonForDubbo{
      * @date: 2019/2/2
      */
     public String getDescription(PsiMethod psiMethodTarget){
-        PsiDocTag[] psiDocTags=psiMethodTarget.getDocComment().getTags();
-        for (PsiDocTag psiDocTag:psiDocTags){
-            if(psiDocTag.getText().contains("@description") || psiDocTag.getText().contains("@Description")){
-                return BuildJsonForYapi.trimFirstAndLastChar(psiDocTag.getText().replace("@description","").replace("@Description","").replace(":","").replace("*","").replace("\n"," "),' ');
+        if(psiMethodTarget.getDocComment()!=null) {
+            PsiDocTag[] psiDocTags = psiMethodTarget.getDocComment().getTags();
+            for (PsiDocTag psiDocTag : psiDocTags) {
+                if (psiDocTag.getText().contains("@description") || psiDocTag.getText().contains("@Description")) {
+                    return BuildJsonForYapi.trimFirstAndLastChar(psiDocTag.getText().replace("@description", "").replace("@Description", "").replace(":", "").replace("*", "").replace("\n", " "), ' ');
+                }
             }
+            return BuildJsonForYapi.trimFirstAndLastChar(psiMethodTarget.getDocComment().getText().split("@")[0].replace("@description", "").replace("@Description", "").replace(":", "").replace("*", "").replace("/", "").replace("\n", " "), ' ');
         }
-       return BuildJsonForYapi.trimFirstAndLastChar(psiMethodTarget.getDocComment().getText().split("@")[0].replace("@description","").replace("@Description","").replace(":","").replace("*","").replace("/","").replace("\n"," "),' ');
+        return null;
     }
 
 
@@ -191,6 +196,8 @@ public class BuildJsonForDubbo{
                     //normal Type
                     if (NormalTypes.isNormalType(fieldTypeName)) {
                         kv.set(name, NormalTypes.normalTypes.get(fieldTypeName));
+                    } else if(((PsiClassReferenceType) type).resolve().isEnum()) {
+                        kv.set(name, fieldTypeName);
                     } else if (type instanceof PsiArrayType) {
                         //array type
                         PsiType deepType = type.getDeepComponentType();
