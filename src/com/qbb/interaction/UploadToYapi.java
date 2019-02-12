@@ -8,9 +8,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.xml.config.ConfigFileSearcher;
 import com.qbb.build.BuildJsonForDubbo;
 import com.qbb.build.BuildJsonForYapi;
 import com.qbb.constant.ProjectTypeConstant;
@@ -20,8 +17,6 @@ import com.qbb.dto.YapiResponse;
 import com.qbb.dto.YapiSaveParam;
 import com.qbb.upload.UploadYapi;
 import com.yourkit.util.Strings;
-
-import java.io.IOException;
 
 
 public class UploadToYapi extends AnAction {
@@ -82,7 +77,7 @@ public class UploadToYapi extends AnAction {
         }else if(ProjectTypeConstant.api.equals(projectType)){
             BuildJsonForYapi buildJsonForYapi=new BuildJsonForYapi();
             YapiApiDTO yapiApiDTO=buildJsonForYapi.actionPerformed(e);
-            YapiSaveParam yapiSaveParam=new YapiSaveParam(projectToken,yapiApiDTO.getTitle(),yapiApiDTO.getPath(),yapiApiDTO.getParams(),yapiApiDTO.getRequestBody(),yapiApiDTO.getResponse(),Integer.valueOf(projectId),yapiUrl,true);
+            YapiSaveParam yapiSaveParam=new YapiSaveParam(projectToken,yapiApiDTO.getTitle(),yapiApiDTO.getPath(),yapiApiDTO.getParams(),yapiApiDTO.getRequestBody(),yapiApiDTO.getResponse(),Integer.valueOf(projectId),yapiUrl,true,yapiApiDTO.getMethod());
             UploadYapi uploadYapi=new UploadYapi();
             try {
                 YapiResponse yapiResponse=uploadYapi.uploadSave(yapiSaveParam);

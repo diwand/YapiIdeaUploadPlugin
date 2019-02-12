@@ -97,7 +97,7 @@ public class BuildJsonForYapi{
                             path.append(psiNameValuePair.getValue());
                         }else{
                             path.append(psiReference.resolve().getText().split("=")[1].split(";")[0].replace("\"",""));
-                            yapiApiDTO.setTitle(BuildJsonForYapi.trimFirstAndLastChar(psiReference.resolve().getText().split("@")[0].replace("@description","").replace("@Description","").replace(":","").replace("*","").replace("/","").replace("\n"," "),' '));
+                            yapiApiDTO.setTitle(BuildJsonForYapi.trimFirstAndLastChar(psiReference.resolve().getText().replace("@description","").replace("@Description","").replace(":","").split("@")[0].replace("*","").replace("/","").replace("\n"," "),' '));
                         }
                         yapiApiDTO.setPath(path.toString());
                     }else if("method".equals(psiNameValuePair.getName()) && psiNameValuePair.getValue().toString().toUpperCase().contains("GET")){
@@ -129,7 +129,7 @@ public class BuildJsonForYapi{
                             path.append(psiNameValuePair.getValue());
                         } else {
                             path.append(psiReference.resolve().getText().split("=")[1].split(";")[0].replace("\"", ""));
-                            yapiApiDTO.setTitle(BuildJsonForYapi.trimFirstAndLastChar(psiReference.resolve().getText().split("@")[0].replace("@description","").replace("@Description","").replace(":","").replace("*","").replace("/","").replace("\n"," "),' '));
+                            yapiApiDTO.setTitle(BuildJsonForYapi.trimFirstAndLastChar(psiReference.resolve().getText().replace("@description","").replace("@Description","").replace(":","").split("@")[0].replace("*","").replace("/","").replace("\n"," "),' '));
                         }
                         yapiApiDTO.setPath(path.toString());
                     }
@@ -180,24 +180,23 @@ public class BuildJsonForYapi{
                 }else{
                     psiAnnotation= PsiAnnotationSearchUtil.findAnnotation(psiParameter,SpringMVCConstant.RequestParam);
                     PsiNameValuePair[] psiNameValuePairs=psiAnnotation.getParameterList().getAttributes();
-
+                    YapiQueryDTO yapiQueryDTO=new YapiQueryDTO();
                     for(PsiNameValuePair psiNameValuePair:psiNameValuePairs){
-                        YapiQueryDTO yapiQueryDTO=new YapiQueryDTO();
                         if("name".equals(psiNameValuePair.getName())){
-                            yapiQueryDTO.setName(psiNameValuePair.getValue().getText());
+                            yapiQueryDTO.setName(psiNameValuePair.getValue().getText().replace("\"",""));
                         }else if("value".equals(psiNameValuePair.getName())){
-                            yapiQueryDTO.setName(psiNameValuePair.getValue().getText());
+                            yapiQueryDTO.setName(psiNameValuePair.getValue().getText().replace("\"",""));
                         }else if("required".equals(psiNameValuePair.getName())){
-                            yapiQueryDTO.setRequired(psiNameValuePair.getValue().getText());
+                            yapiQueryDTO.setRequired(psiNameValuePair.getValue().getText().replace("\"","").replace("false","0").replace("true","1"));
                         }else if("defaultValue".equals(psiNameValuePair.getName())){
-                            yapiQueryDTO.setExample(psiNameValuePair.getValue().getText());
+                            yapiQueryDTO.setExample(psiNameValuePair.getValue().getText().replace("\"",""));
                         }else{
                             yapiQueryDTO.setName(psiNameValuePair.getLiteralValue());
                             yapiQueryDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
                             yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
                         }
-                        list.add(yapiQueryDTO);
                     }
+                    list.add(yapiQueryDTO);
                 }
             }
             yapiApiDTO.setParams(list);
