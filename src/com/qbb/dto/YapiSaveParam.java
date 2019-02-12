@@ -73,7 +73,11 @@ public class YapiSaveParam implements Serializable{
     /**
      * 创建的用户名
      */
-    private Integer uid=11;
+    private Integer edit_uid=11;
+    /**
+     * 用户名称
+     */
+    private String username;
 
     /**
      * 邮件开关
@@ -268,12 +272,12 @@ public class YapiSaveParam implements Serializable{
         this.res_body_is_json_schema = res_body_is_json_schema;
     }
 
-    public Integer getUid() {
-        return uid;
+    public Integer getEdit_uid() {
+        return edit_uid;
     }
 
-    public void setUid(Integer uid) {
-        this.uid = uid;
+    public void setEdit_uid(Integer edit_uid) {
+        this.edit_uid = edit_uid;
     }
 
     public Integer getProjectId() {
@@ -292,10 +296,18 @@ public class YapiSaveParam implements Serializable{
         this.yapiUrl = yapiUrl;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public YapiSaveParam() {
     }
 
-    public YapiSaveParam(String token, String title, String path,String req_body_other ,String res_body,Integer projectId,String yapiUrl,Integer uid) {
+    public YapiSaveParam(String token, String title, String path,String req_body_other ,String res_body,Integer projectId,String yapiUrl) {
         this.token = token;
         this.title = title;
         this.path = path;
@@ -303,11 +315,10 @@ public class YapiSaveParam implements Serializable{
         this.req_body_other=req_body_other;
         this.projectId=projectId;
         this.yapiUrl=yapiUrl;
-        this.uid=uid;
     }
 
 
-    public YapiSaveParam(String token, String title, String path,List req_query,String req_body_other ,String res_body,Integer projectId,String yapiUrl,Integer uid,boolean req_body_is_json_schema) {
+    public YapiSaveParam(String token, String title, String path,List req_query,String req_body_other ,String res_body,Integer projectId,String yapiUrl,boolean req_body_is_json_schema) {
         this.token = token;
         this.title = title;
         this.path = path;
@@ -316,7 +327,6 @@ public class YapiSaveParam implements Serializable{
         this.req_body_other=req_body_other;
         this.projectId=projectId;
         this.yapiUrl=yapiUrl;
-        this.uid=uid;
         this.req_body_is_json_schema=req_body_is_json_schema;
     }
 

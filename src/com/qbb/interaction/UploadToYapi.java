@@ -43,7 +43,6 @@ public class UploadToYapi extends AnAction {
         String projectId=null;
         String yapiUrl=null;
         String projectType=null;
-        String editId=null;
         // 获取配置
         try {
             String projectConfig=new String(editor.getProject().getProjectFile().contentsToByteArray(),"utf-8");
@@ -51,7 +50,6 @@ public class UploadToYapi extends AnAction {
             projectId=projectConfig.split("projectId\">")[1].split("</")[0];
             yapiUrl=projectConfig.split("yapiUrl\">")[1].split("</")[0];
             projectType=projectConfig.split("projectType\">")[1].split("</")[0];
-            editId=projectConfig.split("editId\">")[1].split("</")[0];
         } catch (Exception e2){
             Notification error = notificationGroup.createNotification("get config error:"+e2.getMessage(), NotificationType.ERROR);
             Notifications.Bus.notify(error, project);
@@ -66,7 +64,7 @@ public class UploadToYapi extends AnAction {
         if(ProjectTypeConstant.dubbo.equals(projectType)){
             BuildJsonForDubbo buildJsonForDubbo=new BuildJsonForDubbo();
             YapiDubboDTO yapiDubboDTO=buildJsonForDubbo.actionPerformed(e);
-            YapiSaveParam yapiSaveParam=new YapiSaveParam(projectToken,yapiDubboDTO.getTitle(),yapiDubboDTO.getPath(),yapiDubboDTO.getParams(),yapiDubboDTO.getResponse(),Integer.valueOf(projectId),yapiUrl,Integer.valueOf(editId));
+            YapiSaveParam yapiSaveParam=new YapiSaveParam(projectToken,yapiDubboDTO.getTitle(),yapiDubboDTO.getPath(),yapiDubboDTO.getParams(),yapiDubboDTO.getResponse(),Integer.valueOf(projectId),yapiUrl);
             UploadYapi uploadYapi=new UploadYapi();
             try {
                 YapiResponse yapiResponse=uploadYapi.uploadSave(yapiSaveParam);
@@ -84,7 +82,7 @@ public class UploadToYapi extends AnAction {
         }else if(ProjectTypeConstant.api.equals(projectType)){
             BuildJsonForYapi buildJsonForYapi=new BuildJsonForYapi();
             YapiApiDTO yapiApiDTO=buildJsonForYapi.actionPerformed(e);
-            YapiSaveParam yapiSaveParam=new YapiSaveParam(projectToken,yapiApiDTO.getTitle(),yapiApiDTO.getPath(),yapiApiDTO.getParams(),yapiApiDTO.getRequestBody(),yapiApiDTO.getResponse(),Integer.valueOf(projectId),yapiUrl,Integer.valueOf(editId),true);
+            YapiSaveParam yapiSaveParam=new YapiSaveParam(projectToken,yapiApiDTO.getTitle(),yapiApiDTO.getPath(),yapiApiDTO.getParams(),yapiApiDTO.getRequestBody(),yapiApiDTO.getResponse(),Integer.valueOf(projectId),yapiUrl,true);
             UploadYapi uploadYapi=new UploadYapi();
             try {
                 YapiResponse yapiResponse=uploadYapi.uploadSave(yapiSaveParam);

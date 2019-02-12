@@ -48,8 +48,8 @@ public class UploadYapi {
             list.add(map);
             yapiSaveParam.setReq_headers(list);
         }
-        if(yapiSaveParam.getUid()==null){
-            yapiSaveParam.setUid(11);
+        if(yapiSaveParam.getEdit_uid()==null){
+            yapiSaveParam.setEdit_uid(11);
         }
         yapiSaveParam.setCatid(String.valueOf(this.getCatIdOrCreate(yapiSaveParam)));
         String response=HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpPost(yapiSaveParam.getYapiUrl()+YapiConstant.yapiSave,gson.toJson(yapiSaveParam))),"utf-8");
