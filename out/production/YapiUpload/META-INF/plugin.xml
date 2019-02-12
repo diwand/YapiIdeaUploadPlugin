@@ -1,17 +1,19 @@
 <idea-plugin>
   <id>com.your.company.unique.plugin.id</id>
   <name>YapiUpload</name>
-  <version>1.0</version>
+  <version>1.1</version>
   <vendor email="chengsheng@qbb6.com" url="http://www.qbb6.com">QBB</vendor>
 
   <description><![CDATA[
       upload api to yapi<br>
-      <em>support dubbo api upload</em>
+      <em>support dubbo api and api upload</em>
     ]]></description>
 
   <change-notes><![CDATA[
       1.0:<br>
       <em>support dubbo api</em>
+      1.1:<br>
+      <em>support  api</em>
     ]]>
   </change-notes>
 

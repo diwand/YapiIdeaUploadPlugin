@@ -315,6 +315,9 @@ public class BuildJsonForYapi{
 
 
     public static  void getField(PsiField field,Project project,KV kv,String[] childType,Integer index){
+        if(field.getModifierList().hasModifierProperty("final")){
+            return;
+        }
         PsiType type = field.getType();
         String name = field.getName();
         String remark ="";
