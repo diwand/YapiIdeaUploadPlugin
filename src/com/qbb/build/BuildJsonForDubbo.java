@@ -177,6 +177,9 @@ public class BuildJsonForDubbo{
         KV kv = KV.create();
         if (psiClass != null) {
             for (PsiField field : psiClass.getAllFields()) {
+                if(field.getModifierList().hasModifierProperty("final")){
+                    continue;
+                }
                 PsiType type = field.getType();
                 String name = field.getName();
                 // 如果是基本类型
