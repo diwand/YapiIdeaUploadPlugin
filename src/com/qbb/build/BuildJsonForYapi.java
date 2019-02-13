@@ -355,19 +355,21 @@ public class BuildJsonForYapi{
                 }
                 kv.set(name, jsonObject);
             }else if(fieldTypeName.equals("T")) {
-                String child=childType[index].split(">")[0];
-                if(child.contains("List") || child.contains("Set") ||child.contains("HashSet") ){
-                    PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childType[index+1].split(">")[0], GlobalSearchScope.allScope(project));
-                    getCollect(kv,psiClassChild.getName(),remark,psiClassChild,project,name);
-                }else{
-                    //class type
-                    KV kv1=new KV();
-                    kv1.set(KV.by("type","object"));
-                    if(!Strings.isNullOrEmpty(remark)) {
-                        kv1.set(KV.by("description",remark));
+                if(childType!=null) {
+                    String child = childType[index].split(">")[0];
+                    if (child.contains("List") || child.contains("Set") || child.contains("HashSet")) {
+                        PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childType[index + 1].split(">")[0], GlobalSearchScope.allScope(project));
+                        getCollect(kv, psiClassChild.getName(), remark, psiClassChild, project, name);
+                    } else {
+                        //class type
+                        KV kv1 = new KV();
+                        kv1.set(KV.by("type", "object"));
+                        if (!Strings.isNullOrEmpty(remark)) {
+                            kv1.set(KV.by("description", remark));
+                        }
+                        kv1.set(KV.by("properties", getFields(PsiUtil.resolveClassInType(type), project, null, null)));
+                        kv.set(name, kv1);
                     }
-                    kv1.set(KV.by("properties",getFields(PsiUtil.resolveClassInType(type),project,null,null)));
-                    kv.set(name,kv1);
                 }
             //    getField()
             } else if (type instanceof PsiArrayType) {
