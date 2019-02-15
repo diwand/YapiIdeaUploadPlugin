@@ -66,7 +66,10 @@ public class BuildJsonForYapi{
         if(selectedText.equals(selectedClass.getName())){
             PsiMethod[] psiMethods=selectedClass.getMethods();
             for(PsiMethod psiMethodTarget:psiMethods) {
-                yapiApiDTOS.add(actionPerformed(selectedClass, psiMethodTarget, project, psiFile));
+                //去除私有方法
+                if(!psiMethodTarget.getModifierList().hasModifierProperty("private")) {
+                    yapiApiDTOS.add(actionPerformed(selectedClass, psiMethodTarget, project, psiFile));
+                }
             }
         }else{
             PsiMethod[] psiMethods =selectedClass.getAllMethods();
