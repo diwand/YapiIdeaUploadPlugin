@@ -18,6 +18,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtil;
 import com.qbb.constant.SpringMVCConstant;
 import com.qbb.dto.YapiApiDTO;
+import com.qbb.dto.YapiDubboDTO;
 import com.qbb.dto.YapiQueryDTO;
 import com.qbb.util.PsiAnnotationSearchUtil;
 import com.yourkit.util.Strings;
@@ -49,21 +50,42 @@ public class BuildJsonForYapi{
     }
 
 
-
-    public YapiApiDTO actionPerformed(AnActionEvent e) {
-        YapiApiDTO yapiApiDTO=new YapiApiDTO();
+    public ArrayList<YapiApiDTO> actionPerformedList(AnActionEvent e){
         Editor editor = (Editor) e.getDataContext().getData(CommonDataKeys.EDITOR);
         PsiFile psiFile = (PsiFile) e.getDataContext().getData(CommonDataKeys.PSI_FILE);
-        Project project = editor.getProject();
-        PsiElement referenceAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
-        PsiClass selectedClass = (PsiClass) PsiTreeUtil.getContextOfType(referenceAt, new Class[]{PsiClass.class});
         String selectedText=e.getRequiredData(CommonDataKeys.EDITOR).getSelectionModel().getSelectedText();
+        Project project = editor.getProject();
         if(Strings.isNullOrEmpty(selectedText)){
-            Notification error = notificationGroup.createNotification("please select method", NotificationType.ERROR);
+            Notification error = notificationGroup.createNotification("please select method or class", NotificationType.ERROR);
             Notifications.Bus.notify(error, project);
             return null;
         }
+        PsiElement referenceAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
+        PsiClass selectedClass = (PsiClass) PsiTreeUtil.getContextOfType(referenceAt, new Class[]{PsiClass.class});
+        ArrayList<YapiApiDTO> yapiApiDTOS=new ArrayList<>();
+        if(selectedText.equals(selectedClass.getName())){
+            PsiMethod[] psiMethods=selectedClass.getMethods();
+            for(PsiMethod psiMethodTarget:psiMethods) {
+                yapiApiDTOS.add(actionPerformed(selectedClass, psiMethodTarget, project, psiFile));
+            }
+        }else{
+            PsiMethod[] psiMethods =selectedClass.getAllMethods();
+            //寻找目标Method
+            PsiMethod psiMethodTarget=null;
+            for(PsiMethod psiMethod:psiMethods){
+                if(psiMethod.getName().equals(selectedText)){
+                    psiMethodTarget=psiMethod;
+                    break;
+                }
+            }
+            yapiApiDTOS.add(actionPerformed(selectedClass,psiMethodTarget,project,psiFile));
+        }
+        return yapiApiDTOS;
+    }
 
+
+    public YapiApiDTO actionPerformed(PsiClass selectedClass,PsiMethod psiMethodTarget,Project project,PsiFile psiFile) {
+        YapiApiDTO yapiApiDTO=new YapiApiDTO();
         // 获得路径
         StringBuilder path=new StringBuilder();
 
@@ -76,15 +98,6 @@ public class BuildJsonForYapi{
             }
         }
 
-        PsiMethod[] psiMethods =selectedClass.getAllMethods();
-        //寻找目标Method
-        PsiMethod psiMethodTarget=null;
-        for(PsiMethod psiMethod:psiMethods){
-            if(psiMethod.getName().equals(selectedText)){
-                psiMethodTarget=psiMethod;
-                break;
-            }
-        }
         PsiAnnotation psiAnnotationMethod= PsiAnnotationSearchUtil.findAnnotation(psiMethodTarget,SpringMVCConstant.RequestMapping);
         if(psiAnnotationMethod!=null){
             PsiNameValuePair[] psiNameValuePairs= psiAnnotationMethod.getParameterList().getAttributes();
@@ -94,10 +107,10 @@ public class BuildJsonForYapi{
                     if("value".equals(psiNameValuePair.getName())){
                         PsiReference psiReference= psiNameValuePair.getDetachedValue().getReference();
                         if(psiReference==null){
-                            path.append(psiNameValuePair.getValue());
+                            path.append(psiNameValuePair.getLiteralValue());
                         }else{
                             path.append(psiReference.resolve().getText().split("=")[1].split(";")[0].replace("\"",""));
-                            yapiApiDTO.setTitle(BuildJsonForYapi.trimFirstAndLastChar(psiReference.resolve().getText().replace("@description","").replace("@Description","").replace(":","").split("@")[0].replace("*","").replace("/","").replace("\n"," "),' '));
+                            yapiApiDTO.setTitle(BuildJsonForYapi.trimFirstAndLastChar(psiReference.resolve().getText().split("@")[0].replace("@description","").replace("@Description","").replace(":","").replace("*","").replace("/","").replace("\n"," "),' '));
                         }
                         yapiApiDTO.setPath(path.toString());
                     }else if("method".equals(psiNameValuePair.getName()) && psiNameValuePair.getValue().toString().toUpperCase().contains("GET")){

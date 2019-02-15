@@ -81,24 +81,25 @@ public class UploadToYapi extends AnAction {
             }
         }else if(ProjectTypeConstant.api.equals(projectType)){
             BuildJsonForYapi buildJsonForYapi=new BuildJsonForYapi();
-            YapiApiDTO yapiApiDTO=buildJsonForYapi.actionPerformed(e);
-            YapiSaveParam yapiSaveParam=new YapiSaveParam(projectToken,yapiApiDTO.getTitle(),yapiApiDTO.getPath(),yapiApiDTO.getParams(),yapiApiDTO.getRequestBody(),yapiApiDTO.getResponse(),Integer.valueOf(projectId),yapiUrl,true,yapiApiDTO.getMethod());
-            UploadYapi uploadYapi=new UploadYapi();
-            try {
-                YapiResponse yapiResponse=uploadYapi.uploadSave(yapiSaveParam);
-                if(yapiResponse.getErrcode()!=0){
-                    Notification error = notificationGroup.createNotification("sorry ,upload api error cause:"+yapiResponse.getErrmsg(), NotificationType.ERROR);
-                    Notifications.Bus.notify(error, project);
-                }else{
-                    String url=yapiUrl+"/project/"+projectId+"/interface/api/cat_"+UploadYapi.catMap.get(projectId);
-                    Notification error = notificationGroup.createNotification("success ,url:  "+url, NotificationType.INFORMATION);
+            ArrayList<YapiApiDTO> yapiApiDTOS=buildJsonForYapi.actionPerformedList(e);
+            for(YapiApiDTO yapiApiDTO:yapiApiDTOS) {
+                YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiApiDTO.getTitle(), yapiApiDTO.getPath(), yapiApiDTO.getParams(), yapiApiDTO.getRequestBody(), yapiApiDTO.getResponse(), Integer.valueOf(projectId), yapiUrl, true, yapiApiDTO.getMethod());
+                UploadYapi uploadYapi = new UploadYapi();
+                try {
+                    YapiResponse yapiResponse = uploadYapi.uploadSave(yapiSaveParam);
+                    if (yapiResponse.getErrcode() != 0) {
+                        Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + yapiResponse.getErrmsg(), NotificationType.ERROR);
+                        Notifications.Bus.notify(error, project);
+                    } else {
+                        String url = yapiUrl + "/project/" + projectId + "/interface/api/cat_" + UploadYapi.catMap.get(projectId);
+                        Notification error = notificationGroup.createNotification("success ,url:  " + url, NotificationType.INFORMATION);
+                        Notifications.Bus.notify(error, project);
+                    }
+                } catch (Exception e1) {
+                    Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + e1.getMessage(), NotificationType.ERROR);
                     Notifications.Bus.notify(error, project);
                 }
-            } catch (Exception e1) {
-                Notification error = notificationGroup.createNotification("sorry ,upload api error cause:"+e1.getMessage(), NotificationType.ERROR);
-                Notifications.Bus.notify(error, project);
             }
         }
-
     }
 }
