@@ -42,30 +42,45 @@ public class BuildJsonForDubbo{
         notificationGroup = new NotificationGroup("Java2Json.NotificationGroup", NotificationDisplayType.BALLOON, true);
     }
 
-    public YapiDubboDTO actionPerformed(AnActionEvent e) {
-        YapiDubboDTO yapiDubboDTO=new YapiDubboDTO();
 
+
+    public ArrayList<YapiDubboDTO> actionPerformedList(AnActionEvent e){
         Editor editor = (Editor) e.getDataContext().getData(CommonDataKeys.EDITOR);
         PsiFile psiFile = (PsiFile) e.getDataContext().getData(CommonDataKeys.PSI_FILE);
         String selectedText=e.getRequiredData(CommonDataKeys.EDITOR).getSelectionModel().getSelectedText();
         Project project = editor.getProject();
         if(Strings.isNullOrEmpty(selectedText)){
-            Notification error = notificationGroup.createNotification("please select method", NotificationType.ERROR);
+            Notification error = notificationGroup.createNotification("please select method or class", NotificationType.ERROR);
             Notifications.Bus.notify(error, project);
             return null;
         }
         PsiElement referenceAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
         PsiClass selectedClass = (PsiClass) PsiTreeUtil.getContextOfType(referenceAt, new Class[]{PsiClass.class});
-
-        PsiMethod[] psiMethods =selectedClass.getAllMethods();
-        //寻找目标Method
-        PsiMethod psiMethodTarget=null;
-        for(PsiMethod psiMethod:psiMethods){
-            if(psiMethod.getName().equals(selectedText)){
-                psiMethodTarget=psiMethod;
-                break;
+        ArrayList<YapiDubboDTO> yapiDubboDTOS=new ArrayList<>();
+        if(selectedText.equals(selectedClass.getName())){
+            PsiMethod[] psiMethods=selectedClass.getMethods();
+            for(PsiMethod psiMethodTarget:psiMethods) {
+                yapiDubboDTOS.add(actionPerformed(selectedClass, psiMethodTarget, project, psiFile));
             }
+        }else{
+            PsiMethod[] psiMethods =selectedClass.getAllMethods();
+            //寻找目标Method
+            PsiMethod psiMethodTarget=null;
+            for(PsiMethod psiMethod:psiMethods){
+                if(psiMethod.getName().equals(selectedText)){
+                    psiMethodTarget=psiMethod;
+                    break;
+                }
+            }
+            yapiDubboDTOS.add(actionPerformed(selectedClass,psiMethodTarget,project,psiFile));
         }
+        return yapiDubboDTOS;
+
+    }
+
+
+    public YapiDubboDTO actionPerformed(PsiClass selectedClass,PsiMethod psiMethodTarget,Project project,PsiFile psiFile) {
+        YapiDubboDTO yapiDubboDTO=new YapiDubboDTO();
         ArrayList list=new ArrayList<KV>();
         //判断是否有匹配的目标方法
         if(psiMethodTarget!=null){
@@ -146,7 +161,7 @@ public class BuildJsonForDubbo{
         try {
             String json = gson.toJson(list);
             yapiDubboDTO.setParams(json);
-            String packageName="/"+((PsiJavaFileImpl) psiFile).getPackageName()+"."+selectedClass.getName()+"/1.0/"+selectedText;
+            String packageName="/"+((PsiJavaFileImpl) psiFile).getPackageName()+"."+selectedClass.getName()+"/1.0/"+psiMethodTarget.getName();
             yapiDubboDTO.setPath(packageName);
             yapiDubboDTO.setTitle(getDescription(psiMethodTarget));
             return yapiDubboDTO;

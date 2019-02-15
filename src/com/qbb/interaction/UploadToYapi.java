@@ -18,6 +18,8 @@ import com.qbb.dto.YapiSaveParam;
 import com.qbb.upload.UploadYapi;
 import com.yourkit.util.Strings;
 
+import java.util.ArrayList;
+
 
 public class UploadToYapi extends AnAction {
 
@@ -58,22 +60,24 @@ public class UploadToYapi extends AnAction {
         }
         if(ProjectTypeConstant.dubbo.equals(projectType)){
             BuildJsonForDubbo buildJsonForDubbo=new BuildJsonForDubbo();
-            YapiDubboDTO yapiDubboDTO=buildJsonForDubbo.actionPerformed(e);
-            YapiSaveParam yapiSaveParam=new YapiSaveParam(projectToken,yapiDubboDTO.getTitle(),yapiDubboDTO.getPath(),yapiDubboDTO.getParams(),yapiDubboDTO.getResponse(),Integer.valueOf(projectId),yapiUrl);
-            UploadYapi uploadYapi=new UploadYapi();
-            try {
-                YapiResponse yapiResponse=uploadYapi.uploadSave(yapiSaveParam);
-                if(yapiResponse.getErrcode()!=0){
-                    Notification error = notificationGroup.createNotification("sorry ,upload api error cause:"+yapiResponse.getErrmsg(), NotificationType.ERROR);
-                    Notifications.Bus.notify(error, project);
-                }else{
-                    String url=yapiUrl+"/project/"+projectId+"/interface/api/cat_"+UploadYapi.catMap.get(projectId);
-                    Notification error = notificationGroup.createNotification("success ,url: "+url, NotificationType.INFORMATION);
+            ArrayList<YapiDubboDTO> yapiDubboDTOs=buildJsonForDubbo.actionPerformedList(e);
+            for(YapiDubboDTO yapiDubboDTO:yapiDubboDTOs) {
+                YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiDubboDTO.getTitle(), yapiDubboDTO.getPath(), yapiDubboDTO.getParams(), yapiDubboDTO.getResponse(), Integer.valueOf(projectId), yapiUrl);
+                UploadYapi uploadYapi = new UploadYapi();
+                try {
+                    YapiResponse yapiResponse=uploadYapi.uploadSave(yapiSaveParam);
+                    if(yapiResponse.getErrcode()!=0){
+                        Notification error = notificationGroup.createNotification("sorry ,upload api error cause:"+yapiResponse.getErrmsg(), NotificationType.ERROR);
+                        Notifications.Bus.notify(error, project);
+                    }else{
+                        String url=yapiUrl+"/project/"+projectId+"/interface/api/cat_"+UploadYapi.catMap.get(projectId);
+                        Notification error = notificationGroup.createNotification("success ,url: "+url, NotificationType.INFORMATION);
+                        Notifications.Bus.notify(error, project);
+                    }
+                } catch (Exception e1) {
+                    Notification error = notificationGroup.createNotification("sorry ,upload api error cause:"+e1.getMessage(), NotificationType.ERROR);
                     Notifications.Bus.notify(error, project);
                 }
-            } catch (Exception e1) {
-                Notification error = notificationGroup.createNotification("sorry ,upload api error cause:"+e1.getMessage(), NotificationType.ERROR);
-                Notifications.Bus.notify(error, project);
             }
         }else if(ProjectTypeConstant.api.equals(projectType)){
             BuildJsonForYapi buildJsonForYapi=new BuildJsonForYapi();
