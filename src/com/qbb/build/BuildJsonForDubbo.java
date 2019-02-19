@@ -43,7 +43,13 @@ public class BuildJsonForDubbo{
     }
 
 
-
+    /**
+     * @description: 批量生成接口数据
+     * @param: [e]
+     * @return: java.util.ArrayList<com.qbb.dto.YapiDubboDTO>
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/2/19
+     */
     public ArrayList<YapiDubboDTO> actionPerformedList(AnActionEvent e){
         Editor editor = (Editor) e.getDataContext().getData(CommonDataKeys.EDITOR);
         PsiFile psiFile = (PsiFile) e.getDataContext().getData(CommonDataKeys.PSI_FILE);
@@ -192,7 +198,12 @@ public class BuildJsonForDubbo{
         return null;
     }
 
-
+    /**
+     * 获得对象属性
+     * @param psiClass
+     * @param project
+     * @return
+     */
     public static KV getFields(PsiClass psiClass,Project project) {
         KV kv = KV.create();
         if (psiClass != null) {

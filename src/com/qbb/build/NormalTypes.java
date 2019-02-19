@@ -1,7 +1,9 @@
 package com.qbb.build;
 
+import com.sun.javafx.binding.StringFormatter;
 import org.jetbrains.annotations.NonNls;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +39,7 @@ public class NormalTypes {
         normalTypes.put("Float", 0.0F);
         normalTypes.put("Double", 0.0D);
         normalTypes.put("String", "String");
-        normalTypes.put("Date", new Date());
+        normalTypes.put("Date", new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(new Date()));
         normalTypes.put("BigDecimal",null);
     }
 
@@ -57,7 +59,7 @@ public class NormalTypes {
         noramlTypesPackages.put("java.lang.Long",1L);
         noramlTypesPackages.put("java.lang.Float",1L);
         noramlTypesPackages.put("java.lang.Double",1.0D);
-        noramlTypesPackages.put("java.util.Date",new Date());
+        noramlTypesPackages.put("java.util.Date", new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(new Date()));
         noramlTypesPackages.put("java.lang.String","String");
         noramlTypesPackages.put("java.math.BigDecimal",1);
 

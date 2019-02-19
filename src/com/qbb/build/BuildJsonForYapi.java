@@ -49,7 +49,11 @@ public class BuildJsonForYapi{
         notificationGroup = new NotificationGroup("Java2Json.NotificationGroup", NotificationDisplayType.BALLOON, true);
     }
 
-
+    /**
+     * 批量生成 接口数据
+     * @param e
+     * @return
+     */
     public ArrayList<YapiApiDTO> actionPerformedList(AnActionEvent e){
         Editor editor = (Editor) e.getDataContext().getData(CommonDataKeys.EDITOR);
         PsiFile psiFile = (PsiFile) e.getDataContext().getData(CommonDataKeys.PSI_FILE);
@@ -147,7 +151,7 @@ public class BuildJsonForYapi{
                             path.append(psiReference.resolve().getText().split("=")[1].split(";")[0].replace("\"", ""));
                             yapiApiDTO.setTitle(BuildJsonForYapi.trimFirstAndLastChar(psiReference.resolve().getText().replace("@description","").replace("@Description","").replace(":","").split("@")[0].replace("*","").replace("/","").replace("\n"," "),' '));
                         }
-                        yapiApiDTO.setPath(path.toString());
+                        yapiApiDTO.setPath(path.toString().trim());
                     }
                 }
             }
@@ -187,7 +191,13 @@ public class BuildJsonForYapi{
         return null;
     }
 
-
+    /**
+     * @description: 获得请求参数
+     * @param: [project, yapiApiDTO, psiMethodTarget]
+     * @return: void
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/2/19
+     */ 
     public static void getRequest(Project project,YapiApiDTO yapiApiDTO,PsiMethod psiMethodTarget) throws JSONException{
         PsiParameter[] psiParameters= psiMethodTarget.getParameterList().getParameters();
         if(psiParameters.length>0) {
@@ -222,7 +232,13 @@ public class BuildJsonForYapi{
         }
     }
 
-
+    /**
+     * @description: 获得响应参数
+     * @param: [project, psiType]
+     * @return: java.lang.String
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/2/19
+     */ 
     public static String getResponse(Project project,PsiType psiType) throws JSONException{
         return getPojoJson(project, psiType);
     }
