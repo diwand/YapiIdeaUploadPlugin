@@ -25,6 +25,10 @@ public class YapiDubboDTO implements Serializable {
      * 响应
      */
     private String response;
+    /**
+     * 描述
+     */
+    private String desc;
 
 
     public String getPath() {
@@ -58,6 +62,14 @@ public class YapiDubboDTO implements Serializable {
 
     public void setResponse(String response) {
         this.response = response;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
     public YapiDubboDTO() {

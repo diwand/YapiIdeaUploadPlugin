@@ -169,6 +169,7 @@ public class BuildJsonForDubbo{
             yapiDubboDTO.setParams(json);
             String packageName="/"+((PsiJavaFileImpl) psiFile).getPackageName()+"."+selectedClass.getName()+"/1.0/"+psiMethodTarget.getName();
             yapiDubboDTO.setPath(packageName);
+            yapiDubboDTO.setDesc("<pre><code> "+psiMethodTarget.getText()  +" </code></pre>");
             yapiDubboDTO.setTitle(getDescription(psiMethodTarget));
             return yapiDubboDTO;
         } catch (Exception ex) {

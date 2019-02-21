@@ -63,7 +63,7 @@ public class UploadToYapi extends AnAction {
             // 获得dubbo需上传的接口列表 参数对象
             ArrayList<YapiDubboDTO> yapiDubboDTOs=new BuildJsonForDubbo().actionPerformedList(e);
             for(YapiDubboDTO yapiDubboDTO:yapiDubboDTOs) {
-                YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiDubboDTO.getTitle(), yapiDubboDTO.getPath(), yapiDubboDTO.getParams(), yapiDubboDTO.getResponse(), Integer.valueOf(projectId), yapiUrl);
+                YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiDubboDTO.getTitle(), yapiDubboDTO.getPath(), yapiDubboDTO.getParams(), yapiDubboDTO.getResponse(), Integer.valueOf(projectId), yapiUrl,yapiDubboDTO.getDesc());
                 try {
                     // 上传
                     YapiResponse yapiResponse=new UploadYapi().uploadSave(yapiSaveParam);

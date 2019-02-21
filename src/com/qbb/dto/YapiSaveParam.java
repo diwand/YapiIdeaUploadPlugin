@@ -307,7 +307,7 @@ public class YapiSaveParam implements Serializable{
     public YapiSaveParam() {
     }
 
-    public YapiSaveParam(String token, String title, String path,String req_body_other ,String res_body,Integer projectId,String yapiUrl) {
+    public YapiSaveParam(String token, String title, String path,String req_body_other ,String res_body,Integer projectId,String yapiUrl,String desc) {
         this.token = token;
         this.title = title;
         this.path = path;
@@ -315,6 +315,7 @@ public class YapiSaveParam implements Serializable{
         this.req_body_other=req_body_other;
         this.projectId=projectId;
         this.yapiUrl=yapiUrl;
+        this.desc=desc;
     }
 
 
