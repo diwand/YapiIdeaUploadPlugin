@@ -403,7 +403,8 @@ public class BuildJsonForYapi{
                         if (!Strings.isNullOrEmpty(remark)) {
                             kv1.set(KV.by("description", remark));
                         }
-                        kv1.set(KV.by("properties", getFields(PsiUtil.resolveClassInType(type), project, null, null)));
+                        PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(child, GlobalSearchScope.allScope(project));
+                        kv1.set(KV.by("properties", getFields(psiClassChild, project, null, null)));
                         kv.set(name, kv1);
                     }
                 }
