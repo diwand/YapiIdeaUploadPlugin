@@ -149,7 +149,8 @@ public class BuildJsonForYapi{
                         if (psiReference == null) {
                             path.append(psiNameValuePair.getValue());
                         } else {
-                            path.append(psiReference.resolve().getText().split("=")[1].split(";")[0].replace("\"", ""));
+                            String[] results=psiReference.resolve().getText().split("=");
+                            path.append(results[results.length-1].split(";")[0].replace("\"", "").trim());
                             yapiApiDTO.setTitle(BuildJsonForYapi.trimFirstAndLastChar(psiReference.resolve().getText().replace("@description","").replace("@Description","").replace(":","").split("@")[0].replace("*","").replace("/","").replace("\n"," "),' '));
                         }
                         yapiApiDTO.setPath(path.toString().trim());
