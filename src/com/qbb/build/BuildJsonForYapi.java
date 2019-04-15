@@ -348,14 +348,14 @@ public class BuildJsonForYapi{
         KV kv = KV.create();
         if (psiClass != null) {
             for (PsiField field : psiClass.getAllFields()) {
-               getField(field,project,kv,childType,index);
+               getField(field,project,kv,childType,index,psiClass.getName());
             }
         }
         return kv;
     }
 
 
-    public static  void getField(PsiField field,Project project,KV kv,String[] childType,Integer index){
+    public static  void getField(PsiField field,Project project,KV kv,String[] childType,Integer index,String pName){
         if(field.getModifierList().hasModifierProperty("final")){
             return;
         }
@@ -385,7 +385,7 @@ public class BuildJsonForYapi{
                     jsonObject.addProperty("description", remark);
                 }
                 kv.set(name, jsonObject);
-            }else if(((PsiClassReferenceType) type).resolve().isEnum()) {
+            }else if(!(type instanceof PsiArrayType)&&((PsiClassReferenceType) type).resolve().isEnum()) {
                 JsonObject jsonObject=new JsonObject();
                 jsonObject.addProperty("type","enum");
                 if(!Strings.isNullOrEmpty(remark)) {
@@ -397,7 +397,7 @@ public class BuildJsonForYapi{
                     String child = childType[index].split(">")[0];
                     if (child.contains("List") || child.contains("Set") || child.contains("HashSet")) {
                         PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childType[index + 1].split(">")[0], GlobalSearchScope.allScope(project));
-                        getCollect(kv, psiClassChild.getName(), remark, psiClassChild, project, name);
+                        getCollect(kv, psiClassChild.getName(), remark, psiClassChild, project, name,pName);
                     } else {
                         //class type
                         KV kv1 = new KV();
@@ -406,7 +406,11 @@ public class BuildJsonForYapi{
                             kv1.set(KV.by("description", remark));
                         }
                         PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(child, GlobalSearchScope.allScope(project));
-                        kv1.set(KV.by("properties", getFields(psiClassChild, project, null, null)));
+                        if(!pName.equals(psiClassChild.getName())) {
+                            kv1.set(KV.by("properties", getFields(psiClassChild, project, null, null)));
+                        }else{
+                            kv1.set(KV.by("type", pName));
+                        }
                         kv.set(name, kv1);
                     }
                 }
@@ -431,7 +435,11 @@ public class BuildJsonForYapi{
                     if(!Strings.isNullOrEmpty(remark)) {
                         kvlist.set(KV.by("description",remark));
                     }
-                    kvlist.set("properties",getFields(PsiUtil.resolveClassInType(deepType),project,null,null));
+                    if(!pName.equals(PsiUtil.resolveClassInType(deepType).getName())){
+                        kvlist.set("properties",getFields(PsiUtil.resolveClassInType(deepType),project,null,null));
+                    }else{
+                        kvlist.set(KV.by("type",pName));
+                    }
                 }
                 KV kv1=new KV();
                 kv1.set(KV.by("type","array"));
@@ -445,7 +453,7 @@ public class BuildJsonForYapi{
                 PsiType iterableType = PsiUtil.extractIterableTypeParameter(type, false);
                 PsiClass iterableClass = PsiUtil.resolveClassInClassTypeOnly(iterableType);
                 String classTypeName = iterableClass.getName();
-                getCollect(kv,classTypeName,remark,iterableClass,project,name);
+                getCollect(kv,classTypeName,remark,iterableClass,project,name,pName);
             } else if(fieldTypeName.startsWith("HashMap") || fieldTypeName.startsWith("Map")){
                 //HashMap or Map
                 CompletableFuture.runAsync(()->{
@@ -464,7 +472,11 @@ public class BuildJsonForYapi{
                 if(!Strings.isNullOrEmpty(remark)) {
                     kv1.set(KV.by("description",remark));
                 }
-                kv1.set(KV.by("properties",getFields(PsiUtil.resolveClassInType(type),project,null,null)));
+                if(!pName.equals(((PsiClassReferenceType) type).getClassName())) {
+                    kv1.set(KV.by("properties", getFields(PsiUtil.resolveClassInType(type), project, null, null)));
+                }else{
+                    kv1.set(KV.by("type",pName));
+                }
                 kv.set(name,kv1);
             }
         }
@@ -472,7 +484,7 @@ public class BuildJsonForYapi{
 
 
 
-    public static void getCollect(KV kv,String classTypeName,String remark,PsiClass psiClass,Project project,String name) {
+    public static void getCollect(KV kv,String classTypeName,String remark,PsiClass psiClass,Project project,String name,String pName) {
         KV kvlist = new KV();
         if (NormalTypes.isNormalType(classTypeName)) {
             kvlist.set("type",classTypeName);
@@ -484,7 +496,11 @@ public class BuildJsonForYapi{
             if(!Strings.isNullOrEmpty(remark)) {
                 kvlist.set(KV.by("description",remark));
             }
-            kvlist.set("properties",getFields(psiClass,project,null,null));
+            if(!pName.equals(psiClass.getName())) {
+                kvlist.set("properties", getFields(psiClass, project, null, null));
+            }else{
+                kvlist.set(KV.by("type",pName));
+            }
         }
         KV kv1=new KV();
         kv1.set(KV.by("type","array"));

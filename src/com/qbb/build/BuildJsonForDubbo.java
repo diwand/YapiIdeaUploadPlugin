@@ -208,6 +208,7 @@ public class BuildJsonForDubbo{
     public static KV getFields(PsiClass psiClass,Project project) {
         KV kv = KV.create();
         if (psiClass != null) {
+            String pName=psiClass.getName();
             for (PsiField field : psiClass.getAllFields()) {
                 if(field.getModifierList().hasModifierProperty("final")){
                     continue;
@@ -223,7 +224,7 @@ public class BuildJsonForDubbo{
                     //normal Type
                     if (NormalTypes.isNormalType(fieldTypeName)) {
                         kv.set(name, NormalTypes.normalTypes.get(fieldTypeName));
-                    } else if(((PsiClassReferenceType) type).resolve().isEnum()) {
+                    } else if(!(type instanceof PsiArrayType)&&((PsiClassReferenceType) type).resolve().isEnum()) {
                         kv.set(name, fieldTypeName);
                     } else if (type instanceof PsiArrayType) {
                         //array type
@@ -235,7 +236,11 @@ public class BuildJsonForDubbo{
                         } else if (NormalTypes.isNormalType(deepTypeName)) {
                             list.add(NormalTypes.normalTypes.get(deepTypeName));
                         } else {
-                            list.add(getFields(PsiUtil.resolveClassInType(deepType),project));
+                            if(!pName.equals(PsiUtil.resolveClassInType(deepType).getName())) {
+                                list.add(getFields(PsiUtil.resolveClassInType(deepType), project));
+                            }else{
+                                list.add(pName);
+                            }
                         }
                         kv.set(name, list);
                     } else if (fieldTypeName.startsWith("List")) {
@@ -247,7 +252,11 @@ public class BuildJsonForDubbo{
                         if (NormalTypes.isNormalType(classTypeName)) {
                             list.add(NormalTypes.normalTypes.get(classTypeName));
                         } else {
-                            list.add(getFields(iterableClass,project));
+                            if(!pName.equals(iterableClass.getName())) {
+                                list.add(getFields(iterableClass, project));
+                            }else{
+                                list.add(pName);
+                            }
                         }
                         kv.set(name, list);
                     } else if(fieldTypeName.startsWith("HashMap") || fieldTypeName.startsWith("Map")){
@@ -271,12 +280,20 @@ public class BuildJsonForDubbo{
                         if (NormalTypes.isNormalType(classTypeName)) {
                             set.add(NormalTypes.normalTypes.get(classTypeName));
                         } else {
-                            set.add(getFields(iterableClass,project));
+                            if(!pName.equals(iterableClass.getName())) {
+                                set.add(getFields(iterableClass, project));
+                            }else{
+                                set.add(pName);
+                            }
                         }
                         kv.set(name, set);
                     }else {
                         //class type
-                        kv.set(name, getFields(PsiUtil.resolveClassInType(type),project));
+                        if(!pName.equals(PsiUtil.resolveClassInType(type).getName())) {
+                            kv.set(name, getFields(PsiUtil.resolveClassInType(type), project));
+                        }else{
+                            kv.set(name, pName);
+                        }
                     }
                 }
             }
