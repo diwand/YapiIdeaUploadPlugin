@@ -36,6 +36,11 @@ public class YapiApiDTO implements Serializable{
      */
     private String method;
 
+    /**
+     * 描述
+     */
+    private String desc;
+
 
     public String getPath() {
         return path;
@@ -83,6 +88,14 @@ public class YapiApiDTO implements Serializable{
 
     public void setMethod(String method) {
         this.method = method;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
     public YapiApiDTO() {

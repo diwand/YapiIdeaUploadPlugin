@@ -119,6 +119,7 @@ public class BuildJsonForYapi{
                             String[] results=psiReference.resolve().getText().split("=");
                             path.append(results[results.length-1].split(";")[0].replace("\"","").trim());
                             yapiApiDTO.setTitle(BuildJsonForYapi.trimFirstAndLastChar(psiReference.resolve().getText().split("@")[0].replace("@description","").replace("@Description","").replace(":","").replace("*","").replace("/","").replace("\n"," "),' '));
+                            yapiApiDTO.setDesc("<pre><code>  "+psiReference.resolve().getText()+" </code></pre>");
                         }
                         yapiApiDTO.setPath(path.toString());
                     }else if("method".equals(psiNameValuePair.getName()) && psiNameValuePair.getValue().toString().toUpperCase().contains("GET")){

@@ -319,7 +319,7 @@ public class YapiSaveParam implements Serializable{
     }
 
 
-    public YapiSaveParam(String token, String title, String path,List req_query,String req_body_other ,String res_body,Integer projectId,String yapiUrl,boolean req_body_is_json_schema,String method) {
+    public YapiSaveParam(String token, String title, String path,List req_query,String req_body_other ,String res_body,Integer projectId,String yapiUrl,boolean req_body_is_json_schema,String method,String desc) {
         this.token = token;
         this.title = title;
         this.path = path;
@@ -330,6 +330,7 @@ public class YapiSaveParam implements Serializable{
         this.yapiUrl=yapiUrl;
         this.req_body_is_json_schema=req_body_is_json_schema;
         this.method=method;
+        this.desc=desc;
     }
 
 
