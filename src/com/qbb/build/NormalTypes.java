@@ -21,6 +21,8 @@ public class NormalTypes {
 
     public static final Map<String,Object> noramlTypesPackages=new HashMap<>();
 
+    public static final Map<String,Object> collectTypes=new HashMap<>();
+
 
     static {
         normalTypes.put("int",1);
@@ -41,6 +43,8 @@ public class NormalTypes {
         normalTypes.put("String", "String");
         normalTypes.put("Date", new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(new Date()));
         normalTypes.put("BigDecimal",null);
+        collectTypes.put("HashMap","HashMap");
+        collectTypes.put("Map","Map");
     }
 
     static {
@@ -64,6 +68,8 @@ public class NormalTypes {
         noramlTypesPackages.put("java.math.BigDecimal",1);
 
     }
+
+
 
 
     public static boolean isNormalType(String typeName) {

@@ -213,20 +213,39 @@ public class BuildJsonForYapi{
                     if(psiAnnotation!=null) {
                         PsiNameValuePair[] psiNameValuePairs = psiAnnotation.getParameterList().getAttributes();
                         YapiQueryDTO yapiQueryDTO = new YapiQueryDTO();
-                        for (PsiNameValuePair psiNameValuePair : psiNameValuePairs) {
-                            if ("name".equals(psiNameValuePair.getName())) {
-                                yapiQueryDTO.setName(psiNameValuePair.getValue().getText().replace("\"", ""));
-                            } else if ("value".equals(psiNameValuePair.getName())) {
-                                yapiQueryDTO.setName(psiNameValuePair.getValue().getText().replace("\"", ""));
-                            } else if ("required".equals(psiNameValuePair.getName())) {
-                                yapiQueryDTO.setRequired(psiNameValuePair.getValue().getText().replace("\"", "").replace("false", "0").replace("true", "1"));
-                            } else if ("defaultValue".equals(psiNameValuePair.getName())) {
-                                yapiQueryDTO.setExample(psiNameValuePair.getValue().getText().replace("\"", ""));
-                            } else {
-                                yapiQueryDTO.setName(psiNameValuePair.getLiteralValue());
-                                yapiQueryDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
-                                yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
+
+                        if(psiNameValuePairs.length>0) {
+                            for (PsiNameValuePair psiNameValuePair : psiNameValuePairs) {
+                                if ("name".equals(psiNameValuePair.getName())) {
+                                    yapiQueryDTO.setName(psiNameValuePair.getValue().getText().replace("\"", ""));
+                                } else if ("value".equals(psiNameValuePair.getName())) {
+                                    yapiQueryDTO.setName(psiNameValuePair.getValue().getText().replace("\"", ""));
+                                } else if ("required".equals(psiNameValuePair.getName())) {
+                                    yapiQueryDTO.setRequired(psiNameValuePair.getValue().getText().replace("\"", "").replace("false", "0").replace("true", "1"));
+                                } else if ("defaultValue".equals(psiNameValuePair.getName())) {
+                                    yapiQueryDTO.setExample(psiNameValuePair.getValue().getText().replace("\"", ""));
+                                } else {
+                                    yapiQueryDTO.setName(psiNameValuePair.getLiteralValue());
+                                    Object example=NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText());
+                                    if(Objects.nonNull(example)){
+                                      yapiQueryDTO.setExample(example.toString());
+                                    }else{
+                                        yapiApiDTO.setRequestBody(getResponse(project,psiParameter.getType()));
+                                    }
+                                    yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
+                                }
+                                yapiApiDTO.setRequestBody(getResponse(project,psiParameter.getType()));
                             }
+                        }else{
+                            yapiQueryDTO.setName(psiParameter.getName());
+                            Object example=NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText());
+                            if(Objects.nonNull(example)){
+                                yapiQueryDTO.setExample(example.toString());
+                            }else{
+                                yapiApiDTO.setRequestBody(getResponse(project,psiParameter.getType()));
+                            }
+                            yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
+                            yapiApiDTO.setRequestBody(getResponse(project,psiParameter.getType()));
                         }
                         list.add(yapiQueryDTO);
                     }else{
@@ -347,8 +366,14 @@ public class BuildJsonForYapi{
     public static KV getFields(PsiClass psiClass,Project project,String[] childType,Integer index) {
         KV kv = KV.create();
         if (psiClass != null) {
-            for (PsiField field : psiClass.getAllFields()) {
-               getField(field,project,kv,childType,index,psiClass.getName());
+            if(Objects.nonNull(NormalTypes.collectTypes.get(psiClass.getSuperClass().getName()))){
+                for (PsiField field : psiClass.getFields()) {
+                    getField(field,project,kv,childType,index,psiClass.getName());
+                }
+            }else{
+                for (PsiField field : psiClass.getAllFields()) {
+                    getField(field,project,kv,childType,index,psiClass.getName());
+                }
             }
         }
         return kv;
