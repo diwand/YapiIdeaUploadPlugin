@@ -28,10 +28,7 @@ import org.jetbrains.annotations.NonNls;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -111,7 +108,7 @@ public class BuildJsonForYapi{
             if(psiNameValuePairs!=null && psiNameValuePairs.length>0){
                 for(PsiNameValuePair psiNameValuePair:psiNameValuePairs){
                     //获得方法上的路径
-                    if("value".equals(psiNameValuePair.getName())){
+                    if(Objects.isNull(psiNameValuePair.getName())||"value".equals(psiNameValuePair.getName())){
                         PsiReference psiReference= psiNameValuePair.getDetachedValue().getReference();
                         if(psiReference==null){
                             path.append(psiNameValuePair.getLiteralValue());
@@ -160,7 +157,7 @@ public class BuildJsonForYapi{
                 }
             }
         }
-        yapiApiDTO.setDesc(yapiApiDTO.getDesc() +" <pre><code>  "+psiMethodTarget.getText().replace(psiMethodTarget.getBody().getText(),"")+" </code></pre>");
+        yapiApiDTO.setDesc(Objects.nonNull(yapiApiDTO.getDesc())?yapiApiDTO.getDesc():"" +" <pre><code>  "+psiMethodTarget.getText().replace(psiMethodTarget.getBody().getText(),"")+" </code></pre>");
         try {
             yapiApiDTO.setResponse(getResponse(project,psiMethodTarget.getReturnType()));
             getRequest(project,yapiApiDTO,psiMethodTarget);
