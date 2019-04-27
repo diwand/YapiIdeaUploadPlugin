@@ -12,6 +12,7 @@ import com.intellij.psi.impl.source.PsiClassReferenceType;
 import com.intellij.psi.impl.source.PsiImmediateClassType;
 import com.intellij.psi.impl.source.PsiJavaFileImpl;
 import com.intellij.psi.impl.source.tree.java.PsiNameValuePairImpl;
+import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.javadoc.PsiDocTag;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -157,7 +158,7 @@ public class BuildJsonForYapi{
                 }
             }
         }
-        yapiApiDTO.setDesc(Objects.nonNull(yapiApiDTO.getDesc())?yapiApiDTO.getDesc():"" +" <pre><code>  "+psiMethodTarget.getText().replace(psiMethodTarget.getBody().getText(),"")+" </code></pre>");
+        yapiApiDTO.setDesc(Objects.nonNull(yapiApiDTO.getDesc())?yapiApiDTO.getDesc():" <pre><code>  "+psiMethodTarget.getText().replace(psiMethodTarget.getBody().getText(),"")+" </code></pre>");
         try {
             yapiApiDTO.setResponse(getResponse(project,psiMethodTarget.getReturnType()));
             getRequest(project,yapiApiDTO,psiMethodTarget);
@@ -191,6 +192,21 @@ public class BuildJsonForYapi{
             return BuildJsonForYapi.trimFirstAndLastChar(psiMethodTarget.getDocComment().getText().split("@")[0].replace("@description", "").replace("@Description", "").replace(":", "").replace("*", "").replace("/", "").replace("\n", " "), ' ');
         }
         return null;
+    }
+
+    /**
+     * @description: 获得属性注释
+     * @param: [psiDocComment]
+     * @return: java.lang.String
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/4/27
+     */
+    public static String getFiledDesc(PsiDocComment psiDocComment){
+        String fileText=psiDocComment.getText();
+        if(!Strings.isNullOrEmpty(fileText)){
+            return trimFirstAndLastChar(fileText.replace("*", "").replace("/", "").replace(" ", "").replace("\n", ",").replace("\t",""),',').split("\\{@link")[0];
+        }
+        return "";
     }
 
     /**
@@ -343,7 +359,7 @@ public class BuildJsonForYapi{
                 KV kvObject = getFields(psiClassChild, project,types,1);
                 result.set("type", "object");
                 result.set("title", psiType.getPresentableText());
-                result.set("description", (psiType.getPresentableText()+"  类型:"+psiClassChild.getName()).trim());
+                result.set("description", (psiType.getPresentableText()+" :"+psiClassChild.getName()).trim());
                 result.set("properties", kvObject);
                 String json = result.toPrettyJson();
                 return json;
@@ -353,7 +369,7 @@ public class BuildJsonForYapi{
                 KV kvObject = getFields(psiClassChild, project,null,null);
                 result.set("type", "object");
                 result.set("title", psiType.getPresentableText());
-                result.set("description", (psiType.getPresentableText()+"  类型:"+psiClassChild.getName()).trim());
+                result.set("description", (psiType.getPresentableText()+" :"+psiClassChild.getName()).trim());
                 result.set("properties", kvObject);
                 String json = result.toPrettyJson();
                 return json;
@@ -388,8 +404,46 @@ public class BuildJsonForYapi{
         String name = field.getName();
         String remark ="";
         if(field.getDocComment()!=null) {
-            remark=field.getDocComment().getText().replace("*", "").replace("/", "").replace(" ", "").replace("\n", ",").replace("\t","");
-            remark=trimFirstAndLastChar(remark,',');
+            remark=getFiledDesc(field.getDocComment());
+
+            // 尝试获得@link 的常量定义
+            String[] linkString=field.getDocComment().getText().split("@link");
+            if(linkString.length>1){
+                //说明有link
+                String linkAddress=linkString[1].split("}")[0].trim();
+                PsiClass psiClassLink=JavaPsiFacade.getInstance(project).findClass(linkAddress,GlobalSearchScope.allScope(project));
+                if(Objects.nonNull(psiClassLink)){
+                    //说明获得了link 的class
+                    PsiField[] linkFields= psiClassLink.getFields();
+                    if(linkFields.length>0){
+                        remark+=","+psiClassLink.getName()+"[";
+                        for (int i=0;i<linkFields.length;i++){
+                            PsiField psiField=linkFields[i];
+                            if(i>0){
+                                remark+=",";
+                            }
+                            // 先获得名称
+                            remark+=psiField.getName();
+                            // 后获得value,通过= 来截取获得，第二个值，再截取;
+                            String[] splitValue = psiField.getText().split("=");
+                            if(splitValue.length>1){
+                                String value=splitValue[1].split(";")[0];
+                                remark+=":"+value;
+                            }
+                            String filedValue=getFiledDesc(psiField.getDocComment());
+                            if(!Strings.isNullOrEmpty(filedValue)){
+                                remark+="("+filedValue+")";
+                            }
+                        }
+                        remark+="]";
+                    }
+                }else{
+                    //可能没有获得全路径，尝试获得全路径
+
+                }
+            }
+
+
         }
         // 如果是基本类型
         if (type instanceof PsiPrimitiveType) {
@@ -428,7 +482,7 @@ public class BuildJsonForYapi{
                         KV kv1 = new KV();
                         kv1.set(KV.by("type", "object"));
                         PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(child, GlobalSearchScope.allScope(project));
-                        kv1.set(KV.by("description", (remark+"  类型:"+psiClassChild.getName()).trim()));
+                        kv1.set(KV.by("description", (remark+" :"+psiClassChild.getName()).trim()));
                         if(!pName.equals(psiClassChild.getName())) {
                             kv1.set(KV.by("properties", getFields(psiClassChild, project, null, null)));
                         }else{
@@ -458,7 +512,7 @@ public class BuildJsonForYapi{
                     kvlist.set(KV.by("type","object"));
                     PsiClass psiClass= PsiUtil.resolveClassInType(deepType);
                     cType=psiClass.getName();
-                    kvlist.set(KV.by("description",(remark+"  类型:"+psiClass.getName()).trim()));
+                    kvlist.set(KV.by("description",(remark+" ,"+psiClass.getName()).trim()));
                     if(!pName.equals(PsiUtil.resolveClassInType(deepType).getName())){
                         kvlist.set("properties",getFields(psiClass,project,null,null));
                     }else{
@@ -467,7 +521,7 @@ public class BuildJsonForYapi{
                 }
                 KV kv1=new KV();
                 kv1.set(KV.by("type","array"));
-                kv1.set(KV.by("description",(remark+" 子类型:"+cType).trim()));
+                kv1.set(KV.by("description",(remark+" :"+cType).trim()));
                 kv1.set("items",kvlist);
                 kv.set(name, kv1);
             } else if (fieldTypeName.startsWith("List")||fieldTypeName.startsWith("Set") || fieldTypeName.startsWith("HashSet")) {
@@ -492,7 +546,7 @@ public class BuildJsonForYapi{
                 KV kv1=new KV();
                 PsiClass psiClass=PsiUtil.resolveClassInType(type);
                 kv1.set(KV.by("type","object"));
-                kv1.set(KV.by("description",(remark+"  类型:"+psiClass.getName()).trim()));
+                kv1.set(KV.by("description",(remark+" ,"+psiClass.getName()).trim()));
                 if(!pName.equals(((PsiClassReferenceType) type).getClassName())) {
                     kv1.set(KV.by("properties", getFields(PsiUtil.resolveClassInType(type), project, null, null)));
                 }else{
@@ -514,7 +568,7 @@ public class BuildJsonForYapi{
             }
         } else {
             kvlist.set(KV.by("type","object"));
-            kvlist.set(KV.by("description",(remark+"  类型:"+psiClass.getName()).trim()));
+            kvlist.set(KV.by("description",(remark+" ,"+psiClass.getName()).trim()));
             if(!pName.equals(psiClass.getName())) {
                 kvlist.set("properties", getFields(psiClass, project, null, null));
             }else{
@@ -523,7 +577,7 @@ public class BuildJsonForYapi{
         }
         KV kv1=new KV();
         kv1.set(KV.by("type","array"));
-        kv1.set(KV.by("description",(remark+"  子类型:"+psiClass.getName()).trim()));
+        kv1.set(KV.by("description",(remark+" ,"+psiClass.getName()).trim()));
         kv1.set("items",kvlist);
         kv.set(name, kv1);
     }
