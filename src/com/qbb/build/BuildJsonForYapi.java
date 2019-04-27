@@ -202,9 +202,11 @@ public class BuildJsonForYapi{
      * @date: 2019/4/27
      */
     public static String getFiledDesc(PsiDocComment psiDocComment){
-        String fileText=psiDocComment.getText();
-        if(!Strings.isNullOrEmpty(fileText)){
-            return trimFirstAndLastChar(fileText.replace("*", "").replace("/", "").replace(" ", "").replace("\n", ",").replace("\t",""),',').split("\\{@link")[0];
+        if(Objects.nonNull(psiDocComment)) {
+            String fileText = psiDocComment.getText();
+            if (!Strings.isNullOrEmpty(fileText)) {
+                return trimFirstAndLastChar(fileText.replace("*", "").replace("/", "").replace(" ", "").replace("\n", ",").replace("\t", ""), ',').split("\\{@link")[0];
+            }
         }
         return "";
     }
@@ -412,6 +414,20 @@ public class BuildJsonForYapi{
                 //说明有link
                 String linkAddress=linkString[1].split("}")[0].trim();
                 PsiClass psiClassLink=JavaPsiFacade.getInstance(project).findClass(linkAddress,GlobalSearchScope.allScope(project));
+                if(Objects.isNull(psiClassLink)) {
+                    //可能没有获得全路径，尝试获得全路径
+                    String[] importPaths=field.getParent().getContext().getText().split("import");
+                    if(importPaths.length>1){
+                        for(String importPath:importPaths){
+                            if(importPath.contains(linkAddress.split("\\.")[0])){
+                                linkAddress=importPath.split(linkAddress.split("\\.")[0])[0]+linkAddress;
+                                psiClassLink=JavaPsiFacade.getInstance(project).findClass(linkAddress.trim(),GlobalSearchScope.allScope(project));
+                                break;
+                            }
+                        }
+                    }
+                    //如果小于等于一为不存在import，不做处理
+                }
                 if(Objects.nonNull(psiClassLink)){
                     //说明获得了link 的class
                     PsiField[] linkFields= psiClassLink.getFields();
@@ -437,9 +453,6 @@ public class BuildJsonForYapi{
                         }
                         remark+="]";
                     }
-                }else{
-                    //可能没有获得全路径，尝试获得全路径
-
                 }
             }
 
