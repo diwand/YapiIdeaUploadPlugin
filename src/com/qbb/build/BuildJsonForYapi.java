@@ -1,5 +1,6 @@
 package com.qbb.build;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 import com.intellij.notification.*;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -22,7 +23,6 @@ import com.qbb.dto.YapiApiDTO;
 import com.qbb.dto.YapiDubboDTO;
 import com.qbb.dto.YapiQueryDTO;
 import com.qbb.util.PsiAnnotationSearchUtil;
-import com.yourkit.util.Strings;
 import org.codehaus.jettison.json.JSONException;
 import org.jetbrains.annotations.NonNls;
 
@@ -143,7 +143,7 @@ public class BuildJsonForYapi{
                 PsiNameValuePair[] psiNameValuePairs = psiAnnotationMethodSemple.getParameterList().getAttributes();
                 for (PsiNameValuePair psiNameValuePair : psiNameValuePairs) {
                     //获得方法上的路径
-                    if (psiNameValuePair.getName().equals("value")) {
+                    if (Objects.isNull(psiNameValuePair.getName()) || psiNameValuePair.getName().equals("value")) {
                         PsiReference psiReference = psiNameValuePair.getDetachedValue().getReference();
                         if (psiReference == null) {
                             path.append(psiNameValuePair.getValue());
@@ -218,7 +218,7 @@ public class BuildJsonForYapi{
      * @author: chengsheng@qbb6.com
      * @date: 2019/2/19
      */ 
-    public static void getRequest(Project project,YapiApiDTO yapiApiDTO,PsiMethod psiMethodTarget) throws JSONException{
+    public static void getRequest(Project project,YapiApiDTO yapiApiDTO,PsiMethod psiMethodTarget) throws JSONException {
         PsiParameter[] psiParameters= psiMethodTarget.getParameterList().getParameters();
         if(psiParameters.length>0) {
             ArrayList list=new ArrayList<YapiQueryDTO>();
@@ -244,26 +244,24 @@ public class BuildJsonForYapi{
                                     yapiQueryDTO.setExample(psiNameValuePair.getValue().getText().replace("\"", ""));
                                 } else {
                                     yapiQueryDTO.setName(psiNameValuePair.getLiteralValue());
-                                    Object example=NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText());
-                                    if(Objects.nonNull(example)){
-                                      yapiQueryDTO.setExample(example.toString());
+                                    if(Objects.nonNull(NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText()))){
+                                      yapiQueryDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
                                     }else{
                                         yapiApiDTO.setRequestBody(getResponse(project,psiParameter.getType()));
                                     }
                                     yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
                                 }
-                                yapiApiDTO.setRequestBody(getResponse(project,psiParameter.getType()));
+                             //   yapiApiDTO.setRequestBody(getResponse(project,psiParameter.getType()));
                             }
                         }else{
                             yapiQueryDTO.setName(psiParameter.getName());
-                            Object example=NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText());
-                            if(Objects.nonNull(example)){
-                                yapiQueryDTO.setExample(example.toString());
+                            if(Objects.nonNull(NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText()))){
+                                yapiQueryDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
                             }else{
                                 yapiApiDTO.setRequestBody(getResponse(project,psiParameter.getType()));
                             }
                             yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
-                            yapiApiDTO.setRequestBody(getResponse(project,psiParameter.getType()));
+                          //  yapiApiDTO.setRequestBody(getResponse(project,psiParameter.getType()));
                         }
                         list.add(yapiQueryDTO);
                     }else{

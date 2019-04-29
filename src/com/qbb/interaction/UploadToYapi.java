@@ -1,5 +1,6 @@
 package com.qbb.interaction;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.intellij.notification.*;
@@ -16,7 +17,6 @@ import com.qbb.dto.YapiDubboDTO;
 import com.qbb.dto.YapiResponse;
 import com.qbb.dto.YapiSaveParam;
 import com.qbb.upload.UploadYapi;
-import com.yourkit.util.Strings;
 
 import java.util.ArrayList;
 

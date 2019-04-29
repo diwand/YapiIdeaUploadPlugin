@@ -1,5 +1,6 @@
 package com.qbb.build;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -18,7 +19,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiTypesUtil;
 import com.intellij.psi.util.PsiUtil;
 import com.qbb.dto.YapiDubboDTO;
-import com.yourkit.util.Strings;
 import org.codehaus.jettison.json.JSONException;
 
 import java.awt.*;

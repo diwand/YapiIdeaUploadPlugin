@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>YapiUpload</id>
   <name>YapiUpload</name>
-  <version>1.4</version>
+  <version>1.5.1</version>
   <vendor email="chengsheng@qbb6.com" url="http://www.qbb6.com">QBB</vendor>
 
   <description><![CDATA[
@@ -10,6 +10,7 @@
     ]]></description>
 
   <change-notes><![CDATA[
+      <a href="https://github.com/FurionCS/YapiIdeaUploadPlugin">使用方式</a>
       1.0:<br>
       <em>support dubbo api</em>
       1.1:<br>
@@ -17,9 +18,13 @@
       1.2:<br>
       <em>support Batch upload</em><br>
       1.3:<br>
-      <em>fix bug <a href="https://github.com/FurionCS/YapiIdeaUploadPlugin">使用方式</a></em><br>
+      <em>fix bug </em><br>
       1.4:<br>
       <em>fix hashmap bug </em> <br>
+      1.5:<br>
+      <em> support constant </em> <br>
+      1.5.1:<br>
+      <em> fixbug </em> <br>
     ]]>
   </change-notes>
 

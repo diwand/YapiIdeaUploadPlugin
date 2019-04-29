@@ -1,5 +1,6 @@
 package com.qbb.upload;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
@@ -9,7 +10,6 @@ import com.qbb.dto.YapiCatResponse;
 import com.qbb.dto.YapiResponse;
 import com.qbb.dto.YapiSaveParam;
 import com.qbb.util.HttpClientUtil;
-import com.yourkit.util.Strings;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
