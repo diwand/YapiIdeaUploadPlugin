@@ -1,6 +1,5 @@
 package com.qbb.build;
 
-import com.sun.javafx.binding.StringFormatter;
 import org.jetbrains.annotations.NonNls;
 
 import java.text.SimpleDateFormat;

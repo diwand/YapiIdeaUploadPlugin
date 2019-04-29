@@ -2,7 +2,6 @@ package com.qbb.upload;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.qbb.constant.YapiConstant;
 import com.qbb.dto.YapiCatMenuParam;
@@ -20,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * 上传到yapi
