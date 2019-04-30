@@ -157,20 +157,26 @@ public class BuildJsonForYapi{
         try {
             // 生成响应参数
             yapiApiDTO.setResponse(getResponse(project,psiMethodTarget.getReturnType()));
-            //TODO 打包响应参数文件
-            FileToZipUtil.toZip(filePaths, project.getBasePath()+"/response.zip", true);
-            filePaths.clear();
-            //TODO 清空路径
+            Set<String> codeSet=new HashSet<>();
+            // 打包响应参数文件
+            if(filePaths.size()>0) {
+                FileToZipUtil.toZip(filePaths, project.getBasePath() + "/response.zip", true);
+                filePaths.clear();
+                codeSet.add(project.getBasePath()+"/response.zip");
+            }
+            // 清空路径
             // 生成请求参数
             getRequest(project,yapiApiDTO,psiMethodTarget);
-            FileToZipUtil.toZip(filePaths, project.getBasePath()+"/request.zip", true);
-            //TODO 打包请求参数文件
-            Set<String> codeSet=new HashSet<>();
-            codeSet.add(project.getBasePath()+"/response.zip");
-            codeSet.add(project.getBasePath()+"/request.zip");
-            FileToZipUtil.toZip(codeSet,project.getBasePath()+"/code.zip",true);
-            //TODO 清空路径
-            filePaths.clear();
+            if(filePaths.size()>0) {
+                FileToZipUtil.toZip(filePaths, project.getBasePath() + "/request.zip", true);
+                filePaths.clear();
+                codeSet.add(project.getBasePath()+"/request.zip");
+            }
+            // 打包请求参数文件
+            if(codeSet.size()>0) {
+                FileToZipUtil.toZip(codeSet, project.getBasePath() + "/code.zip", true);
+            }
+            // 清空路径
             if(Strings.isNullOrEmpty(yapiApiDTO.getTitle())) {
                 yapiApiDTO.setTitle(DesUtil.getDescription(psiMethodTarget));
             }
@@ -277,7 +283,7 @@ public class BuildJsonForYapi{
                     KV kvObject = getFields(psiClassChild, project,null,null);
                     listKv.set("type","object");
                     filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
-                    if(Objects.nonNull(psiClassChild.getSuperClass())){
+                    if(Objects.nonNull(psiClassChild.getSuperClass())&&!psiClassChild.getSuperClass().getName().toString().equals("Object") ){
                         filePaths.add(((PsiJavaFileImpl) psiClassChild.getSuperClass().getContext()).getViewProvider().getVirtualFile().getPath());
                     }
                     listKv.set("properties", kvObject);
@@ -302,7 +308,7 @@ public class BuildJsonForYapi{
                     KV kvObject = getFields(psiClassChild, project,null,null);
                     listKv.set("type","object");
                     filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
-                    if(Objects.nonNull(psiClassChild.getSuperClass())){
+                    if(Objects.nonNull(psiClassChild.getSuperClass())&& !psiClassChild.getSuperClass().getName().toString().equals("Object")){
                         filePaths.add(((PsiJavaFileImpl) psiClassChild.getSuperClass().getContext()).getViewProvider().getVirtualFile().getPath());
                     }
                     listKv.set("properties", kvObject);
@@ -339,7 +345,7 @@ public class BuildJsonForYapi{
                 result.set("type", "object");
                 result.set("title", psiType.getPresentableText());
                 filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
-                if(Objects.nonNull(psiClassChild.getSuperClass())){
+                if(Objects.nonNull(psiClassChild.getSuperClass())&&!psiClassChild.getSuperClass().getName().toString().equals("Object")){
                     filePaths.add(((PsiJavaFileImpl) psiClassChild.getSuperClass().getContext()).getViewProvider().getVirtualFile().getPath());
                 }
                 result.set("description", (psiType.getPresentableText()+" :"+psiClassChild.getName()).trim());
@@ -351,7 +357,7 @@ public class BuildJsonForYapi{
                 KV result = new KV();
                 KV kvObject = getFields(psiClassChild, project,null,null);
                 filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
-                if(Objects.nonNull(psiClassChild.getSuperClass())){
+                if(Objects.nonNull(psiClassChild.getSuperClass()) && !psiClassChild.getSuperClass().getName().toString().equals("Object")){
                     filePaths.add(((PsiJavaFileImpl) psiClassChild.getSuperClass().getContext()).getViewProvider().getVirtualFile().getPath());
                 }
                 result.set("type", "object");

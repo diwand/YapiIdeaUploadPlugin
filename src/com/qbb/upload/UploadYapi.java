@@ -51,6 +51,7 @@ public class UploadYapi {
             File file=new File(path+"/code.zip");
             if(file.exists()&&file.isFile()) {
                 //TODO 上传
+                //TODo 获得地址进行填充到desc
                 file.delete();
                 file=new File(path+"/response.zip");
                 file.delete();
