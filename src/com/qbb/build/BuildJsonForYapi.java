@@ -9,21 +9,20 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.PsiClassReferenceType;
-import com.intellij.psi.javadoc.PsiDocComment;
-import com.intellij.psi.javadoc.PsiDocTag;
+import com.intellij.psi.impl.source.PsiJavaFileImpl;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtil;
 import com.qbb.constant.SpringMVCConstant;
 import com.qbb.dto.YapiApiDTO;
 import com.qbb.dto.YapiQueryDTO;
+import com.qbb.util.DesUtil;
 import com.qbb.util.PsiAnnotationSearchUtil;
 import org.codehaus.jettison.json.JSONException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,11 +33,11 @@ import java.util.concurrent.TimeUnit;
 public class BuildJsonForYapi{
     private static NotificationGroup notificationGroup;
 
-
-
     static {
         notificationGroup = new NotificationGroup("Java2Json.NotificationGroup", NotificationDisplayType.BALLOON, true);
     }
+
+    static List<String> filePaths=new CopyOnWriteArrayList<>();
 
     /**
      * 批量生成 接口数据
@@ -82,7 +81,7 @@ public class BuildJsonForYapi{
     }
 
 
-    public YapiApiDTO actionPerformed(PsiClass selectedClass,PsiMethod psiMethodTarget,Project project,PsiFile psiFile) {
+    public static YapiApiDTO actionPerformed(PsiClass selectedClass,PsiMethod psiMethodTarget,Project project,PsiFile psiFile) {
         YapiApiDTO yapiApiDTO=new YapiApiDTO();
         // 获得路径
         StringBuilder path=new StringBuilder();
@@ -109,7 +108,7 @@ public class BuildJsonForYapi{
                         }else{
                             String[] results=psiReference.resolve().getText().split("=");
                             path.append(results[results.length-1].split(";")[0].replace("\"","").trim());
-                            yapiApiDTO.setTitle(BuildJsonForYapi.trimFirstAndLastChar(psiReference.resolve().getText().split("@")[0].replace("@description","").replace("@Description","").replace(":","").replace("*","").replace("/","").replace("\n"," "),' '));
+                            yapiApiDTO.setTitle(DesUtil.trimFirstAndLastChar(psiReference.resolve().getText().split("@")[0].replace("@description","").replace("@Description","").replace(":","").replace("*","").replace("/","").replace("\n"," "),' '));
                             yapiApiDTO.setDesc("<pre><code>  "+psiReference.resolve().getText()+" </code></pre> <hr>");
                         }
                         yapiApiDTO.setPath(path.toString());
@@ -139,11 +138,11 @@ public class BuildJsonForYapi{
                     if (Objects.isNull(psiNameValuePair.getName()) || psiNameValuePair.getName().equals("value")) {
                         PsiReference psiReference = psiNameValuePair.getDetachedValue().getReference();
                         if (psiReference == null) {
-                            path.append(psiNameValuePair.getValue());
+                            path.append(psiNameValuePair.getLiteralValue());
                         } else {
                             String[] results=psiReference.resolve().getText().split("=");
                             path.append(results[results.length-1].split(";")[0].replace("\"", "").trim());
-                            yapiApiDTO.setTitle(BuildJsonForYapi.trimFirstAndLastChar(psiReference.resolve().getText().replace("@description","").replace("@Description","").replace(":","").split("@")[0].replace("*","").replace("/","").replace("\n"," "),' '));
+                            yapiApiDTO.setTitle(DesUtil.trimFirstAndLastChar(psiReference.resolve().getText().replace("@description","").replace("@Description","").replace(":","").split("@")[0].replace("*","").replace("/","").replace("\n"," "),' '));
                             yapiApiDTO.setDesc("<pre><code>  "+psiReference.resolve().getText()+" </code></pre> <hr>");
                         }
                         yapiApiDTO.setPath(path.toString().trim());
@@ -153,10 +152,18 @@ public class BuildJsonForYapi{
         }
         yapiApiDTO.setDesc(Objects.nonNull(yapiApiDTO.getDesc())?yapiApiDTO.getDesc():" <pre><code>  "+psiMethodTarget.getText().replace(Objects.nonNull(psiMethodTarget.getBody())?psiMethodTarget.getBody().getText():"","")+" </code></pre>");
         try {
+            // 生成响应参数
             yapiApiDTO.setResponse(getResponse(project,psiMethodTarget.getReturnType()));
+            //TODO 打包响应参数文件
+
+            //TODO 清空路径
+            // 生成请求参数
             getRequest(project,yapiApiDTO,psiMethodTarget);
+            //TODO 打包请求参数文件
+            //TODO 清空路径
+
             if(Strings.isNullOrEmpty(yapiApiDTO.getTitle())) {
-                yapiApiDTO.setTitle(getDescription(psiMethodTarget));
+                yapiApiDTO.setTitle(DesUtil.getDescription(psiMethodTarget));
             }
             return yapiApiDTO;
         } catch (Exception ex) {
@@ -167,42 +174,6 @@ public class BuildJsonForYapi{
     }
 
 
-    /**
-     * @description: 获得描述
-     * @param: [psiMethodTarget]
-     * @return: java.lang.String
-     * @author: chengsheng@qbb6.com
-     * @date: 2019/2/2
-     */
-    public String getDescription(PsiMethod psiMethodTarget){
-        if(psiMethodTarget.getDocComment()!=null) {
-            PsiDocTag[] psiDocTags = psiMethodTarget.getDocComment().getTags();
-            for (PsiDocTag psiDocTag : psiDocTags) {
-                if (psiDocTag.getText().contains("@description") || psiDocTag.getText().contains("@Description")) {
-                    return BuildJsonForYapi.trimFirstAndLastChar(psiDocTag.getText().replace("@description", "").replace("@Description", "").replace(":", "").replace("*", "").replace("\n", " "), ' ');
-                }
-            }
-            return BuildJsonForYapi.trimFirstAndLastChar(psiMethodTarget.getDocComment().getText().split("@")[0].replace("@description", "").replace("@Description", "").replace(":", "").replace("*", "").replace("/", "").replace("\n", " "), ' ');
-        }
-        return null;
-    }
-
-    /**
-     * @description: 获得属性注释
-     * @param: [psiDocComment]
-     * @return: java.lang.String
-     * @author: chengsheng@qbb6.com
-     * @date: 2019/4/27
-     */
-    public static String getFiledDesc(PsiDocComment psiDocComment){
-        if(Objects.nonNull(psiDocComment)) {
-            String fileText = psiDocComment.getText();
-            if (!Strings.isNullOrEmpty(fileText)) {
-                return trimFirstAndLastChar(fileText.replace("*", "").replace("/", "").replace(" ", "").replace("\n", ",").replace("\t", ""), ',').split("\\{@link")[0];
-            }
-        }
-        return "";
-    }
 
     /**
      * @description: 获得请求参数
@@ -296,6 +267,7 @@ public class BuildJsonForYapi{
                     PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childPackage, GlobalSearchScope.allScope(project));
                     KV kvObject = getFields(psiClassChild, project,null,null);
                     listKv.set("type","object");
+                    filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
                     listKv.set("properties", kvObject);
                 }
             }
@@ -317,6 +289,7 @@ public class BuildJsonForYapi{
                     PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childPackage, GlobalSearchScope.allScope(project));
                     KV kvObject = getFields(psiClassChild, project,null,null);
                     listKv.set("type","object");
+                    filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
                     listKv.set("properties", kvObject);
                 }
             }
@@ -350,6 +323,7 @@ public class BuildJsonForYapi{
                 KV kvObject = getFields(psiClassChild, project,types,1);
                 result.set("type", "object");
                 result.set("title", psiType.getPresentableText());
+                filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
                 result.set("description", (psiType.getPresentableText()+" :"+psiClassChild.getName()).trim());
                 result.set("properties", kvObject);
                 String json = result.toPrettyJson();
@@ -358,6 +332,7 @@ public class BuildJsonForYapi{
                 PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(psiType.getCanonicalText(), GlobalSearchScope.allScope(project));
                 KV result = new KV();
                 KV kvObject = getFields(psiClassChild, project,null,null);
+                filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
                 result.set("type", "object");
                 result.set("title", psiType.getPresentableText());
                 result.set("description", (psiType.getPresentableText()+" :"+psiClassChild.getName()).trim());
@@ -395,7 +370,7 @@ public class BuildJsonForYapi{
         String name = field.getName();
         String remark ="";
         if(field.getDocComment()!=null) {
-            remark=getFiledDesc(field.getDocComment());
+            remark= DesUtil.getFiledDesc(field.getDocComment());
 
             // 尝试获得@link 的常量定义
             String[] linkString=field.getDocComment().getText().split("@link");
@@ -435,7 +410,7 @@ public class BuildJsonForYapi{
                                 String value=splitValue[1].split(";")[0];
                                 remark+=":"+value;
                             }
-                            String filedValue=getFiledDesc(psiField.getDocComment());
+                            String filedValue=DesUtil.getFiledDesc(psiField.getDocComment());
                             if(!Strings.isNullOrEmpty(filedValue)){
                                 remark+="("+filedValue+")";
                             }
@@ -487,6 +462,7 @@ public class BuildJsonForYapi{
                         kv1.set(KV.by("description", (remark+" :"+psiClassChild.getName()).trim()));
                         if(!pName.equals(psiClassChild.getName())) {
                             kv1.set(KV.by("properties", getFields(psiClassChild, project, null, null)));
+                            filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
                         }else{
                             kv1.set(KV.by("type", pName));
                         }
@@ -517,6 +493,7 @@ public class BuildJsonForYapi{
                     kvlist.set(KV.by("description",(remark+" ,"+psiClass.getName()).trim()));
                     if(!pName.equals(PsiUtil.resolveClassInType(deepType).getName())){
                         kvlist.set("properties",getFields(psiClass,project,null,null));
+                        filePaths.add(((PsiJavaFileImpl) psiClass.getContext()).getViewProvider().getVirtualFile().getPath());
                     }else{
                         kvlist.set(KV.by("type",pName));
                     }
@@ -550,6 +527,7 @@ public class BuildJsonForYapi{
                 kv1.set(KV.by("type","object"));
                 kv1.set(KV.by("description",(remark+" ,"+psiClass.getName()).trim()));
                 if(!pName.equals(((PsiClassReferenceType) type).getClassName())) {
+                    filePaths.add(((PsiJavaFileImpl) psiClass.getContext()).getViewProvider().getVirtualFile().getPath());
                     kv1.set(KV.by("properties", getFields(PsiUtil.resolveClassInType(type), project, null, null)));
                 }else{
                     kv1.set(KV.by("type",pName));
@@ -573,6 +551,7 @@ public class BuildJsonForYapi{
             kvlist.set(KV.by("description",(remark+" ,"+psiClass.getName()).trim()));
             if(!pName.equals(psiClass.getName())) {
                 kvlist.set("properties", getFields(psiClass, project, null, null));
+                filePaths.add(((PsiJavaFileImpl) psiClass.getContext()).getViewProvider().getVirtualFile().getPath());
             }else{
                 kvlist.set(KV.by("type",pName));
             }
@@ -583,26 +562,5 @@ public class BuildJsonForYapi{
         kv1.set("items",kvlist);
         kv.set(name, kv1);
     }
-    /**
-     * 去除字符串首尾出现的某个字符.
-     * @param source 源字符串.
-     * @param element 需要去除的字符.
-     * @return String.
-     */
-    public static String trimFirstAndLastChar(String source,char element) {
-        boolean beginIndexFlag = true;
-        boolean endIndexFlag = true;
-        do {
-            if(Strings.isNullOrEmpty(source.trim())){
-                source=null;
-                break;
-            }
-            int beginIndex = source.indexOf(element) == 0 ? 1 : 0;
-            int endIndex = source.lastIndexOf(element) + 1 == source.length() ? source.lastIndexOf(element) : source.length();
-            source = source.substring(beginIndex, endIndex);
-            beginIndexFlag = (source.indexOf(element) == 0);
-            endIndexFlag = (source.lastIndexOf(element) + 1 == source.length());
-        } while (beginIndexFlag || endIndexFlag);
-        return source;
-    }
+
 }

@@ -11,12 +11,12 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.PsiClassReferenceType;
 import com.intellij.psi.impl.source.PsiJavaFileImpl;
-import com.intellij.psi.javadoc.PsiDocTag;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiTypesUtil;
 import com.intellij.psi.util.PsiUtil;
 import com.qbb.dto.YapiDubboDTO;
+import com.qbb.util.DesUtil;
 import org.codehaus.jettison.json.JSONException;
 
 import java.util.ArrayList;
@@ -61,7 +61,10 @@ public class BuildJsonForDubbo{
         if(selectedText.equals(selectedClass.getName())){
             PsiMethod[] psiMethods=selectedClass.getMethods();
             for(PsiMethod psiMethodTarget:psiMethods) {
-                yapiDubboDTOS.add(actionPerformed(selectedClass, psiMethodTarget, project, psiFile));
+                //去除私有方法
+                if(!psiMethodTarget.getModifierList().hasModifierProperty("private")) {
+                    yapiDubboDTOS.add(actionPerformed(selectedClass, psiMethodTarget, project, psiFile));
+                }
             }
         }else{
             PsiMethod[] psiMethods =selectedClass.getAllMethods();
@@ -165,7 +168,7 @@ public class BuildJsonForDubbo{
             String packageName="/"+((PsiJavaFileImpl) psiFile).getPackageName()+"."+selectedClass.getName()+"/1.0/"+psiMethodTarget.getName();
             yapiDubboDTO.setPath(packageName);
             yapiDubboDTO.setDesc("<pre><code> "+psiMethodTarget.getText()  +" </code></pre>");
-            yapiDubboDTO.setTitle(getDescription(psiMethodTarget));
+            yapiDubboDTO.setTitle(DesUtil.getDescription(psiMethodTarget));
             return yapiDubboDTO;
         } catch (Exception ex) {
             Notification error = notificationGroup.createNotification("Convert to JSON failed.", NotificationType.ERROR);
@@ -174,25 +177,7 @@ public class BuildJsonForDubbo{
         return null;
     }
 
-    /**
-     * @description: 获得描述
-     * @param: [psiMethodTarget]
-     * @return: java.lang.String
-     * @author: chengsheng@qbb6.com
-     * @date: 2019/2/2
-     */
-    public String getDescription(PsiMethod psiMethodTarget){
-        if(psiMethodTarget.getDocComment()!=null) {
-            PsiDocTag[] psiDocTags = psiMethodTarget.getDocComment().getTags();
-            for (PsiDocTag psiDocTag : psiDocTags) {
-                if (psiDocTag.getText().contains("@description") || psiDocTag.getText().contains("@Description")) {
-                    return BuildJsonForYapi.trimFirstAndLastChar(psiDocTag.getText().replace("@description", "").replace("@Description", "").replace(":", "").replace("*", "").replace("\n", " "), ' ');
-                }
-            }
-            return BuildJsonForYapi.trimFirstAndLastChar(psiMethodTarget.getDocComment().getText().split("@")[0].replace("@description", "").replace("@Description", "").replace(":", "").replace("*", "").replace("/", "").replace("\n", " "), ' ');
-        }
-        return null;
-    }
+
 
     /**
      * 获得对象属性
@@ -293,7 +278,6 @@ public class BuildJsonForDubbo{
                 }
             }
         }
-
         return kv;
     }
 }
