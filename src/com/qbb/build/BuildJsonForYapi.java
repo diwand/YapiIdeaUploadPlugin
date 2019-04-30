@@ -151,7 +151,7 @@ public class BuildJsonForYapi{
                 }
             }
         }
-        yapiApiDTO.setDesc(Objects.nonNull(yapiApiDTO.getDesc())?yapiApiDTO.getDesc():" <pre><code>  "+psiMethodTarget.getText().replace(psiMethodTarget.getBody().getText(),"")+" </code></pre>");
+        yapiApiDTO.setDesc(Objects.nonNull(yapiApiDTO.getDesc())?yapiApiDTO.getDesc():" <pre><code>  "+psiMethodTarget.getText().replace(Objects.nonNull(psiMethodTarget.getBody())?psiMethodTarget.getBody().getText():"","")+" </code></pre>");
         try {
             yapiApiDTO.setResponse(getResponse(project,psiMethodTarget.getReturnType()));
             getRequest(project,yapiApiDTO,psiMethodTarget);
