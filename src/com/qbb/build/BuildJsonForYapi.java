@@ -139,7 +139,7 @@ public class BuildJsonForYapi{
                     if (Objects.isNull(psiNameValuePair.getName()) || psiNameValuePair.getName().equals("value")) {
                         PsiReference psiReference = psiNameValuePair.getDetachedValue().getReference();
                         if (psiReference == null) {
-                            path.append(psiNameValuePair.getValue());
+                            path.append(psiNameValuePair.getLiteralValue());
                         } else {
                             String[] results=psiReference.resolve().getText().split("=");
                             path.append(results[results.length-1].split(";")[0].replace("\"", "").trim());
