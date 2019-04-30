@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -22,7 +23,7 @@ public class FileToZipUtil {
      *			false:所有文件跑到压缩包根目录下(注意：不保留目录结构可能会出现同名文件,会压缩失败)
      * @throws RuntimeException 压缩失败会抛出运行时异常
      */
-    public static void toZip(String[] srcDir, String outDir,
+    public static void toZip(Set<String> srcDir, String outDir,
                              boolean KeepDirStructure) throws RuntimeException, Exception {
 
         OutputStream out = new FileOutputStream(new File(outDir));
@@ -134,14 +135,5 @@ public class FileToZipUtil {
                 }
             }
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-
-        String[] srcDir = { "/Users/chengsheng/Documents/Project/testziptest2.zip",
-                "/Users/chengsheng/Documents/Project/pom.xml"
-               };
-        String outDir = "/Users/chengsheng/Documents/Project/aaa.zip";
-        FileToZipUtil.toZip(srcDir, outDir, true);
     }
 }

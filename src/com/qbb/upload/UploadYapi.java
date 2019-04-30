@@ -14,6 +14,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ public class UploadYapi {
     public static Map<String,Integer> catMap=new HashMap<>();
 
 
-    public YapiResponse  uploadSave(YapiSaveParam yapiSaveParam) throws IOException {
+    public YapiResponse  uploadSave(YapiSaveParam yapiSaveParam,String attachUpload,String path) throws IOException {
         if(Strings.isNullOrEmpty(yapiSaveParam.getTitle())){
             yapiSaveParam.setTitle(yapiSaveParam.getPath());
         }
@@ -46,8 +47,17 @@ public class UploadYapi {
             list.add(map);
             yapiSaveParam.setReq_headers(list);
         }
-        if(yapiSaveParam.getEdit_uid()==null){
-            yapiSaveParam.setEdit_uid(11);
+        if(!Strings.isNullOrEmpty(attachUpload) && !Strings.isNullOrEmpty(path)){
+            File file=new File(path+"/code.zip");
+            if(file.exists()&&file.isFile()) {
+                //TODO 上传
+                file.delete();
+                file=new File(path+"/response.zip");
+                file.delete();
+                file=new File(path+"/request.zip");
+                file.delete();
+            }
+            // 移除 文件
         }
         yapiSaveParam.setCatid(String.valueOf(this.getCatIdOrCreate(yapiSaveParam)));
         String response=HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpPost(yapiSaveParam.getYapiUrl()+YapiConstant.yapiSave,gson.toJson(yapiSaveParam))),"utf-8");

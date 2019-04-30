@@ -40,6 +40,7 @@ public class UploadToYapi extends AnAction {
         String projectId=null;
         String yapiUrl=null;
         String projectType=null;
+        String attachUpload=null;
         // 获取配置
         try {
             String projectConfig=new String(editor.getProject().getProjectFile().contentsToByteArray(),"utf-8");
@@ -47,6 +48,10 @@ public class UploadToYapi extends AnAction {
             projectId=projectConfig.split("projectId\">")[1].split("</")[0];
             yapiUrl=projectConfig.split("yapiUrl\">")[1].split("</")[0];
             projectType=projectConfig.split("projectType\">")[1].split("</")[0];
+            String[] attachs=projectConfig.split("attachUploadUrl\">");
+            if(attachs.length>1){
+                attachUpload=attachs[1].split("</")[0];
+            }
         } catch (Exception e2){
             Notification error = notificationGroup.createNotification("get config error:"+e2.getMessage(), NotificationType.ERROR);
             Notifications.Bus.notify(error, project);
@@ -66,7 +71,7 @@ public class UploadToYapi extends AnAction {
                 YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiDubboDTO.getTitle(), yapiDubboDTO.getPath(), yapiDubboDTO.getParams(), yapiDubboDTO.getResponse(), Integer.valueOf(projectId), yapiUrl,yapiDubboDTO.getDesc());
                 try {
                     // 上传
-                    YapiResponse yapiResponse=new UploadYapi().uploadSave(yapiSaveParam);
+                    YapiResponse yapiResponse=new UploadYapi().uploadSave(yapiSaveParam,null,project.getBasePath());
                     if(yapiResponse.getErrcode()!=0){
                         Notification error = notificationGroup.createNotification("sorry ,upload api error cause:"+yapiResponse.getErrmsg(), NotificationType.ERROR);
                         Notifications.Bus.notify(error, project);
@@ -87,7 +92,7 @@ public class UploadToYapi extends AnAction {
                 YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiApiDTO.getTitle(), yapiApiDTO.getPath(), yapiApiDTO.getParams(), yapiApiDTO.getRequestBody(), yapiApiDTO.getResponse(), Integer.valueOf(projectId), yapiUrl, true, yapiApiDTO.getMethod(),yapiApiDTO.getDesc());
                 try {
                     // 上传
-                    YapiResponse yapiResponse = new UploadYapi().uploadSave(yapiSaveParam);
+                    YapiResponse yapiResponse = new UploadYapi().uploadSave(yapiSaveParam,attachUpload,project.getBasePath());
                     if (yapiResponse.getErrcode() != 0) {
                         Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + yapiResponse.getErrmsg(), NotificationType.ERROR);
                         Notifications.Bus.notify(error, project);

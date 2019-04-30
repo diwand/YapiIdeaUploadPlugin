@@ -1,6 +1,7 @@
 package com.qbb.build;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 import com.intellij.notification.*;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -17,12 +18,14 @@ import com.qbb.constant.SpringMVCConstant;
 import com.qbb.dto.YapiApiDTO;
 import com.qbb.dto.YapiQueryDTO;
 import com.qbb.util.DesUtil;
+import com.qbb.util.FileToZipUtil;
 import com.qbb.util.PsiAnnotationSearchUtil;
 import org.codehaus.jettison.json.JSONException;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -37,7 +40,7 @@ public class BuildJsonForYapi{
         notificationGroup = new NotificationGroup("Java2Json.NotificationGroup", NotificationDisplayType.BALLOON, true);
     }
 
-    static List<String> filePaths=new CopyOnWriteArrayList<>();
+    static Set<String> filePaths=new CopyOnWriteArraySet<>();
 
     /**
      * 批量生成 接口数据
@@ -155,13 +158,19 @@ public class BuildJsonForYapi{
             // 生成响应参数
             yapiApiDTO.setResponse(getResponse(project,psiMethodTarget.getReturnType()));
             //TODO 打包响应参数文件
-
+            FileToZipUtil.toZip(filePaths, project.getBasePath()+"/response.zip", true);
+            filePaths.clear();
             //TODO 清空路径
             // 生成请求参数
             getRequest(project,yapiApiDTO,psiMethodTarget);
+            FileToZipUtil.toZip(filePaths, project.getBasePath()+"/request.zip", true);
             //TODO 打包请求参数文件
+            Set<String> codeSet=new HashSet<>();
+            codeSet.add(project.getBasePath()+"/response.zip");
+            codeSet.add(project.getBasePath()+"/request.zip");
+            FileToZipUtil.toZip(codeSet,project.getBasePath()+"/code.zip",true);
             //TODO 清空路径
-
+            filePaths.clear();
             if(Strings.isNullOrEmpty(yapiApiDTO.getTitle())) {
                 yapiApiDTO.setTitle(DesUtil.getDescription(psiMethodTarget));
             }
@@ -268,6 +277,9 @@ public class BuildJsonForYapi{
                     KV kvObject = getFields(psiClassChild, project,null,null);
                     listKv.set("type","object");
                     filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
+                    if(Objects.nonNull(psiClassChild.getSuperClass())){
+                        filePaths.add(((PsiJavaFileImpl) psiClassChild.getSuperClass().getContext()).getViewProvider().getVirtualFile().getPath());
+                    }
                     listKv.set("properties", kvObject);
                 }
             }
@@ -290,6 +302,9 @@ public class BuildJsonForYapi{
                     KV kvObject = getFields(psiClassChild, project,null,null);
                     listKv.set("type","object");
                     filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
+                    if(Objects.nonNull(psiClassChild.getSuperClass())){
+                        filePaths.add(((PsiJavaFileImpl) psiClassChild.getSuperClass().getContext()).getViewProvider().getVirtualFile().getPath());
+                    }
                     listKv.set("properties", kvObject);
                 }
             }
@@ -324,6 +339,9 @@ public class BuildJsonForYapi{
                 result.set("type", "object");
                 result.set("title", psiType.getPresentableText());
                 filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
+                if(Objects.nonNull(psiClassChild.getSuperClass())){
+                    filePaths.add(((PsiJavaFileImpl) psiClassChild.getSuperClass().getContext()).getViewProvider().getVirtualFile().getPath());
+                }
                 result.set("description", (psiType.getPresentableText()+" :"+psiClassChild.getName()).trim());
                 result.set("properties", kvObject);
                 String json = result.toPrettyJson();
@@ -333,6 +351,9 @@ public class BuildJsonForYapi{
                 KV result = new KV();
                 KV kvObject = getFields(psiClassChild, project,null,null);
                 filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
+                if(Objects.nonNull(psiClassChild.getSuperClass())){
+                    filePaths.add(((PsiJavaFileImpl) psiClassChild.getSuperClass().getContext()).getViewProvider().getVirtualFile().getPath());
+                }
                 result.set("type", "object");
                 result.set("title", psiType.getPresentableText());
                 result.set("description", (psiType.getPresentableText()+" :"+psiClassChild.getName()).trim());
