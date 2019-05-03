@@ -373,7 +373,7 @@ public class BuildJsonForYapi{
     public static KV getFields(PsiClass psiClass,Project project,String[] childType,Integer index) {
         KV kv = KV.create();
         if (psiClass != null) {
-            if(Objects.nonNull(NormalTypes.collectTypes.get(psiClass.getSuperClass().getName()))){
+            if(Objects.nonNull(psiClass.getSuperClass()) && Objects.nonNull(NormalTypes.collectTypes.get(psiClass.getSuperClass().getName()))){
                 for (PsiField field : psiClass.getFields()) {
                     getField(field,project,kv,childType,index,psiClass.getName());
                 }
@@ -484,7 +484,7 @@ public class BuildJsonForYapi{
                         KV kv1 = new KV();
                         kv1.set(KV.by("type", "object"));
                         PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(child, GlobalSearchScope.allScope(project));
-                        kv1.set(KV.by("description", (remark+" :"+psiClassChild.getName()).trim()));
+                        kv1.set(KV.by("description", (Strings.isNullOrEmpty(remark)?(""+psiClassChild.getName().trim()):" ,"+psiClassChild.getName().trim())));
                         if(!pName.equals(psiClassChild.getName())) {
                             kv1.set(KV.by("properties", getFields(psiClassChild, project, null, null)));
                         }else{
@@ -514,7 +514,7 @@ public class BuildJsonForYapi{
                     kvlist.set(KV.by("type","object"));
                     PsiClass psiClass= PsiUtil.resolveClassInType(deepType);
                     cType=psiClass.getName();
-                    kvlist.set(KV.by("description",(remark+" ,"+psiClass.getName()).trim()));
+                    kvlist.set(KV.by("description",(Strings.isNullOrEmpty(remark)?(""+psiClass.getName().trim()):" ,"+psiClass.getName().trim())));
                     if(!pName.equals(PsiUtil.resolveClassInType(deepType).getName())){
                         kvlist.set("properties",getFields(psiClass,project,null,null));
                     }else{
@@ -532,7 +532,7 @@ public class BuildJsonForYapi{
                 PsiClass iterableClass = PsiUtil.resolveClassInClassTypeOnly(iterableType);
                 String classTypeName = iterableClass.getName();
                 getCollect(kv,classTypeName,remark,iterableClass,project,name,pName);
-            } else if(fieldTypeName.startsWith("HashMap") || fieldTypeName.startsWith("Map")){
+            } else if(fieldTypeName.startsWith("HashMap") || fieldTypeName.startsWith("Map") || fieldTypeName.startsWith("LinkedHashMap")){
                 //HashMap or Map
                 CompletableFuture.runAsync(()->{
                     try {
@@ -548,7 +548,7 @@ public class BuildJsonForYapi{
                 KV kv1=new KV();
                 PsiClass psiClass=PsiUtil.resolveClassInType(type);
                 kv1.set(KV.by("type","object"));
-                kv1.set(KV.by("description",(remark+" ,"+psiClass.getName()).trim()));
+                kv1.set(KV.by("description",(Strings.isNullOrEmpty(remark)?(""+psiClass.getName().trim()):(remark+" ,"+psiClass.getName()).trim())));
                 if(!pName.equals(((PsiClassReferenceType) type).getClassName())) {
                     kv1.set(KV.by("properties", getFields(PsiUtil.resolveClassInType(type), project, null, null)));
                 }else{
@@ -570,7 +570,7 @@ public class BuildJsonForYapi{
             }
         } else {
             kvlist.set(KV.by("type","object"));
-            kvlist.set(KV.by("description",(remark+" ,"+psiClass.getName()).trim()));
+            kvlist.set(KV.by("description",(Strings.isNullOrEmpty(remark)?(""+psiClass.getName().trim()):" ,"+psiClass.getName().trim())));
             if(!pName.equals(psiClass.getName())) {
                 kvlist.set("properties", getFields(psiClass, project, null, null));
             }else{
@@ -579,7 +579,7 @@ public class BuildJsonForYapi{
         }
         KV kv1=new KV();
         kv1.set(KV.by("type","array"));
-        kv1.set(KV.by("description",(remark+" ,"+psiClass.getName()).trim()));
+        kv1.set(KV.by("description",(Strings.isNullOrEmpty(remark)?(""+psiClass.getName().trim()):" ,"+psiClass.getName().trim())));
         kv1.set("items",kvlist);
         kv.set(name, kv1);
     }
