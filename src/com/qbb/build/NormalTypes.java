@@ -44,6 +44,7 @@ public class NormalTypes {
         normalTypes.put("BigDecimal",null);
         collectTypes.put("HashMap","HashMap");
         collectTypes.put("Map","Map");
+        collectTypes.put("LinkedHashMap","LinkedHashMap");
     }
 
     static {
