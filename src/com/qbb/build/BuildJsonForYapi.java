@@ -292,6 +292,8 @@ public class BuildJsonForYapi{
                 String childPackage=types[1].split(">")[0];
                 if(NormalTypes.noramlTypesPackages.keySet().contains(childPackage)){
                     listKv.set("type",NormalTypes.noramlTypesPackages.get(childPackage));
+                }else if(NormalTypes.collectTypesPackages.containsKey(childPackage)){
+                    listKv.set("type",NormalTypes.collectTypesPackages.get(childPackage));
                 }else {
                     PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childPackage, GlobalSearchScope.allScope(project));
                     KV kvObject = getFields(psiClassChild, project,null,null);
@@ -313,6 +315,8 @@ public class BuildJsonForYapi{
                 String childPackage=types[1].split(">")[0];
                 if(NormalTypes.noramlTypesPackages.keySet().contains(childPackage)){
                     listKv.set("type",NormalTypes.noramlTypesPackages.get(childPackage));
+                }else if(NormalTypes.collectTypesPackages.containsKey(childPackage)){
+                    listKv.set("type",NormalTypes.collectTypesPackages.get(childPackage));
                 }else {
                     PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childPackage, GlobalSearchScope.allScope(project));
                     KV kvObject = getFields(psiClassChild, project,null,null);
@@ -342,6 +346,10 @@ public class BuildJsonForYapi{
             result.set("properties", hashMapChild);
             String json = result.toPrettyJson();
             return json;
+        }else if(NormalTypes.collectTypes.containsKey(psiType.getPresentableText())){
+            //如果是集合类型
+            KV kvClass=KV.create();
+            kvClass.set(psiType.getCanonicalText(),NormalTypes.collectTypes.get(psiType.getPresentableText()));
         }else{
             String[] types=psiType.getCanonicalText().split("<");
             if(types.length>1) {
@@ -563,7 +571,7 @@ public class BuildJsonForYapi{
 
     public static void getCollect(KV kv,String classTypeName,String remark,PsiClass psiClass,Project project,String name,String pName) {
         KV kvlist = new KV();
-        if (NormalTypes.isNormalType(classTypeName)) {
+        if (NormalTypes.isNormalType(classTypeName) || NormalTypes.collectTypes.containsKey(classTypeName)) {
             kvlist.set("type",classTypeName);
             if(!Strings.isNullOrEmpty(remark)) {
                 kvlist.set("description", remark);

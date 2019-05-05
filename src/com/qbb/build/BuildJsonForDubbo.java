@@ -110,6 +110,8 @@ public class BuildJsonForDubbo{
                         String childPackage=types[1].split(">")[0];
                         if(NormalTypes.noramlTypesPackages.keySet().contains(childPackage)){
                             listChild.add(NormalTypes.noramlTypesPackages.get(childPackage));
+                        }else if(NormalTypes.collectTypesPackages.containsKey(childPackage)){
+                            listChild.add(NormalTypes.collectTypesPackages.get(childPackage));
                         }else {
                             PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childPackage, GlobalSearchScope.allScope(project));
                             KV kvObject = getFields(psiClassChild, project);
@@ -126,6 +128,8 @@ public class BuildJsonForDubbo{
                         String childPackage=types[1].split(">")[0];
                         if(NormalTypes.noramlTypesPackages.keySet().contains(childPackage)){
                             setChild.add(NormalTypes.noramlTypesPackages.get(childPackage));
+                        }else if(NormalTypes.collectTypesPackages.containsKey(childPackage)){
+                            setChild.add(NormalTypes.collectTypesPackages.get(childPackage));
                         }else {
                             PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childPackage, GlobalSearchScope.allScope(project));
                             KV kvObject = getFields(psiClassChild, project);
