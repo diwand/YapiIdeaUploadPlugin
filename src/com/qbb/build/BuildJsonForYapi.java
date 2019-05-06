@@ -109,7 +109,7 @@ public class BuildJsonForYapi{
                 for(PsiNameValuePair psiNameValuePair:psiNameValuePairs){
                     //获得方法上的路径
                     if(Objects.isNull(psiNameValuePair.getName())||"value".equals(psiNameValuePair.getName())){
-                        PsiReference psiReference= psiNameValuePair.getDetachedValue().getReference();
+                        PsiReference psiReference= psiNameValuePair.getValue().getReference();
                         if(psiReference==null){
                             path.append(psiNameValuePair.getLiteralValue());
                         }else{
@@ -143,7 +143,7 @@ public class BuildJsonForYapi{
                 for (PsiNameValuePair psiNameValuePair : psiNameValuePairs) {
                     //获得方法上的路径
                     if (Objects.isNull(psiNameValuePair.getName()) || psiNameValuePair.getName().equals("value")) {
-                        PsiReference psiReference = psiNameValuePair.getDetachedValue().getReference();
+                        PsiReference psiReference = psiNameValuePair.getValue().getReference();
                         if (psiReference == null) {
                             path.append(psiNameValuePair.getLiteralValue());
                         } else {
