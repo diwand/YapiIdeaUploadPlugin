@@ -13,6 +13,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,6 +84,21 @@ public class UploadYapi {
         } catch (Exception e) {
         }
         return httpPost;
+    }
+
+
+    public String uploadFile(String url,String filePath){
+        HttpPost httpPost = null;
+        try {
+            httpPost = new HttpPost(url);
+            //httpPost.setHeader("Connection", "close");
+            FileBody bin = new FileBody(new File(filePath));
+            HttpEntity reqEntity = MultipartEntityBuilder.create().addPart("file", bin).build();
+            httpPost.setEntity(reqEntity);
+            return  HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(httpPost),"utf-8");
+        } catch (Exception e) {
+        }
+        return "";
     }
 
 

@@ -87,7 +87,7 @@ public class UploadToYapi extends AnAction {
             }
         }else if(ProjectTypeConstant.api.equals(projectType)){
             //获得api 需上传的接口列表 参数对象
-            ArrayList<YapiApiDTO> yapiApiDTOS=new BuildJsonForYapi().actionPerformedList(e);
+            ArrayList<YapiApiDTO> yapiApiDTOS=new BuildJsonForYapi().actionPerformedList(e,attachUpload);
             for(YapiApiDTO yapiApiDTO:yapiApiDTOS) {
                 YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiApiDTO.getTitle(), yapiApiDTO.getPath(), yapiApiDTO.getParams(), yapiApiDTO.getRequestBody(), yapiApiDTO.getResponse(), Integer.valueOf(projectId), yapiUrl, true, yapiApiDTO.getMethod(),yapiApiDTO.getDesc());
                 try {

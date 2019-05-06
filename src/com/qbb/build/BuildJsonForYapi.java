@@ -17,6 +17,8 @@ import com.intellij.psi.util.PsiUtil;
 import com.qbb.constant.SpringMVCConstant;
 import com.qbb.dto.YapiApiDTO;
 import com.qbb.dto.YapiQueryDTO;
+import com.qbb.interaction.UploadToYapi;
+import com.qbb.upload.UploadYapi;
 import com.qbb.util.DesUtil;
 import com.qbb.util.FileToZipUtil;
 import com.qbb.util.PsiAnnotationSearchUtil;
@@ -47,7 +49,7 @@ public class BuildJsonForYapi{
      * @param e
      * @return
      */
-    public ArrayList<YapiApiDTO> actionPerformedList(AnActionEvent e){
+    public ArrayList<YapiApiDTO> actionPerformedList(AnActionEvent e,String attachUpload){
         Editor editor = (Editor) e.getDataContext().getData(CommonDataKeys.EDITOR);
         PsiFile psiFile = (PsiFile) e.getDataContext().getData(CommonDataKeys.PSI_FILE);
         String selectedText=e.getRequiredData(CommonDataKeys.EDITOR).getSelectionModel().getSelectedText();
@@ -65,7 +67,7 @@ public class BuildJsonForYapi{
             for(PsiMethod psiMethodTarget:psiMethods) {
                 //去除私有方法
                 if(!psiMethodTarget.getModifierList().hasModifierProperty("private")) {
-                    yapiApiDTOS.add(actionPerformed(selectedClass, psiMethodTarget, project, psiFile));
+                    yapiApiDTOS.add(actionPerformed(selectedClass, psiMethodTarget, project, psiFile,attachUpload));
                 }
             }
         }else{
@@ -78,13 +80,13 @@ public class BuildJsonForYapi{
                     break;
                 }
             }
-            yapiApiDTOS.add(actionPerformed(selectedClass,psiMethodTarget,project,psiFile));
+            yapiApiDTOS.add(actionPerformed(selectedClass,psiMethodTarget,project,psiFile,attachUpload));
         }
         return yapiApiDTOS;
     }
 
 
-    public static YapiApiDTO actionPerformed(PsiClass selectedClass,PsiMethod psiMethodTarget,Project project,PsiFile psiFile) {
+    public static YapiApiDTO actionPerformed(PsiClass selectedClass,PsiMethod psiMethodTarget,Project project,PsiFile psiFile,String attachUpload) {
         YapiApiDTO yapiApiDTO=new YapiApiDTO();
         // 获得路径
         StringBuilder path=new StringBuilder();
@@ -175,6 +177,12 @@ public class BuildJsonForYapi{
             // 打包请求参数文件
             if(codeSet.size()>0) {
                 FileToZipUtil.toZip(codeSet, project.getBasePath() + "/code.zip", true);
+                if(!Strings.isNullOrEmpty(attachUpload)) {
+                    String fileUrl=new UploadYapi().uploadFile(attachUpload, project.getBasePath() + "/code.zip");
+                    if(!Strings.isNullOrEmpty(fileUrl)) {
+                        yapiApiDTO.setDesc("java类:<a href='"+fileUrl+"'>下载地址</a>");
+                    }
+                }
             }
             // 清空路径
             if(Strings.isNullOrEmpty(yapiApiDTO.getTitle())) {
