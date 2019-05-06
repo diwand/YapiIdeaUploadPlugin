@@ -1,7 +1,6 @@
 package com.qbb.build;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 import com.intellij.notification.*;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -9,6 +8,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
+import com.intellij.psi.impl.compiled.ClsFileImpl;
 import com.intellij.psi.impl.source.PsiClassReferenceType;
 import com.intellij.psi.impl.source.PsiJavaFileImpl;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -17,18 +17,20 @@ import com.intellij.psi.util.PsiUtil;
 import com.qbb.constant.SpringMVCConstant;
 import com.qbb.dto.YapiApiDTO;
 import com.qbb.dto.YapiQueryDTO;
-import com.qbb.interaction.UploadToYapi;
 import com.qbb.upload.UploadYapi;
 import com.qbb.util.DesUtil;
 import com.qbb.util.FileToZipUtil;
+import com.qbb.util.FileUnZipUtil;
 import com.qbb.util.PsiAnnotationSearchUtil;
 import org.codehaus.jettison.json.JSONException;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @description: 为了yapi 创建的
@@ -168,6 +170,7 @@ public class BuildJsonForYapi{
             Set<String> codeSet=new HashSet<>();
             // 打包响应参数文件
             if(filePaths.size()>0) {
+                changeFilePath(project);
                 FileToZipUtil.toZip(filePaths, project.getBasePath() + "/response.zip", true);
                 filePaths.clear();
                 codeSet.add(project.getBasePath()+"/response.zip");
@@ -176,6 +179,7 @@ public class BuildJsonForYapi{
             // 生成请求参数
             getRequest(project,yapiApiDTO,psiMethodTarget);
             if(filePaths.size()>0) {
+                changeFilePath(project);
                 FileToZipUtil.toZip(filePaths, project.getBasePath() + "/request.zip", true);
                 filePaths.clear();
                 codeSet.add(project.getBasePath()+"/request.zip");
@@ -186,7 +190,7 @@ public class BuildJsonForYapi{
                 if(!Strings.isNullOrEmpty(attachUpload)) {
                     String fileUrl=new UploadYapi().uploadFile(attachUpload, project.getBasePath() + "/code.zip");
                     if(!Strings.isNullOrEmpty(fileUrl)) {
-                        yapiApiDTO.setDesc("java类:<a href='"+fileUrl+"'>下载地址</a>");
+                        yapiApiDTO.setDesc("java类:<a href='"+fileUrl+"'>下载地址</a><br/>"+ yapiApiDTO.getDesc());
                     }
                 }
             }
@@ -298,9 +302,10 @@ public class BuildJsonForYapi{
                     PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childPackage, GlobalSearchScope.allScope(project));
                     KV kvObject = getFields(psiClassChild, project,null,null);
                     listKv.set("type","object");
-                    filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
+                    addFilePaths(filePaths,psiClassChild);
                     if(Objects.nonNull(psiClassChild.getSuperClass())&&!psiClassChild.getSuperClass().getName().toString().equals("Object") ){
-                        filePaths.add(((PsiJavaFileImpl) psiClassChild.getSuperClass().getContext()).getViewProvider().getVirtualFile().getPath());
+                      //  filePaths.add(((PsiJavaFileImpl) psiClassChild.getSuperClass().getContext()).getViewProvider().getVirtualFile().getPath());
+                        addFilePaths(filePaths,psiClassChild.getSuperClass());
                     }
                     listKv.set("properties", kvObject);
                 }
@@ -325,9 +330,11 @@ public class BuildJsonForYapi{
                     PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childPackage, GlobalSearchScope.allScope(project));
                     KV kvObject = getFields(psiClassChild, project,null,null);
                     listKv.set("type","object");
-                    filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
+                  //  filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
+                    addFilePaths(filePaths,psiClassChild);
                     if(Objects.nonNull(psiClassChild.getSuperClass())&& !psiClassChild.getSuperClass().getName().toString().equals("Object")){
-                        filePaths.add(((PsiJavaFileImpl) psiClassChild.getSuperClass().getContext()).getViewProvider().getVirtualFile().getPath());
+                      //  filePaths.add(((PsiJavaFileImpl) psiClassChild.getSuperClass().getContext()).getViewProvider().getVirtualFile().getPath());
+                        addFilePaths(filePaths,psiClassChild.getSuperClass());
                     }
                     listKv.set("properties", kvObject);
                 }
@@ -366,9 +373,11 @@ public class BuildJsonForYapi{
                 KV kvObject = getFields(psiClassChild, project,types,1);
                 result.set("type", "object");
                 result.set("title", psiType.getPresentableText());
-                filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
+              //  filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
+                addFilePaths(filePaths,psiClassChild);
                 if(Objects.nonNull(psiClassChild.getSuperClass())&&!psiClassChild.getSuperClass().getName().toString().equals("Object")){
-                    filePaths.add(((PsiJavaFileImpl) psiClassChild.getSuperClass().getContext()).getViewProvider().getVirtualFile().getPath());
+              //      filePaths.add(((PsiJavaFileImpl) psiClassChild.getSuperClass().getContext()).getViewProvider().getVirtualFile().getPath());
+                    addFilePaths(filePaths,psiClassChild.getSuperClass());
                 }
                 result.set("description", (psiType.getPresentableText()+" :"+psiClassChild.getName()).trim());
                 result.set("properties", kvObject);
@@ -378,9 +387,11 @@ public class BuildJsonForYapi{
                 PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(psiType.getCanonicalText(), GlobalSearchScope.allScope(project));
                 KV result = new KV();
                 KV kvObject = getFields(psiClassChild, project,null,null);
-                filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
+              //  filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
+                addFilePaths(filePaths,psiClassChild);
                 if(Objects.nonNull(psiClassChild.getSuperClass()) && !psiClassChild.getSuperClass().getName().toString().equals("Object")){
-                    filePaths.add(((PsiJavaFileImpl) psiClassChild.getSuperClass().getContext()).getViewProvider().getVirtualFile().getPath());
+              //      filePaths.add(((PsiJavaFileImpl) psiClassChild.getSuperClass().getContext()).getViewProvider().getVirtualFile().getPath());
+                    addFilePaths(filePaths,psiClassChild.getSuperClass());
                 }
                 result.set("type", "object");
                 result.set("title", psiType.getPresentableText());
@@ -511,7 +522,8 @@ public class BuildJsonForYapi{
                         kv1.set(KV.by("description", (Strings.isNullOrEmpty(remark)?(""+psiClassChild.getName().trim()):" ,"+psiClassChild.getName().trim())));
                         if(!pName.equals(psiClassChild.getName())) {
                             kv1.set(KV.by("properties", getFields(psiClassChild, project, null, null)));
-                            filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
+                          //  filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
+                            addFilePaths(filePaths,psiClassChild);
                         }else{
                             kv1.set(KV.by("type", pName));
                         }
@@ -542,7 +554,8 @@ public class BuildJsonForYapi{
                     kvlist.set(KV.by("description",(Strings.isNullOrEmpty(remark)?(""+psiClass.getName().trim()):" ,"+psiClass.getName().trim())));
                     if(!pName.equals(PsiUtil.resolveClassInType(deepType).getName())){
                         kvlist.set("properties",getFields(psiClass,project,null,null));
-                        filePaths.add(((PsiJavaFileImpl) psiClass.getContext()).getViewProvider().getVirtualFile().getPath());
+                        //filePaths.add(((PsiJavaFileImpl) psiClass.getContext()).getViewProvider().getVirtualFile().getPath());
+                        addFilePaths(filePaths,psiClass);
                     }else{
                         kvlist.set(KV.by("type",pName));
                     }
@@ -576,7 +589,7 @@ public class BuildJsonForYapi{
                 kv1.set(KV.by("type","object"));
                 kv1.set(KV.by("description",(Strings.isNullOrEmpty(remark)?(""+psiClass.getName().trim()):(remark+" ,"+psiClass.getName()).trim())));
                 if(!pName.equals(((PsiClassReferenceType) type).getClassName())) {
-                    filePaths.add(((PsiJavaFileImpl) psiClass.getContext()).getViewProvider().getVirtualFile().getPath());
+                    addFilePaths(filePaths,psiClass);
                     kv1.set(KV.by("properties", getFields(PsiUtil.resolveClassInType(type), project, null, null)));
                 }else{
                     kv1.set(KV.by("type",pName));
@@ -600,7 +613,8 @@ public class BuildJsonForYapi{
             kvlist.set(KV.by("description",(Strings.isNullOrEmpty(remark)?(""+psiClass.getName().trim()):" ,"+psiClass.getName().trim())));
             if(!pName.equals(psiClass.getName())) {
                 kvlist.set("properties", getFields(psiClass, project, null, null));
-                filePaths.add(((PsiJavaFileImpl) psiClass.getContext()).getViewProvider().getVirtualFile().getPath());
+              //  filePaths.add(((PsiJavaFileImpl) psiClass.getContext()).getViewProvider().getVirtualFile().getPath());
+                addFilePaths(filePaths,psiClass);
             }else{
                 kvlist.set(KV.by("type",pName));
             }
@@ -612,4 +626,45 @@ public class BuildJsonForYapi{
         kv.set(name, kv1);
     }
 
+
+    /**
+     * @description: 添加到文件路径列表
+     * @param: [filePaths, psiClass]
+     * @return: void
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/5/6
+     */
+    public static void addFilePaths(Set<String> filePaths,PsiClass psiClass){
+        try {
+            filePaths.add(((PsiJavaFileImpl) psiClass.getContext()).getViewProvider().getVirtualFile().getPath());
+        }catch (Exception e){
+            try {
+                filePaths.add(((ClsFileImpl) psiClass.getContext()).getViewProvider().getVirtualFile().getPath());
+            }catch (Exception e1){
+            }
+        }
+    }
+
+
+
+    public static void changeFilePath(Project project){
+        Set<String> changeFilePaths=filePaths.stream().map(filePath->{
+            if(filePath.contains(".jar")){
+                String[] filePathsubs=  filePath.split("\\.jar");
+                String jarPath=filePathsubs[0]+"-sources.jar";
+                try {
+                    //去解压源码包
+                    FileUnZipUtil.uncompress(new File(jarPath),new File(filePathsubs[0]));
+                    filePath=filePathsubs[0]+filePathsubs[1].replace("!","");
+                    return filePath.replace(".class",".java");
+                } catch (IOException e) {
+                    Notification error = notificationGroup.createNotification("can not find sources java:"+jarPath, NotificationType.ERROR);
+                    Notifications.Bus.notify(error, project);
+                }
+            }
+            return filePath;
+        }).collect(Collectors.toSet());
+        filePaths.clear();
+        filePaths.addAll(changeFilePaths);
+    }
 }

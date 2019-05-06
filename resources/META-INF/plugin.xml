@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>YapiUpload</id>
   <name>YapiUpload</name>
-  <version>1.5.3</version>
+  <version>1.6.0</version>
   <vendor email="chengsheng@qbb6.com" url="http://www.qbb6.com">QBB</vendor>
 
   <description><![CDATA[
@@ -29,6 +29,8 @@
       <em> fixbug </em> <br>
       1.5.3:<br>
       <em> fixbug </em> <br>
+      1.6.0:<br>
+      <em> support java download<br>
     ]]>
   </change-notes>
 

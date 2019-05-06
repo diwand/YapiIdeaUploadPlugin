@@ -2,6 +2,7 @@ package com.qbb.build;
 
 import org.jetbrains.annotations.NonNls;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ public class NormalTypes {
         normalTypes.put("String", "String");
         normalTypes.put("Date", new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(new Date()));
         normalTypes.put("BigDecimal",null);
+        normalTypes.put("Timestamp",new Timestamp(System.currentTimeMillis()));
         collectTypes.put("HashMap","HashMap");
         collectTypes.put("Map","Map");
         collectTypes.put("LinkedHashMap","LinkedHashMap");
@@ -65,6 +67,7 @@ public class NormalTypes {
         noramlTypesPackages.put("java.lang.Long",1L);
         noramlTypesPackages.put("java.lang.Float",1L);
         noramlTypesPackages.put("java.lang.Double",1.0D);
+        noramlTypesPackages.put("java.sql.Timestamp",new Timestamp(System.currentTimeMillis()));
         noramlTypesPackages.put("java.util.Date", new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(new Date()));
         noramlTypesPackages.put("java.lang.String","String");
         noramlTypesPackages.put("java.math.BigDecimal",1);
