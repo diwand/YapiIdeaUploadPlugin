@@ -646,7 +646,13 @@ public class BuildJsonForYapi{
     }
 
 
-
+    /**
+     * @description: 转换文件路径
+     * @param: [project]
+     * @return: void
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/5/6
+     */ 
     public static void changeFilePath(Project project){
         Set<String> changeFilePaths=filePaths.stream().map(filePath->{
             if(filePath.contains(".jar")){
