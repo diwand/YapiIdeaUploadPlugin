@@ -76,7 +76,13 @@ public class BuildJsonForYapi{
                     break;
                 }
             }
-            yapiApiDTOS.add(actionPerformed(selectedClass,psiMethodTarget,project,psiFile));
+            if(Objects.nonNull(psiMethodTarget)) {
+                yapiApiDTOS.add(actionPerformed(selectedClass, psiMethodTarget, project, psiFile));
+            }else{
+                Notification error = notificationGroup.createNotification("can not find method:"+selectedText, NotificationType.ERROR);
+                Notifications.Bus.notify(error, project);
+                return null;
+            }
         }
         return yapiApiDTOS;
     }
