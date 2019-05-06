@@ -34,7 +34,7 @@ public class YapiApiDTO implements Serializable{
     /**
      * 请求方法
      */
-    private String method;
+    private String method="POST";
 
     /**
      * 描述

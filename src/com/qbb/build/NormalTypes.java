@@ -22,6 +22,8 @@ public class NormalTypes {
 
     public static final Map<String,Object> collectTypes=new HashMap<>();
 
+    public static final Map<String,Object> collectTypesPackages=new HashMap<>();
+
 
     static {
         normalTypes.put("int",1);
@@ -67,6 +69,9 @@ public class NormalTypes {
         noramlTypesPackages.put("java.lang.String","String");
         noramlTypesPackages.put("java.math.BigDecimal",1);
 
+        collectTypesPackages.put("java.util.LinkedHashMap","LinkedHashMap");
+        collectTypesPackages.put("java.util.HashMap","HashMap");
+        collectTypesPackages.put("java.util.Map","Map");
     }
 
 
