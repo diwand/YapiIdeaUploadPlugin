@@ -167,32 +167,36 @@ public class BuildJsonForYapi{
         try {
             // 生成响应参数
             yapiApiDTO.setResponse(getResponse(project,psiMethodTarget.getReturnType()));
-            Set<String> codeSet=new HashSet<>();
-            // 打包响应参数文件
-            if(filePaths.size()>0) {
-                changeFilePath(project);
-                FileToZipUtil.toZip(filePaths, project.getBasePath() + "/response.zip", true);
-                filePaths.clear();
-                codeSet.add(project.getBasePath()+"/response.zip");
-            }
-            // 清空路径
-            // 生成请求参数
-            getRequest(project,yapiApiDTO,psiMethodTarget);
-            if(filePaths.size()>0) {
-                changeFilePath(project);
-                FileToZipUtil.toZip(filePaths, project.getBasePath() + "/request.zip", true);
-                filePaths.clear();
-                codeSet.add(project.getBasePath()+"/request.zip");
-            }
-            // 打包请求参数文件
-            if(codeSet.size()>0) {
-                FileToZipUtil.toZip(codeSet, project.getBasePath() + "/code.zip", true);
-                if(!Strings.isNullOrEmpty(attachUpload)) {
-                    String fileUrl=new UploadYapi().uploadFile(attachUpload, project.getBasePath() + "/code.zip");
-                    if(!Strings.isNullOrEmpty(fileUrl)) {
-                        yapiApiDTO.setDesc("java类:<a href='"+fileUrl+"'>下载地址</a><br/>"+ yapiApiDTO.getDesc());
+            if(!Strings.isNullOrEmpty(attachUpload)) {
+                Set<String> codeSet = new HashSet<>();
+                // 打包响应参数文件
+                if (filePaths.size() > 0) {
+                    changeFilePath(project);
+                    FileToZipUtil.toZip(filePaths, project.getBasePath() + "/response.zip", true);
+                    filePaths.clear();
+                    codeSet.add(project.getBasePath() + "/response.zip");
+                }
+                // 清空路径
+                // 生成请求参数
+                getRequest(project, yapiApiDTO, psiMethodTarget);
+                if (filePaths.size() > 0) {
+                    changeFilePath(project);
+                    FileToZipUtil.toZip(filePaths, project.getBasePath() + "/request.zip", true);
+                    filePaths.clear();
+                    codeSet.add(project.getBasePath() + "/request.zip");
+                }
+                // 打包请求参数文件
+                if (codeSet.size() > 0) {
+                    FileToZipUtil.toZip(codeSet, project.getBasePath() + "/code.zip", true);
+                    if (!Strings.isNullOrEmpty(attachUpload)) {
+                        String fileUrl = new UploadYapi().uploadFile(attachUpload, project.getBasePath() + "/code.zip");
+                        if (!Strings.isNullOrEmpty(fileUrl)) {
+                            yapiApiDTO.setDesc("java类:<a href='" + fileUrl + "'>下载地址</a><br/>" + yapiApiDTO.getDesc());
+                        }
                     }
                 }
+            }else{
+                filePaths.clear();
             }
             // 清空路径
             if(Strings.isNullOrEmpty(yapiApiDTO.getTitle())) {
