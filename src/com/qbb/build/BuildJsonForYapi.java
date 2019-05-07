@@ -523,7 +523,7 @@ public class BuildJsonForYapi{
                         KV kv1 = new KV();
                         kv1.set(KV.by("type", "object"));
                         PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(child, GlobalSearchScope.allScope(project));
-                        kv1.set(KV.by("description", (Strings.isNullOrEmpty(remark)?(""+psiClassChild.getName().trim()):" ,"+psiClassChild.getName().trim())));
+                        kv1.set(KV.by("description", (Strings.isNullOrEmpty(remark)?(""+psiClassChild.getName().trim()):remark+" ,"+psiClassChild.getName().trim())));
                         if(!pName.equals(psiClassChild.getName())) {
                             kv1.set(KV.by("properties", getFields(psiClassChild, project, null, null)));
                           //  filePaths.add(((PsiJavaFileImpl) psiClassChild.getContext()).getViewProvider().getVirtualFile().getPath());
@@ -555,7 +555,7 @@ public class BuildJsonForYapi{
                     kvlist.set(KV.by("type","object"));
                     PsiClass psiClass= PsiUtil.resolveClassInType(deepType);
                     cType=psiClass.getName();
-                    kvlist.set(KV.by("description",(Strings.isNullOrEmpty(remark)?(""+psiClass.getName().trim()):" ,"+psiClass.getName().trim())));
+                    kvlist.set(KV.by("description",(Strings.isNullOrEmpty(remark)?(""+psiClass.getName().trim()):remark+" ,"+psiClass.getName().trim())));
                     if(!pName.equals(PsiUtil.resolveClassInType(deepType).getName())){
                         kvlist.set("properties",getFields(psiClass,project,null,null));
                         //filePaths.add(((PsiJavaFileImpl) psiClass.getContext()).getViewProvider().getVirtualFile().getPath());
@@ -614,7 +614,7 @@ public class BuildJsonForYapi{
             }
         } else {
             kvlist.set(KV.by("type","object"));
-            kvlist.set(KV.by("description",(Strings.isNullOrEmpty(remark)?(""+psiClass.getName().trim()):" ,"+psiClass.getName().trim())));
+            kvlist.set(KV.by("description",(Strings.isNullOrEmpty(remark)?(""+psiClass.getName().trim()):remark+" ,"+psiClass.getName().trim())));
             if(!pName.equals(psiClass.getName())) {
                 kvlist.set("properties", getFields(psiClass, project, null, null));
               //  filePaths.add(((PsiJavaFileImpl) psiClass.getContext()).getViewProvider().getVirtualFile().getPath());
@@ -625,7 +625,7 @@ public class BuildJsonForYapi{
         }
         KV kv1=new KV();
         kv1.set(KV.by("type","array"));
-        kv1.set(KV.by("description",(Strings.isNullOrEmpty(remark)?(""+psiClass.getName().trim()):" ,"+psiClass.getName().trim())));
+        kv1.set(KV.by("description",(Strings.isNullOrEmpty(remark)?(""+psiClass.getName().trim()):remark+" ,"+psiClass.getName().trim())));
         kv1.set("items",kvlist);
         kv.set(name, kv1);
     }
