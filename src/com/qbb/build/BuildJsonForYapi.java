@@ -167,8 +167,8 @@ public class BuildJsonForYapi{
         try {
             // 生成响应参数
             yapiApiDTO.setResponse(getResponse(project,psiMethodTarget.getReturnType()));
+            Set<String> codeSet = new HashSet<>();
             if(!Strings.isNullOrEmpty(attachUpload)) {
-                Set<String> codeSet = new HashSet<>();
                 // 打包响应参数文件
                 if (filePaths.size() > 0) {
                     changeFilePath(project);
@@ -178,7 +178,11 @@ public class BuildJsonForYapi{
                 }
                 // 清空路径
                 // 生成请求参数
-                getRequest(project, yapiApiDTO, psiMethodTarget);
+            }else{
+                filePaths.clear();
+            }
+            getRequest(project, yapiApiDTO, psiMethodTarget);
+            if(!Strings.isNullOrEmpty(attachUpload)){
                 if (filePaths.size() > 0) {
                     changeFilePath(project);
                     FileToZipUtil.toZip(filePaths, project.getBasePath() + "/request.zip", true);
