@@ -233,6 +233,9 @@ public class BuildJsonForYapi{
                     yapiApiDTO.setRequestBody(getResponse(project,psiParameter.getType()));
                 }else{
                     psiAnnotation= PsiAnnotationSearchUtil.findAnnotation(psiParameter,SpringMVCConstant.RequestParam);
+                    if(psiAnnotation==null){
+                        psiAnnotation= PsiAnnotationSearchUtil.findAnnotation(psiParameter,SpringMVCConstant.RequestHeader);
+                    }
                     if(psiAnnotation!=null) {
                         PsiNameValuePair[] psiNameValuePairs = psiAnnotation.getParameterList().getAttributes();
                         YapiQueryDTO yapiQueryDTO = new YapiQueryDTO();
@@ -358,7 +361,7 @@ public class BuildJsonForYapi{
             HashMap hashMapChild=new HashMap();
             String[] types=psiType.getCanonicalText().split("<");
             if(types.length>1){
-                hashMapChild.put("String","Object");
+                hashMapChild.put("paramMap",psiType.getPresentableText());
             }
             KV kvClass=KV.create();
             kvClass.set(types[0],hashMapChild);

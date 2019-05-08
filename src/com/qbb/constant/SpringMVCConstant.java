@@ -19,4 +19,6 @@ public interface SpringMVCConstant {
 
     String RequestParam="org.springframework.web.bind.annotation.RequestParam";
 
+    String RequestHeader="org.springframework.web.bind.annotation.RequestHeader";
+
 }
