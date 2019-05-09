@@ -16,6 +16,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtil;
 import com.qbb.constant.SpringMVCConstant;
 import com.qbb.dto.YapiApiDTO;
+import com.qbb.dto.YapiHeaderDTO;
 import com.qbb.dto.YapiQueryDTO;
 import com.qbb.upload.UploadYapi;
 import com.qbb.util.DesUtil;
@@ -227,14 +228,20 @@ public class BuildJsonForYapi{
         PsiParameter[] psiParameters= psiMethodTarget.getParameterList().getParameters();
         if(psiParameters.length>0) {
             ArrayList list=new ArrayList<YapiQueryDTO>();
+            List<YapiHeaderDTO> yapiHeaderDTOList=new ArrayList<>();
             for(PsiParameter psiParameter:psiParameters){
                 PsiAnnotation psiAnnotation= PsiAnnotationSearchUtil.findAnnotation(psiParameter,SpringMVCConstant.RequestBody);
                 if(psiAnnotation!=null){
                     yapiApiDTO.setRequestBody(getResponse(project,psiParameter.getType()));
                 }else{
                     psiAnnotation= PsiAnnotationSearchUtil.findAnnotation(psiParameter,SpringMVCConstant.RequestParam);
+                    YapiHeaderDTO yapiHeaderDTO=null;
                     if(psiAnnotation==null){
-                        psiAnnotation= PsiAnnotationSearchUtil.findAnnotation(psiParameter,SpringMVCConstant.RequestHeader);
+                        psiAnnotation=PsiAnnotationSearchUtil.findAnnotation(psiParameter,SpringMVCConstant.RequestAttribute);
+                        if(psiAnnotation==null){
+                            psiAnnotation= PsiAnnotationSearchUtil.findAnnotation(psiParameter,SpringMVCConstant.RequestHeader);
+                            yapiHeaderDTO=new YapiHeaderDTO();
+                        }
                     }
                     if(psiAnnotation!=null) {
                         PsiNameValuePair[] psiNameValuePairs = psiAnnotation.getParameterList().getAttributes();
@@ -243,39 +250,75 @@ public class BuildJsonForYapi{
                         if(psiNameValuePairs.length>0) {
                             for (PsiNameValuePair psiNameValuePair : psiNameValuePairs) {
                                 if ("name".equals(psiNameValuePair.getName())) {
-                                    yapiQueryDTO.setName(psiNameValuePair.getValue().getText().replace("\"", ""));
+                                    if(yapiHeaderDTO!=null){
+                                        yapiHeaderDTO.setName(psiNameValuePair.getValue().getText().replace("\"", ""));
+                                    }else {
+                                        yapiQueryDTO.setName(psiNameValuePair.getValue().getText().replace("\"", ""));
+                                    }
                                 } else if ("value".equals(psiNameValuePair.getName())) {
-                                    yapiQueryDTO.setName(psiNameValuePair.getValue().getText().replace("\"", ""));
+                                    if(yapiHeaderDTO!=null){
+                                        yapiHeaderDTO.setName(psiNameValuePair.getValue().getText().replace("\"", ""));
+                                    }else {
+                                        yapiQueryDTO.setName(psiNameValuePair.getValue().getText().replace("\"", ""));
+                                    }
                                 } else if ("required".equals(psiNameValuePair.getName())) {
                                     yapiQueryDTO.setRequired(psiNameValuePair.getValue().getText().replace("\"", "").replace("false", "0").replace("true", "1"));
                                 } else if ("defaultValue".equals(psiNameValuePair.getName())) {
-                                    yapiQueryDTO.setExample(psiNameValuePair.getValue().getText().replace("\"", ""));
+                                    if(yapiHeaderDTO!=null) {
+                                        yapiHeaderDTO.setExample(psiNameValuePair.getValue().getText().replace("\"", ""));
+                                    }else{
+                                        yapiQueryDTO.setExample(psiNameValuePair.getValue().getText().replace("\"", ""));
+                                    }
                                 } else {
-                                    yapiQueryDTO.setName(psiNameValuePair.getLiteralValue());
+                                    if(yapiHeaderDTO!=null) {
+                                        yapiHeaderDTO.setName(psiNameValuePair.getLiteralValue());
+                                        yapiHeaderDTO.setDesc(psiParameter.getType().getPresentableText());
+                                    }else{
+                                        yapiQueryDTO.setName(psiNameValuePair.getLiteralValue());
+                                        yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
+                                    }
                                     if(Objects.nonNull(NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText()))){
-                                      yapiQueryDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
+                                        if(yapiHeaderDTO!=null) {
+                                            yapiHeaderDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
+                                        }else{
+                                            yapiQueryDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
+                                        }
                                     }else{
                                         yapiApiDTO.setRequestBody(getResponse(project,psiParameter.getType()));
                                     }
-                                    yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
+
                                 }
                             }
                         }else{
-                            yapiQueryDTO.setName(psiParameter.getName());
+                            if(yapiHeaderDTO!=null) {
+                                yapiHeaderDTO.setName(psiParameter.getName());
+                                yapiHeaderDTO.setDesc(psiParameter.getType().getPresentableText());
+                            }else{
+                                yapiQueryDTO.setName(psiParameter.getName());
+                                yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
+                            }
                             if(Objects.nonNull(NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText()))){
-                                yapiQueryDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
+                                if(yapiHeaderDTO!=null){
+                                    yapiHeaderDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
+                                }else {
+                                    yapiQueryDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
+                                }
                             }else{
                                 yapiApiDTO.setRequestBody(getResponse(project,psiParameter.getType()));
                             }
-                            yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
                         }
-                        list.add(yapiQueryDTO);
+                        if(yapiHeaderDTO!=null){
+                            yapiHeaderDTOList.add(yapiHeaderDTO);
+                        }else {
+                            list.add(yapiQueryDTO);
+                        }
                     }else{
                         //TODO
                     }
                 }
             }
             yapiApiDTO.setParams(list);
+            yapiApiDTO.setHeader(yapiHeaderDTOList);
         }
     }
 

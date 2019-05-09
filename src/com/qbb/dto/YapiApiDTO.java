@@ -19,6 +19,10 @@ public class YapiApiDTO implements Serializable{
      */
     private List<YapiQueryDTO> params;
     /**
+     * 头信息
+     */
+    private List header;
+    /**
      * title
      */
     private String title;
@@ -96,6 +100,14 @@ public class YapiApiDTO implements Serializable{
 
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    public List getHeader() {
+        return header;
+    }
+
+    public void setHeader(List header) {
+        this.header = header;
     }
 
     public YapiApiDTO() {

@@ -89,7 +89,7 @@ public class UploadToYapi extends AnAction {
             //获得api 需上传的接口列表 参数对象
             ArrayList<YapiApiDTO> yapiApiDTOS=new BuildJsonForYapi().actionPerformedList(e,attachUpload);
             for(YapiApiDTO yapiApiDTO:yapiApiDTOS) {
-                YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiApiDTO.getTitle(), yapiApiDTO.getPath(), yapiApiDTO.getParams(), yapiApiDTO.getRequestBody(), yapiApiDTO.getResponse(), Integer.valueOf(projectId), yapiUrl, true, yapiApiDTO.getMethod(),yapiApiDTO.getDesc());
+                YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiApiDTO.getTitle(), yapiApiDTO.getPath(), yapiApiDTO.getParams(), yapiApiDTO.getRequestBody(), yapiApiDTO.getResponse(), Integer.valueOf(projectId), yapiUrl, true, yapiApiDTO.getMethod(),yapiApiDTO.getDesc(),yapiApiDTO.getHeader());
                 try {
                     // 上传
                     YapiResponse yapiResponse = new UploadYapi().uploadSave(yapiSaveParam,attachUpload,project.getBasePath());

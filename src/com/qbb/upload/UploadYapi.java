@@ -4,10 +4,7 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.qbb.constant.YapiConstant;
-import com.qbb.dto.YapiCatMenuParam;
-import com.qbb.dto.YapiCatResponse;
-import com.qbb.dto.YapiResponse;
-import com.qbb.dto.YapiSaveParam;
+import com.qbb.dto.*;
 import com.qbb.util.HttpClientUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -18,10 +15,7 @@ import org.apache.http.entity.mime.content.FileBody;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 上传到yapi
@@ -42,12 +36,16 @@ public class UploadYapi {
             yapiSaveParam.setTitle(yapiSaveParam.getPath());
         }
         if(yapiSaveParam.getReq_headers()==null || yapiSaveParam.getReq_headers().isEmpty()){
-            Map map=new HashMap();
-            map.put("name","Content-Type");
-            map.put("value","application/json");
-            List list=new ArrayList();
-            list.add(map);
-            yapiSaveParam.setReq_headers(list);
+            YapiHeaderDTO yapiHeaderDTO=new YapiHeaderDTO();
+            yapiHeaderDTO.setName("Content-Type");
+            yapiHeaderDTO.setValue("application/json");
+            if(Objects.isNull(yapiSaveParam.getReq_headers())){
+                List list=new ArrayList();
+                list.add(yapiHeaderDTO);
+                yapiSaveParam.setReq_headers(list);
+            }else{
+                yapiSaveParam.getReq_headers().add(yapiHeaderDTO);
+            }
         }
         if(!Strings.isNullOrEmpty(attachUpload) && !Strings.isNullOrEmpty(path)){
             File file=new File(path+"/code.zip");
