@@ -308,8 +308,20 @@ public class BuildJsonForYapi{
                             }
                         }
                         if(yapiHeaderDTO!=null){
+                            if(Strings.isNullOrEmpty(yapiHeaderDTO.getDesc())){
+                                yapiHeaderDTO.setDesc(psiParameter.getType().getPresentableText());
+                            }
+                            if(Strings.isNullOrEmpty(yapiHeaderDTO.getExample()) && Objects.nonNull(NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText())) ){
+                                yapiHeaderDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
+                            }
                             yapiHeaderDTOList.add(yapiHeaderDTO);
                         }else {
+                            if(Strings.isNullOrEmpty(yapiQueryDTO.getDesc())){
+                                yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
+                            }
+                            if(Strings.isNullOrEmpty(yapiQueryDTO.getExample()) && Objects.nonNull(NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText())) ){
+                                yapiQueryDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
+                            }
                             list.add(yapiQueryDTO);
                         }
                     }else{
