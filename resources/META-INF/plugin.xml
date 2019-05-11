@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>YapiUpload</id>
   <name>YapiUpload</name>
-  <version>1.6.1</version>
+  <version>1.6.2</version>
   <vendor email="chengsheng@qbb6.com" url="http://www.qbb6.com">QBB</vendor>
 
   <description><![CDATA[
@@ -23,16 +23,14 @@
       <em>fix hashmap bug </em> <br>
       1.5:<br>
       <em> support constant </em> <br>
-      1.5.1:<br>
-      <em> fixbug </em> <br>
-      1.5.2:<br>
-      <em> fixbug </em> <br>
-      1.5.3:<br>
+      1.5.1-1.5.3:<br>
       <em> fixbug </em> <br>
       1.6.0:<br>
       <em> support java download<br>
       1.6.1:<br>
       <em> support RequestAttribute & RequestHeader <br>
+      1.6.2:<br>
+      <em> support modules </em> <br>
     ]]>
   </change-notes>
 
