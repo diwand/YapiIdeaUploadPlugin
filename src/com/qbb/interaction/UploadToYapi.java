@@ -20,6 +20,7 @@ import com.qbb.dto.YapiSaveParam;
 import com.qbb.upload.UploadYapi;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class UploadToYapi extends AnAction {
@@ -88,43 +89,47 @@ public class UploadToYapi extends AnAction {
         if(ProjectTypeConstant.dubbo.equals(projectType)){
             // 获得dubbo需上传的接口列表 参数对象
             ArrayList<YapiDubboDTO> yapiDubboDTOs=new BuildJsonForDubbo().actionPerformedList(e);
-            for(YapiDubboDTO yapiDubboDTO:yapiDubboDTOs) {
-                YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiDubboDTO.getTitle(), yapiDubboDTO.getPath(), yapiDubboDTO.getParams(), yapiDubboDTO.getResponse(), Integer.valueOf(projectId), yapiUrl,yapiDubboDTO.getDesc());
-                try {
-                    // 上传
-                    YapiResponse yapiResponse=new UploadYapi().uploadSave(yapiSaveParam,null,project.getBasePath());
-                    if(yapiResponse.getErrcode()!=0){
-                        Notification error = notificationGroup.createNotification("sorry ,upload api error cause:"+yapiResponse.getErrmsg(), NotificationType.ERROR);
-                        Notifications.Bus.notify(error, project);
-                    }else{
-                        String url=yapiUrl+"/project/"+projectId+"/interface/api/cat_"+UploadYapi.catMap.get(projectId);
-                        Notification error = notificationGroup.createNotification("success ,url: "+url, NotificationType.INFORMATION);
+            if(yapiDubboDTOs!=null) {
+                for (YapiDubboDTO yapiDubboDTO : yapiDubboDTOs) {
+                    YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiDubboDTO.getTitle(), yapiDubboDTO.getPath(), yapiDubboDTO.getParams(), yapiDubboDTO.getResponse(), Integer.valueOf(projectId), yapiUrl, yapiDubboDTO.getDesc());
+                    try {
+                        // 上传
+                        YapiResponse yapiResponse = new UploadYapi().uploadSave(yapiSaveParam, null, project.getBasePath());
+                        if (yapiResponse.getErrcode() != 0) {
+                            Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + yapiResponse.getErrmsg(), NotificationType.ERROR);
+                            Notifications.Bus.notify(error, project);
+                        } else {
+                            String url = yapiUrl + "/project/" + projectId + "/interface/api/cat_" + UploadYapi.catMap.get(projectId);
+                            Notification error = notificationGroup.createNotification("success ,url: " + url, NotificationType.INFORMATION);
+                            Notifications.Bus.notify(error, project);
+                        }
+                    } catch (Exception e1) {
+                        Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + e1.getMessage(), NotificationType.ERROR);
                         Notifications.Bus.notify(error, project);
                     }
-                } catch (Exception e1) {
-                    Notification error = notificationGroup.createNotification("sorry ,upload api error cause:"+e1.getMessage(), NotificationType.ERROR);
-                    Notifications.Bus.notify(error, project);
                 }
             }
         }else if(ProjectTypeConstant.api.equals(projectType)){
             //获得api 需上传的接口列表 参数对象
             ArrayList<YapiApiDTO> yapiApiDTOS=new BuildJsonForYapi().actionPerformedList(e,attachUpload);
-            for(YapiApiDTO yapiApiDTO:yapiApiDTOS) {
-                YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiApiDTO.getTitle(), yapiApiDTO.getPath(), yapiApiDTO.getParams(), yapiApiDTO.getRequestBody(), yapiApiDTO.getResponse(), Integer.valueOf(projectId), yapiUrl, true, yapiApiDTO.getMethod(),yapiApiDTO.getDesc(),yapiApiDTO.getHeader());
-                try {
-                    // 上传
-                    YapiResponse yapiResponse = new UploadYapi().uploadSave(yapiSaveParam,attachUpload,project.getBasePath());
-                    if (yapiResponse.getErrcode() != 0) {
-                        Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + yapiResponse.getErrmsg(), NotificationType.ERROR);
-                        Notifications.Bus.notify(error, project);
-                    } else {
-                        String url = yapiUrl + "/project/" + projectId + "/interface/api/cat_" + UploadYapi.catMap.get(projectId);
-                        Notification error = notificationGroup.createNotification("success ,url:  " + url, NotificationType.INFORMATION);
+            if(yapiApiDTOS!=null) {
+                for (YapiApiDTO yapiApiDTO : yapiApiDTOS) {
+                    YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiApiDTO.getTitle(), yapiApiDTO.getPath(), yapiApiDTO.getParams(), yapiApiDTO.getRequestBody(), yapiApiDTO.getResponse(), Integer.valueOf(projectId), yapiUrl, true, yapiApiDTO.getMethod(), yapiApiDTO.getDesc(), yapiApiDTO.getHeader());
+                    try {
+                        // 上传
+                        YapiResponse yapiResponse = new UploadYapi().uploadSave(yapiSaveParam, attachUpload, project.getBasePath());
+                        if (yapiResponse.getErrcode() != 0) {
+                            Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + yapiResponse.getErrmsg(), NotificationType.ERROR);
+                            Notifications.Bus.notify(error, project);
+                        } else {
+                            String url = yapiUrl + "/project/" + projectId + "/interface/api/cat_" + UploadYapi.catMap.get(projectId);
+                            Notification error = notificationGroup.createNotification("success ,url:  " + url, NotificationType.INFORMATION);
+                            Notifications.Bus.notify(error, project);
+                        }
+                    } catch (Exception e1) {
+                        Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + e1.getMessage(), NotificationType.ERROR);
                         Notifications.Bus.notify(error, project);
                     }
-                } catch (Exception e1) {
-                    Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + e1.getMessage(), NotificationType.ERROR);
-                    Notifications.Bus.notify(error, project);
                 }
             }
         }
