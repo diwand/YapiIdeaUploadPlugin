@@ -30,7 +30,13 @@ public class UploadYapi {
 
     public static Map<String,Integer> catMap=new HashMap<>();
 
-
+    /**
+     * @description: 调用保存接口
+     * @param: [yapiSaveParam, attachUpload, path]
+     * @return: com.qbb.dto.YapiResponse
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/5/15
+     */ 
     public YapiResponse  uploadSave(YapiSaveParam yapiSaveParam,String attachUpload,String path) throws IOException {
         if(Strings.isNullOrEmpty(yapiSaveParam.getTitle())){
             yapiSaveParam.setTitle(yapiSaveParam.getPath());
@@ -87,7 +93,13 @@ public class UploadYapi {
         return httpPost;
     }
 
-
+    /**
+     * @description: 上传文件
+     * @param: [url, filePath]
+     * @return: java.lang.String
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/5/15
+     */ 
     public String uploadFile(String url,String filePath){
         HttpPost httpPost = null;
         try {
@@ -114,7 +126,13 @@ public class UploadYapi {
 
 
 
-
+    /**
+     * @description: 获得分类或者创建分类或者
+     * @param: [yapiSaveParam]
+     * @return: com.qbb.dto.YapiResponse
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/5/15
+     */ 
     public YapiResponse getCatIdOrCreate(YapiSaveParam yapiSaveParam){
         Integer catId= catMap.get(yapiSaveParam.getProjectId().toString());
         if(catId!=null){
