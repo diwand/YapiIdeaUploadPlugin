@@ -10,7 +10,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
+/**
+ * @description: 文件压缩
+ * @author: chengsheng@qbb6.com
+ * @date: 2019/5/15
+ */
 public class FileToZipUtil {
 
     private static final int BUFFER_SIZE = 2 * 1024;

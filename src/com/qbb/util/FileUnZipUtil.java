@@ -120,14 +120,4 @@ public class FileUnZipUtil {
                 }
             }
         }
-
-        public static void main(String[] args) {
-            File jarFile = new File("/Users/chengsheng/.m2/repository/com/btime/recommend/recommend-calculate-api/1.3.9/recommend-calculate-api-1.3.9-sources.jar");
-            File targetDir = new File("/Users/chengsheng/.m2/repository/com/btime/recommend/recommend-calculate-api/1.3.9/sources");
-            try {
-                FileUnZipUtil.uncompress(jarFile, targetDir);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
 }

@@ -21,7 +21,11 @@ import com.qbb.upload.UploadYapi;
 
 import java.util.ArrayList;
 
-
+/**
+ * @description: 入口
+ * @author: chengsheng@qbb6.com
+ * @date: 2019/5/15
+ */
 public class UploadToYapi extends AnAction {
 
     private static NotificationGroup notificationGroup;
