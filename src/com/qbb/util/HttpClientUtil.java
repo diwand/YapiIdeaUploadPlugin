@@ -52,9 +52,9 @@ import java.util.Map;
  * @date 2018/1/26.
  */
 public class HttpClientUtil {
-    private static int socketTimeout = 1000;
-    private static int connectionTimeout = 3000;
-    private static int connectionRequestTimeout = 3000;
+    private static int socketTimeout = 10000;
+    private static int connectionTimeout = 10000;
+    private static int connectionRequestTimeout = 10000;
     private static int maxTotal = 100;
     private static int defaultMaxPerRoute = 100;
 

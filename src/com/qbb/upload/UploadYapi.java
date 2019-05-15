@@ -58,9 +58,14 @@ public class UploadYapi {
             }
             // 移除 文件
         }
-        yapiSaveParam.setCatid(String.valueOf(this.getCatIdOrCreate(yapiSaveParam)));
-        String response=HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpPost(yapiSaveParam.getYapiUrl()+YapiConstant.yapiSave,gson.toJson(yapiSaveParam))),"utf-8");
-        return gson.fromJson(response,YapiResponse.class);
+        YapiResponse yapiResponse= this.getCatIdOrCreate(yapiSaveParam);
+        if(yapiResponse.getErrcode()==0 && yapiResponse.getData()!=null){
+            yapiSaveParam.setCatid(String.valueOf(yapiResponse.getData()));
+            String response=HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpPost(yapiSaveParam.getYapiUrl()+YapiConstant.yapiSave,gson.toJson(yapiSaveParam))),"utf-8");
+            return gson.fromJson(response,YapiResponse.class);
+        }else{
+            return yapiResponse;
+        }
     }
 
 
@@ -110,23 +115,23 @@ public class UploadYapi {
 
 
 
-    public Integer getCatIdOrCreate(YapiSaveParam yapiSaveParam){
+    public YapiResponse getCatIdOrCreate(YapiSaveParam yapiSaveParam){
         Integer catId= catMap.get(yapiSaveParam.getProjectId().toString());
         if(catId!=null){
-            return catId;
+            return new YapiResponse(catId);
         }
         String response= null;
         try {
             response = HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpGet(yapiSaveParam.getYapiUrl()+ YapiConstant.yapiCatMenu+"?project_id="+yapiSaveParam.getProjectId()+"&token="+yapiSaveParam.getToken())),"utf-8");
             YapiResponse yapiResponse=gson.fromJson(response,YapiResponse.class);
-            if(yapiResponse.getErrcode().equals(0)) {
+            if(yapiResponse.getErrcode()==0) {
                 List<YapiCatResponse> list = (List<YapiCatResponse>) yapiResponse.getData();
                 list=gson.fromJson(gson.toJson(list),new TypeToken<List<YapiCatResponse>>() {
                 }.getType());
                 for (YapiCatResponse yapiCatResponse : list) {
                     if (yapiCatResponse.getName().equals("tool-temp")) {
                         catMap.put(yapiSaveParam.getProjectId().toString(),yapiCatResponse.get_id());
-                        return yapiCatResponse.get_id();
+                        return new YapiResponse(yapiCatResponse.get_id());
                     }
                 }
             }
@@ -134,11 +139,11 @@ public class UploadYapi {
             String responseCat=HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpPost(yapiSaveParam.getYapiUrl()+YapiConstant.yapiAddCat,gson.toJson(yapiCatMenuParam))),"utf-8");
             YapiCatResponse yapiCatResponse=gson.fromJson(gson.fromJson(responseCat,YapiResponse.class).getData().toString(),YapiCatResponse.class);
             catMap.put(yapiSaveParam.getProjectId().toString(),yapiCatResponse.get_id());
-            return  yapiCatResponse.get_id();
+            return  new YapiResponse(yapiCatResponse.get_id());
         } catch (IOException e) {
             e.printStackTrace();
+           return  new YapiResponse(0,e.toString());
         }
-        return null;
     }
 
 

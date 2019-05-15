@@ -20,7 +20,6 @@ import com.qbb.dto.YapiSaveParam;
 import com.qbb.upload.UploadYapi;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 
 public class UploadToYapi extends AnAction {
@@ -104,7 +103,7 @@ public class UploadToYapi extends AnAction {
                             Notifications.Bus.notify(error, project);
                         }
                     } catch (Exception e1) {
-                        Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + e1.getMessage(), NotificationType.ERROR);
+                        Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + e1, NotificationType.ERROR);
                         Notifications.Bus.notify(error, project);
                     }
                 }
@@ -127,7 +126,7 @@ public class UploadToYapi extends AnAction {
                             Notifications.Bus.notify(error, project);
                         }
                     } catch (Exception e1) {
-                        Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + e1.getMessage(), NotificationType.ERROR);
+                        Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + e1, NotificationType.ERROR);
                         Notifications.Bus.notify(error, project);
                     }
                 }
