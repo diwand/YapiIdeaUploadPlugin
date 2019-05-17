@@ -593,7 +593,7 @@ public class BuildJsonForYapi{
                         PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(child, GlobalSearchScope.allScope(project));
                         kv1.set(KV.by("description", (Strings.isNullOrEmpty(remark)?(""+psiClassChild.getName().trim()):remark+" ,"+psiClassChild.getName().trim())));
                         if(!pName.equals(psiClassChild.getName())) {
-                            kv1.set(KV.by("properties", getFields(psiClassChild, project, null, null)));
+                            kv1.set(KV.by("properties", getFields(psiClassChild, project, childType, index+1)));
                             addFilePaths(filePaths,psiClassChild);
                         }else{
                             kv1.set(KV.by("type", pName));
