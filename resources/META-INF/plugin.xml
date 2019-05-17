@@ -31,6 +31,8 @@
       <em> support RequestAttribute & RequestHeader <br>
       1.6.2:<br>
       <em> support modules </em> <br>
+      1.6.3:<br>
+      <em> fix  BaseResponse<PageResult<User>> <br>
     ]]>
   </change-notes>
 

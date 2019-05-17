@@ -325,7 +325,7 @@ public class BuildJsonForYapi{
                             list.add(yapiQueryDTO);
                         }
                     }else{
-                        //TODO
+                        //TODO 支持实体对象接收
                     }
                 }
             }
@@ -479,8 +479,14 @@ public class BuildJsonForYapi{
                     getField(field,project,kv,childType,index,psiClass.getName());
                 }
             }else{
-                for (PsiField field : psiClass.getAllFields()) {
-                    getField(field,project,kv,childType,index,psiClass.getName());
+                if("T".equals(psiClass.getName())&&childType!=null && childType.length>index){
+                    String child = childType[index].split(">")[0];
+                    PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(child, GlobalSearchScope.allScope(project));
+                    return getFields(psiClassChild,project,childType,index+1);
+                }else {
+                    for (PsiField field : psiClass.getAllFields()) {
+                        getField(field, project, kv, childType, index, psiClass.getName());
+                    }
                 }
             }
         }
@@ -585,7 +591,7 @@ public class BuildJsonForYapi{
                     String child = childType[index].split(">")[0];
                     if (child.contains("List") || child.contains("Set") || child.contains("HashSet")) {
                         PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childType[index + 1].split(">")[0], GlobalSearchScope.allScope(project));
-                        getCollect(kv, psiClassChild.getName(), remark, psiClassChild, project, name,pName);
+                        getCollect(kv, psiClassChild.getName(), remark, psiClassChild, project, name,pName,childType,index+1);
                     } else {
                         //class type
                         KV kv1 = new KV();
@@ -640,7 +646,7 @@ public class BuildJsonForYapi{
                 PsiType iterableType = PsiUtil.extractIterableTypeParameter(type, false);
                 PsiClass iterableClass = PsiUtil.resolveClassInClassTypeOnly(iterableType);
                 String classTypeName = iterableClass.getName();
-                getCollect(kv,classTypeName,remark,iterableClass,project,name,pName);
+                getCollect(kv,classTypeName,remark,iterableClass,project,name,pName,childType,index);
             } else if(fieldTypeName.startsWith("HashMap") || fieldTypeName.startsWith("Map") || fieldTypeName.startsWith("LinkedHashMap")){
                 //HashMap or Map
                 CompletableFuture.runAsync(()->{
@@ -660,7 +666,7 @@ public class BuildJsonForYapi{
                 kv1.set(KV.by("description",(Strings.isNullOrEmpty(remark)?(""+psiClass.getName().trim()):(remark+" ,"+psiClass.getName()).trim())));
                 if(!pName.equals(((PsiClassReferenceType) type).getClassName())) {
                     addFilePaths(filePaths,psiClass);
-                    kv1.set(KV.by("properties", getFields(PsiUtil.resolveClassInType(type), project, null, null)));
+                    kv1.set(KV.by("properties", getFields(PsiUtil.resolveClassInType(type), project, childType, index)));
                 }else{
                     kv1.set(KV.by("type",pName));
                 }
@@ -677,7 +683,7 @@ public class BuildJsonForYapi{
      * @author: chengsheng@qbb6.com
      * @date: 2019/5/15
      */
-    public static void getCollect(KV kv,String classTypeName,String remark,PsiClass psiClass,Project project,String name,String pName) {
+    public static void getCollect(KV kv,String classTypeName,String remark,PsiClass psiClass,Project project,String name,String pName,String[] childType,Integer index) {
         KV kvlist = new KV();
         if (NormalTypes.isNormalType(classTypeName) || NormalTypes.collectTypes.containsKey(classTypeName)) {
             kvlist.set("type",classTypeName);
@@ -688,7 +694,7 @@ public class BuildJsonForYapi{
             kvlist.set(KV.by("type","object"));
             kvlist.set(KV.by("description",(Strings.isNullOrEmpty(remark)?(""+psiClass.getName().trim()):remark+" ,"+psiClass.getName().trim())));
             if(!pName.equals(psiClass.getName())) {
-                kvlist.set("properties", getFields(psiClass, project, null, null));
+                kvlist.set("properties", getFields(psiClass, project, childType, index));
                 addFilePaths(filePaths,psiClass);
             }else{
                 kvlist.set(KV.by("type",pName));
