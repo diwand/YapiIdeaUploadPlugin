@@ -50,6 +50,7 @@ public class UploadYapi {
             }else{
                 yapiHeaderDTO.setName("Content-Type");
                 yapiHeaderDTO.setValue("application/json");
+                yapiSaveParam.setReq_body_type("json");
             }
             if(Objects.isNull(yapiSaveParam.getReq_headers())){
                 List list=new ArrayList();
