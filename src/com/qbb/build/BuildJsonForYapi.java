@@ -124,6 +124,7 @@ public class BuildJsonForYapi{
                             String[] results=psiReference.resolve().getText().split("=");
                             path.append(results[results.length-1].split(";")[0].replace("\"","").trim());
                             yapiApiDTO.setTitle(DesUtil.getUrlReFerenceRDesc(psiReference.resolve().getText()));
+                            yapiApiDTO.setMenu(DesUtil.getMenu(psiReference.resolve().getText()));
                             yapiApiDTO.setDesc("<pre><code>  "+psiReference.resolve().getText()+" </code></pre> <hr>");
                         }
                         yapiApiDTO.setPath(path.toString());
@@ -182,6 +183,7 @@ public class BuildJsonForYapi{
                             String[] results=psiReference.resolve().getText().split("=");
                             path.append(results[results.length-1].split(";")[0].replace("\"", "").trim());
                             yapiApiDTO.setTitle(DesUtil.getUrlReFerenceRDesc(psiReference.resolve().getText()));
+                            yapiApiDTO.setMenu(DesUtil.getMenu(psiReference.resolve().getText()));
                             yapiApiDTO.setDesc("<pre><code>  "+psiReference.resolve().getText()+" </code></pre> <hr>");
                         }
                         yapiApiDTO.setPath(path.toString().trim());
@@ -231,6 +233,7 @@ public class BuildJsonForYapi{
             // 清空路径
             if(Strings.isNullOrEmpty(yapiApiDTO.getTitle())) {
                 yapiApiDTO.setTitle(DesUtil.getDescription(psiMethodTarget));
+                yapiApiDTO.setMenu(DesUtil.getMenu(psiMethodTarget.getDocComment().getText()));
             }
             return yapiApiDTO;
         } catch (Exception ex) {

@@ -28,7 +28,7 @@ public class UploadYapi {
 
     private Gson gson=new Gson();
 
-    public static Map<String,Integer> catMap=new HashMap<>();
+    public static Map<String,Map<String,Integer>> catMap=new HashMap<>();
 
     /**
      * @description: 调用保存接口
@@ -92,7 +92,6 @@ public class UploadYapi {
         try {
             httpPost = new HttpPost(url);
             httpPost.setHeader("Content-type", "application/json;charset=utf-8");
-            //httpPost.setHeader("Connection", "close");
             HttpEntity reqEntity = new StringEntity(body == null ? "" : body, "UTF-8");
             httpPost.setEntity(reqEntity);
         } catch (Exception e) {
@@ -111,7 +110,6 @@ public class UploadYapi {
         HttpPost httpPost = null;
         try {
             httpPost = new HttpPost(url);
-            //httpPost.setHeader("Connection", "close");
             FileBody bin = new FileBody(new File(filePath));
             HttpEntity reqEntity = MultipartEntityBuilder.create().addPart("file", bin).build();
             httpPost.setEntity(reqEntity);
@@ -141,9 +139,18 @@ public class UploadYapi {
      * @date: 2019/5/15
      */ 
     public YapiResponse getCatIdOrCreate(YapiSaveParam yapiSaveParam){
-        Integer catId= catMap.get(yapiSaveParam.getProjectId().toString());
-        if(catId!=null){
-            return new YapiResponse(catId);
+        Map<String,Integer> catMenuMap= catMap.get(yapiSaveParam.getProjectId().toString());
+        if(catMenuMap!=null){
+            if(!Strings.isNullOrEmpty(yapiSaveParam.getMenu())) {
+                if(Objects.nonNull(catMenuMap.get(yapiSaveParam.getMenu()))){
+                    return new YapiResponse(catMenuMap.get(yapiSaveParam.getMenu()));
+                }
+            }else{
+                if(Objects.nonNull(catMenuMap.get(YapiConstant.menu))){
+                    return new YapiResponse(catMenuMap.get(YapiConstant.menu));
+                }
+                yapiSaveParam.setMenu(YapiConstant.menu);
+            }
         }
         String response= null;
         try {
@@ -154,16 +161,30 @@ public class UploadYapi {
                 list=gson.fromJson(gson.toJson(list),new TypeToken<List<YapiCatResponse>>() {
                 }.getType());
                 for (YapiCatResponse yapiCatResponse : list) {
-                    if (yapiCatResponse.getName().equals("tool-temp")) {
-                        catMap.put(yapiSaveParam.getProjectId().toString(),yapiCatResponse.get_id());
+                    if (yapiCatResponse.getName().equals(yapiSaveParam.getMenu())) {
+                        Map<String,Integer> catMenuMapSub=catMap.get(yapiSaveParam.getProjectId().toString());
+                        if(catMenuMapSub!=null){
+                            catMenuMapSub.put(yapiCatResponse.getName(),yapiCatResponse.get_id());
+                        }else{
+                            catMenuMapSub=new HashMap<>();
+                            catMenuMapSub.put(yapiCatResponse.getName(),yapiCatResponse.get_id());
+                            catMap.put(yapiSaveParam.getProjectId().toString(),catMenuMapSub);
+                        }
                         return new YapiResponse(yapiCatResponse.get_id());
                     }
                 }
             }
-            YapiCatMenuParam  yapiCatMenuParam=new YapiCatMenuParam(yapiSaveParam.getProjectId(),yapiSaveParam.getToken());
+            YapiCatMenuParam  yapiCatMenuParam=new YapiCatMenuParam(yapiSaveParam.getMenu(),yapiSaveParam.getProjectId(),yapiSaveParam.getToken());
             String responseCat=HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpPost(yapiSaveParam.getYapiUrl()+YapiConstant.yapiAddCat,gson.toJson(yapiCatMenuParam))),"utf-8");
             YapiCatResponse yapiCatResponse=gson.fromJson(gson.fromJson(responseCat,YapiResponse.class).getData().toString(),YapiCatResponse.class);
-            catMap.put(yapiSaveParam.getProjectId().toString(),yapiCatResponse.get_id());
+            Map<String,Integer> catMenuMapSub=catMap.get(yapiSaveParam.getProjectId().toString());
+            if(catMenuMapSub!=null){
+                catMenuMapSub.put(yapiCatResponse.getName(),yapiCatResponse.get_id());
+            }else{
+                catMenuMapSub=new HashMap<>();
+                catMenuMapSub.put(yapiCatResponse.getName(),yapiCatResponse.get_id());
+                catMap.put(yapiSaveParam.getProjectId().toString(),catMenuMapSub);
+            }
             return  new YapiResponse(yapiCatResponse.get_id());
         } catch (IOException e) {
             e.printStackTrace();

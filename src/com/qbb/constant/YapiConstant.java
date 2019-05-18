@@ -8,6 +8,11 @@ package com.qbb.constant;
  */
 public interface YapiConstant {
     /**
+     * 目录
+     */
+    String menu="tool-temp";
+
+    /**
      * yapi 地址
      */
     String yapiAddress="http://47.96.254.39:3000";

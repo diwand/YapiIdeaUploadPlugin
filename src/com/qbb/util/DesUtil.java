@@ -101,7 +101,25 @@ public class DesUtil {
         }
         return DesUtil.trimFirstAndLastChar(text.split("\\*/")[0].replace("@description","").replace("@Description","").split("@")[0].replace(":","").replace("*","").replace("/","").replace("\n"," "),' ');
     }
-
+    
+    /**
+     * @description: 获得菜单
+     * @param: [text]
+     * @return: java.lang.String
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/5/18
+     */ 
+    public static String getMenu(String text) {
+        if (Strings.isNullOrEmpty(text) || !text.contains("*/")) {
+            return null;
+        }
+        String[] menuList = text.split("\\*/")[0].split("@menu");
+        if (menuList.length > 1) {
+            return DesUtil.trimFirstAndLastChar(menuList[1].split("\\*")[0].replace("*", "").replace("/", "").replace("\n", " "), ' ');
+        } else {
+            return null;
+        }
+    }
     /**
      * @description: 获得link 备注
      * @param: [remark, project, field]

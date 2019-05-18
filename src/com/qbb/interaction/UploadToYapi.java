@@ -13,6 +13,7 @@ import com.intellij.psi.PsiFile;
 import com.qbb.build.BuildJsonForDubbo;
 import com.qbb.build.BuildJsonForYapi;
 import com.qbb.constant.ProjectTypeConstant;
+import com.qbb.constant.YapiConstant;
 import com.qbb.dto.YapiApiDTO;
 import com.qbb.dto.YapiDubboDTO;
 import com.qbb.dto.YapiResponse;
@@ -120,6 +121,11 @@ public class UploadToYapi extends AnAction {
                     YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiApiDTO.getTitle(), yapiApiDTO.getPath(), yapiApiDTO.getParams(), yapiApiDTO.getRequestBody(), yapiApiDTO.getResponse(), Integer.valueOf(projectId), yapiUrl, true, yapiApiDTO.getMethod(), yapiApiDTO.getDesc(), yapiApiDTO.getHeader());
                     yapiSaveParam.setReq_body_form(yapiApiDTO.getReq_body_form());
                     yapiSaveParam.setReq_body_type(yapiApiDTO.getReq_body_type());
+                    if(!Strings.isNullOrEmpty(yapiApiDTO.getMenu())) {
+                        yapiSaveParam.setMenu(yapiApiDTO.getMenu());
+                    }else{
+                        yapiSaveParam.setMenu(YapiConstant.menu);
+                    }
                     try {
                         // 上传
                         YapiResponse yapiResponse = new UploadYapi().uploadSave(yapiSaveParam, attachUpload, project.getBasePath());
@@ -127,7 +133,7 @@ public class UploadToYapi extends AnAction {
                             Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + yapiResponse.getErrmsg(), NotificationType.ERROR);
                             Notifications.Bus.notify(error, project);
                         } else {
-                            String url = yapiUrl + "/project/" + projectId + "/interface/api/cat_" + UploadYapi.catMap.get(projectId);
+                            String url = yapiUrl + "/project/" + projectId + "/interface/api/cat_" + UploadYapi.catMap.get(projectId).get(yapiSaveParam.getMenu());
                             Notification error = notificationGroup.createNotification("success ,url:  " + url, NotificationType.INFORMATION);
                             Notifications.Bus.notify(error, project);
                         }

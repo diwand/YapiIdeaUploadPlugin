@@ -110,6 +110,10 @@ public class YapiSaveParam implements Serializable{
      * yapi 地址
      */
     private String yapiUrl;
+    /**
+     * 菜单名称
+     */
+    private String menu;
 
 
     public String getToken() {
@@ -302,6 +306,15 @@ public class YapiSaveParam implements Serializable{
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+
+    public String getMenu() {
+        return menu;
+    }
+
+    public void setMenu(String menu) {
+        this.menu = menu;
     }
 
     public YapiSaveParam() {

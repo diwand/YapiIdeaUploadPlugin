@@ -54,6 +54,10 @@ public class YapiApiDTO implements Serializable{
      * 描述
      */
     private String desc;
+    /**
+     * 菜单
+     */
+    private String menu;
 
 
     public String getPath() {
@@ -134,6 +138,14 @@ public class YapiApiDTO implements Serializable{
 
     public void setReq_body_form(List<Map<String, String>> req_body_form) {
         this.req_body_form = req_body_form;
+    }
+
+    public String getMenu() {
+        return menu;
+    }
+
+    public void setMenu(String menu) {
+        this.menu = menu;
     }
 
     public YapiApiDTO() {
