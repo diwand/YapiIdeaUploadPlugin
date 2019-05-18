@@ -2,6 +2,7 @@ package com.qbb.dto;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * yapi dto
@@ -39,6 +40,15 @@ public class YapiApiDTO implements Serializable{
      * 请求方法
      */
     private String method="POST";
+
+    /**
+     * 请求 类型 raw,form,json
+     */
+    private String req_body_type;
+    /**
+     * 请求form
+     */
+    private List<Map<String,String>> req_body_form;
 
     /**
      * 描述
@@ -108,6 +118,22 @@ public class YapiApiDTO implements Serializable{
 
     public void setHeader(List header) {
         this.header = header;
+    }
+
+    public String getReq_body_type() {
+        return req_body_type;
+    }
+
+    public void setReq_body_type(String req_body_type) {
+        this.req_body_type = req_body_type;
+    }
+
+    public List<Map<String, String>> getReq_body_form() {
+        return req_body_form;
+    }
+
+    public void setReq_body_form(List<Map<String, String>> req_body_form) {
+        this.req_body_form = req_body_form;
     }
 
     public YapiApiDTO() {

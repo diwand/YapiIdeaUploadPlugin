@@ -43,8 +43,14 @@ public class UploadYapi {
         }
         if(yapiSaveParam.getReq_headers()==null || yapiSaveParam.getReq_headers().isEmpty()){
             YapiHeaderDTO yapiHeaderDTO=new YapiHeaderDTO();
-            yapiHeaderDTO.setName("Content-Type");
-            yapiHeaderDTO.setValue("application/json");
+            if("form".equals(yapiSaveParam.getReq_body_type())){
+                yapiHeaderDTO.setName("Content-Type");
+                yapiHeaderDTO.setValue("application/x-www-form-urlencoded");
+                yapiSaveParam.setReq_body_form(yapiSaveParam.getReq_body_form());
+            }else{
+                yapiHeaderDTO.setName("Content-Type");
+                yapiHeaderDTO.setValue("application/json");
+            }
             if(Objects.isNull(yapiSaveParam.getReq_headers())){
                 List list=new ArrayList();
                 list.add(yapiHeaderDTO);

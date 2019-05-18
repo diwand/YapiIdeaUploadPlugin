@@ -122,7 +122,7 @@ public class BuildJsonForYapi{
                         }else{
                             String[] results=psiReference.resolve().getText().split("=");
                             path.append(results[results.length-1].split(";")[0].replace("\"","").trim());
-                            yapiApiDTO.setTitle(DesUtil.trimFirstAndLastChar(psiReference.resolve().getText().split("@")[0].replace("@description","").replace("@Description","").replace(":","").replace("*","").replace("/","").replace("\n"," "),' '));
+                            yapiApiDTO.setTitle(DesUtil.getUrlReFerenceRDesc(psiReference.resolve().getText()));
                             yapiApiDTO.setDesc("<pre><code>  "+psiReference.resolve().getText()+" </code></pre> <hr>");
                         }
                         yapiApiDTO.setPath(path.toString());
@@ -156,7 +156,7 @@ public class BuildJsonForYapi{
                         } else {
                             String[] results=psiReference.resolve().getText().split("=");
                             path.append(results[results.length-1].split(";")[0].replace("\"", "").trim());
-                            yapiApiDTO.setTitle(DesUtil.trimFirstAndLastChar(psiReference.resolve().getText().replace("@description","").replace("@Description","").replace(":","").split("@")[0].replace("*","").replace("/","").replace("\n"," "),' '));
+                            yapiApiDTO.setTitle(DesUtil.getUrlReFerenceRDesc(psiReference.resolve().getText()));
                             yapiApiDTO.setDesc("<pre><code>  "+psiReference.resolve().getText()+" </code></pre> <hr>");
                         }
                         yapiApiDTO.setPath(path.toString().trim());
@@ -325,13 +325,45 @@ public class BuildJsonForYapi{
                             list.add(yapiQueryDTO);
                         }
                     }else{
-                        //TODO 支持实体对象接收
+                        // 支持实体对象接收
+                        yapiApiDTO.setReq_body_type("form");
+                        yapiApiDTO.setReq_body_form(getRequestForm(project,psiParameter.getType()));
                     }
                 }
             }
             yapiApiDTO.setParams(list);
             yapiApiDTO.setHeader(yapiHeaderDTOList);
         }
+    }
+    /**
+     * @description: 获得表单提交数据对象
+     * @param: [requestClass]
+     * @return: java.util.List<java.util.Map<java.lang.String,java.lang.String>>
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/5/17
+     */
+    public static List<Map<String,String>> getRequestForm(Project project,PsiType psiType){
+        PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(psiType.getCanonicalText(), GlobalSearchScope.allScope(project));
+        List<Map<String,String>> requestForm=new ArrayList<>();
+        for (PsiField field : psiClass.getAllFields()) {
+            if(field.getModifierList().hasModifierProperty("final")){
+                continue;
+            }
+            Map<String,String> map=new HashMap<>();
+            map.put("name",field.getName());
+            map.put("type","text");
+            String remark= DesUtil.getFiledDesc(field.getDocComment());
+            remark=DesUtil.getLinkRemark(remark,project,field);
+            map.put("desc",remark);
+            if(Objects.nonNull(field.getType().getPresentableText())){
+                Object obj=NormalTypes.normalTypes.get(field.getType().getPresentableText());
+                if(Objects.nonNull(obj)){
+                    map.put("example",NormalTypes.normalTypes.get(field.getType().getPresentableText()).toString());
+                }
+            }
+            requestForm.add(map);
+        }
+        return requestForm;
     }
 
     /**
@@ -508,57 +540,9 @@ public class BuildJsonForYapi{
         String name = field.getName();
         String remark ="";
         if(field.getDocComment()!=null) {
-            remark= DesUtil.getFiledDesc(field.getDocComment());
-
-            // 尝试获得@link 的常量定义
-            String[] linkString=field.getDocComment().getText().split("@link");
-            if(linkString.length>1){
-                //说明有link
-                String linkAddress=linkString[1].split("}")[0].trim();
-                PsiClass psiClassLink=JavaPsiFacade.getInstance(project).findClass(linkAddress,GlobalSearchScope.allScope(project));
-                if(Objects.isNull(psiClassLink)) {
-                    //可能没有获得全路径，尝试获得全路径
-                    String[] importPaths=field.getParent().getContext().getText().split("import");
-                    if(importPaths.length>1){
-                        for(String importPath:importPaths){
-                            if(importPath.contains(linkAddress.split("\\.")[0])){
-                                linkAddress=importPath.split(linkAddress.split("\\.")[0])[0]+linkAddress;
-                                psiClassLink=JavaPsiFacade.getInstance(project).findClass(linkAddress.trim(),GlobalSearchScope.allScope(project));
-                                break;
-                            }
-                        }
-                    }
-                    //如果小于等于一为不存在import，不做处理
-                }
-                if(Objects.nonNull(psiClassLink)){
-                    //说明获得了link 的class
-                    PsiField[] linkFields= psiClassLink.getFields();
-                    if(linkFields.length>0){
-                        remark+=","+psiClassLink.getName()+"[";
-                        for (int i=0;i<linkFields.length;i++){
-                            PsiField psiField=linkFields[i];
-                            if(i>0){
-                                remark+=",";
-                            }
-                            // 先获得名称
-                            remark+=psiField.getName();
-                            // 后获得value,通过= 来截取获得，第二个值，再截取;
-                            String[] splitValue = psiField.getText().split("=");
-                            if(splitValue.length>1){
-                                String value=splitValue[1].split(";")[0];
-                                remark+=":"+value;
-                            }
-                            String filedValue=DesUtil.getFiledDesc(psiField.getDocComment());
-                            if(!Strings.isNullOrEmpty(filedValue)){
-                                remark+="("+filedValue+")";
-                            }
-                        }
-                        remark+="]";
-                    }
-                }
-            }
-
-
+            remark = DesUtil.getFiledDesc(field.getDocComment());
+            //获得link 备注
+            remark = DesUtil.getLinkRemark(remark, project, field);
         }
         // 如果是基本类型
         if (type instanceof PsiPrimitiveType) {
@@ -754,4 +738,6 @@ public class BuildJsonForYapi{
         filePaths.clear();
         filePaths.addAll(changeFilePaths);
     }
+
+
 }

@@ -44,7 +44,7 @@ public class NormalTypes {
         normalTypes.put("Double", 0.0D);
         normalTypes.put("String", "String");
         normalTypes.put("Date", new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(new Date()));
-        normalTypes.put("BigDecimal",null);
+        normalTypes.put("BigDecimal",0.111111);
         normalTypes.put("Timestamp",new Timestamp(System.currentTimeMillis()));
         collectTypes.put("HashMap","HashMap");
         collectTypes.put("Map","Map");

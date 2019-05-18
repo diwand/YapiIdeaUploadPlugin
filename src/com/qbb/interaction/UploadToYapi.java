@@ -118,6 +118,8 @@ public class UploadToYapi extends AnAction {
             if(yapiApiDTOS!=null) {
                 for (YapiApiDTO yapiApiDTO : yapiApiDTOS) {
                     YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiApiDTO.getTitle(), yapiApiDTO.getPath(), yapiApiDTO.getParams(), yapiApiDTO.getRequestBody(), yapiApiDTO.getResponse(), Integer.valueOf(projectId), yapiUrl, true, yapiApiDTO.getMethod(), yapiApiDTO.getDesc(), yapiApiDTO.getHeader());
+                    yapiSaveParam.setReq_body_form(yapiApiDTO.getReq_body_form());
+                    yapiSaveParam.setReq_body_type(yapiApiDTO.getReq_body_type());
                     try {
                         // 上传
                         YapiResponse yapiResponse = new UploadYapi().uploadSave(yapiSaveParam, attachUpload, project.getBasePath());
