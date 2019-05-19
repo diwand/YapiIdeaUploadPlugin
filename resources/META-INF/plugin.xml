@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>YapiUpload</id>
   <name>YapiUpload</name>
-  <version>1.6.4</version>
+  <version>1.6.3</version>
   <vendor email="chengsheng@qbb6.com" url="http://www.qbb6.com">QBB</vendor>
 
   <description><![CDATA[
@@ -35,10 +35,8 @@
       <em> fix 多级泛型问题
       - 支持@NotNull 注解
       - 支持PutMapping,DeleteMapping,
-      - 支持 model 接收参数和application/x-www-form-urlencoded<User>> <br>
-      1.6.4:<br>
-      <em>
-       - 支持自定义分类 <br>
+      - 支持 model 接收参数和application/x-www-form-urlencoded
+      - 支持自定义分类 <br>
     ]]>
   </change-notes>
 
