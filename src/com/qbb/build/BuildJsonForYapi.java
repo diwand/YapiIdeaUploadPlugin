@@ -233,7 +233,9 @@ public class BuildJsonForYapi{
             // 清空路径
             if(Strings.isNullOrEmpty(yapiApiDTO.getTitle())) {
                 yapiApiDTO.setTitle(DesUtil.getDescription(psiMethodTarget));
-                yapiApiDTO.setMenu(DesUtil.getMenu(psiMethodTarget.getDocComment().getText()));
+                if(Objects.nonNull(psiMethodTarget.getDocComment())) {
+                    yapiApiDTO.setMenu(DesUtil.getMenu(psiMethodTarget.getDocComment().getText()));
+                }
             }
             return yapiApiDTO;
         } catch (Exception ex) {
