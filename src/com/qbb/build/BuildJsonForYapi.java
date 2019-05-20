@@ -65,13 +65,21 @@ public class BuildJsonForYapi{
         }
         PsiElement referenceAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
         PsiClass selectedClass = (PsiClass) PsiTreeUtil.getContextOfType(referenceAt, new Class[]{PsiClass.class});
+        String classMenu=null;
+        if(Objects.nonNull(selectedClass.getDocComment())){
+             classMenu=DesUtil.getMenu(selectedClass.getText());
+        }
         ArrayList<YapiApiDTO> yapiApiDTOS=new ArrayList<>();
         if(selectedText.equals(selectedClass.getName())){
             PsiMethod[] psiMethods=selectedClass.getMethods();
             for(PsiMethod psiMethodTarget:psiMethods) {
                 //去除私有方法
                 if(!psiMethodTarget.getModifierList().hasModifierProperty("private")) {
-                    yapiApiDTOS.add(actionPerformed(selectedClass, psiMethodTarget, project, psiFile,attachUpload));
+                    YapiApiDTO yapiApiDTO=actionPerformed(selectedClass, psiMethodTarget, project, psiFile,attachUpload);
+                    if(Objects.isNull(yapiApiDTO.getMenu())){
+                        yapiApiDTO.setMenu(classMenu);
+                    }
+                    yapiApiDTOS.add(yapiApiDTO);
                 }
             }
         }else{
@@ -85,7 +93,11 @@ public class BuildJsonForYapi{
                 }
             }
             if(Objects.nonNull(psiMethodTarget)) {
-                yapiApiDTOS.add(actionPerformed(selectedClass, psiMethodTarget, project, psiFile,attachUpload));
+                YapiApiDTO yapiApiDTO= actionPerformed(selectedClass, psiMethodTarget, project, psiFile,attachUpload);
+                if(Objects.isNull(yapiApiDTO.getMenu())){
+                    yapiApiDTO.setMenu(classMenu);
+                }
+                yapiApiDTOS.add(yapiApiDTO);
             }else{
                 Notification error = notificationGroup.createNotification("can not find method:"+selectedText, NotificationType.ERROR);
                 Notifications.Bus.notify(error, project);
@@ -233,7 +245,9 @@ public class BuildJsonForYapi{
             // 清空路径
             if(Strings.isNullOrEmpty(yapiApiDTO.getTitle())) {
                 yapiApiDTO.setTitle(DesUtil.getDescription(psiMethodTarget));
-                yapiApiDTO.setMenu(DesUtil.getMenu(psiMethodTarget.getDocComment().getText()));
+                if(Objects.nonNull(psiMethodTarget.getDocComment())) {
+                    yapiApiDTO.setMenu(DesUtil.getMenu(psiMethodTarget.getDocComment().getText()));
+                }
             }
             return yapiApiDTO;
         } catch (Exception ex) {

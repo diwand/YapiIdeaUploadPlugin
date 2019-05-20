@@ -104,8 +104,8 @@ private Integer age;
     
     /**
      * @description: 添加或更新课程数据
-     * @param: [sources, count]
-     * @return: java.util.List<com.btime.recommend.dto.babyRearing.BaseBabyRearingDO>
+     * @param: [CourseParam]
+     * @return: Course
      * @date: 2018/3/15
      */
      @RequestMapping(value = "/test", method = RequestMethod.POST)
@@ -147,3 +147,32 @@ import com.xxx.constant.*;
 private Integer status;
 
 ``` 
+
+- 支持自定义分类 
+
+通过在方法或类注释中加  @menu 注释实现，优先级 方法>类
+
+
+```java 
+
+/** 
+ *@description: 用户控制器
+ *@menu 这里填写类分类名称
+ */   
+@RestController
+public class UserController {
+
+    /**
+     * @description: 新增用户
+     * @param: [User]
+     * @menu: 这里填写方法级别分类名称
+     * @return: Response<UserDTO>
+     * @date: 2018/3/15
+     */
+     @RequestMapping(value = "/addUser", method = RequestMethod.POST)
+     public Response<UserDTO> addUser(@RequestBody User user){
+    
+    }
+}
+
+```
