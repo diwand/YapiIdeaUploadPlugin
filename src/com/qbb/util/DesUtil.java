@@ -32,7 +32,7 @@ public class DesUtil {
         boolean beginIndexFlag = true;
         boolean endIndexFlag = true;
         do {
-            if(Strings.isNullOrEmpty(source.trim())){
+            if(Strings.isNullOrEmpty(source.trim()) || source.equals(String.valueOf(element))){
                 source="";
                 break;
             }

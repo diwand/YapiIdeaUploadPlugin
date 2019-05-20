@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>YapiUpload</id>
   <name>YapiUpload</name>
-  <version>1.6.4</version>
+  <version>1.6.5</version>
   <vendor email="chengsheng@qbb6.com" url="http://www.qbb6.com">QBB</vendor>
 
   <description><![CDATA[
@@ -42,6 +42,11 @@
         - 支持类级别 分类定义
         <em>
        <br>
+      1.6.5:<br>
+      <em>
+        - fixbug
+      </em>
+      <br>
     ]]>
   </change-notes>
 
