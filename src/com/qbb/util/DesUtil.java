@@ -96,7 +96,7 @@ public class DesUtil {
         if(Strings.isNullOrEmpty(text)){
             return text;
         }
-        if(!text.contains("\\*/")){
+        if(!text.contains("*/")){
             return null;
         }
         return DesUtil.trimFirstAndLastChar(text.split("\\*/")[0].replace("@description","").replace("@Description","").split("@")[0].replace(":","").replace("*","").replace("/","").replace("\n"," "),' ');
