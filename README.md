@@ -176,3 +176,10 @@ public class UserController {
 }
 
 ```
+
+
+
+
+#### 注意点
+
+- YapiUpload.iml 中 <module type="PLUGIN_MODULE" version="4">  type 必须为PLUGIN_MODULE 才能正常运行其代码
