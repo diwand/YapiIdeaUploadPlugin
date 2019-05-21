@@ -1,4 +1,5 @@
 #### 变更历史
+- 1.6.5: fixbug request 为 List<Long> 等 bug,fix code.zip 概率性一样问题,fix HttpServletRequest&HttpServletResponse 存在下Req_body_type 类型问题
 - 1.6.4: 新增自定义类别
 - 1.6.3: fix 多级泛型问题, 支持@NotNull 注解,支持PutMapping,DeleteMapping,支持 model 接收参数和application/x-www-form-urlencoded
 - 1.6.2: 支持idea 多模块配置

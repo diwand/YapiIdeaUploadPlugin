@@ -44,8 +44,9 @@
        <br>
       1.6.5:<br>
       <em>
-        - fixbug List<Long> bug
-        - 优化filepath 获得
+        - fixbug request 为 List<Long> 等 bug
+        - fix code.zip 概率性一样问题
+        - fix HttpServletRequest&HttpServletResponse 存在下Req_body_type 类型问题
       </em>
       <br>
     ]]>
