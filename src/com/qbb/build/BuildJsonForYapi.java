@@ -205,6 +205,8 @@ public class BuildJsonForYapi{
         }
         yapiApiDTO.setDesc(Objects.nonNull(yapiApiDTO.getDesc())?yapiApiDTO.getDesc():" <pre><code>  "+psiMethodTarget.getText().replace(Objects.nonNull(psiMethodTarget.getBody())?psiMethodTarget.getBody().getText():"","")+" </code></pre>");
         try {
+            // 先清空之前的文件路径
+            filePaths.clear();
             // 生成响应参数
             yapiApiDTO.setResponse(getResponse(project,psiMethodTarget.getReturnType()));
             Set<String> codeSet = new HashSet<>();
