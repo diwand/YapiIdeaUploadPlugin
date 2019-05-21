@@ -157,6 +157,8 @@ public class BuildJsonForYapi{
                         yapiApiDTO.setMethod("PATCH");
                     }
                 }
+            }else{
+                yapiApiDTO.setPath(path.toString());
             }
         }else{
             PsiAnnotation psiAnnotationMethodSemple= PsiAnnotationSearchUtil.findAnnotation(psiMethodTarget,SpringMVCConstant.GetMapping);
@@ -185,21 +187,25 @@ public class BuildJsonForYapi{
             }
             if(psiAnnotationMethodSemple!=null) {
                 PsiNameValuePair[] psiNameValuePairs = psiAnnotationMethodSemple.getParameterList().getAttributes();
-                for (PsiNameValuePair psiNameValuePair : psiNameValuePairs) {
-                    //获得方法上的路径
-                    if (Objects.isNull(psiNameValuePair.getName()) || psiNameValuePair.getName().equals("value")) {
-                        PsiReference psiReference = psiNameValuePair.getValue().getReference();
-                        if (psiReference == null) {
-                            path.append(psiNameValuePair.getLiteralValue());
-                        } else {
-                            String[] results=psiReference.resolve().getText().split("=");
-                            path.append(results[results.length-1].split(";")[0].replace("\"", "").trim());
-                            yapiApiDTO.setTitle(DesUtil.getUrlReFerenceRDesc(psiReference.resolve().getText()));
-                            yapiApiDTO.setMenu(DesUtil.getMenu(psiReference.resolve().getText()));
-                            yapiApiDTO.setDesc("<pre><code>  "+psiReference.resolve().getText()+" </code></pre> <hr>");
+                if(psiNameValuePairs!=null && psiNameValuePairs.length>0) {
+                    for (PsiNameValuePair psiNameValuePair : psiNameValuePairs) {
+                        //获得方法上的路径
+                        if (Objects.isNull(psiNameValuePair.getName()) || psiNameValuePair.getName().equals("value")) {
+                            PsiReference psiReference = psiNameValuePair.getValue().getReference();
+                            if (psiReference == null) {
+                                path.append(psiNameValuePair.getLiteralValue());
+                            } else {
+                                String[] results = psiReference.resolve().getText().split("=");
+                                path.append(results[results.length - 1].split(";")[0].replace("\"", "").trim());
+                                yapiApiDTO.setTitle(DesUtil.getUrlReFerenceRDesc(psiReference.resolve().getText()));
+                                yapiApiDTO.setMenu(DesUtil.getMenu(psiReference.resolve().getText()));
+                                yapiApiDTO.setDesc("<pre><code>  " + psiReference.resolve().getText() + " </code></pre> <hr>");
+                            }
+                            yapiApiDTO.setPath(path.toString().trim());
                         }
-                        yapiApiDTO.setPath(path.toString().trim());
                     }
+                }else{
+                    yapiApiDTO.setPath(path.toString().trim());
                 }
             }
         }
