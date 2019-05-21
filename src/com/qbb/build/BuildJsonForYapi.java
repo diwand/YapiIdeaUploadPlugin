@@ -321,7 +321,7 @@ public class BuildJsonForYapi{
                                         yapiQueryDTO.setName(psiNameValuePair.getLiteralValue());
                                         yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
                                     }
-                                    if(Objects.nonNull(NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText()))){
+                                    if(NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText())){
                                         if(yapiHeaderDTO!=null) {
                                             yapiHeaderDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
                                         }else{
@@ -341,7 +341,7 @@ public class BuildJsonForYapi{
                                 yapiQueryDTO.setName(psiParameter.getName());
                                 yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
                             }
-                            if(Objects.nonNull(NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText()))){
+                            if(NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText())){
                                 if(yapiHeaderDTO!=null){
                                     yapiHeaderDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
                                 }else {
@@ -355,7 +355,7 @@ public class BuildJsonForYapi{
                             if(Strings.isNullOrEmpty(yapiHeaderDTO.getDesc())){
                                 yapiHeaderDTO.setDesc(psiParameter.getType().getPresentableText());
                             }
-                            if(Strings.isNullOrEmpty(yapiHeaderDTO.getExample()) && Objects.nonNull(NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText())) ){
+                            if(Strings.isNullOrEmpty(yapiHeaderDTO.getExample()) && NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText())){
                                 yapiHeaderDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
                             }
                             yapiHeaderDTOList.add(yapiHeaderDTO);
