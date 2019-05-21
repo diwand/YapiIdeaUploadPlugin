@@ -44,7 +44,7 @@
        <br>
       1.6.5:<br>
       <em>
-        - fixbug
+        - fixbug List<Long> bug
         - 优化filepath 获得
       </em>
       <br>

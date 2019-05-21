@@ -363,7 +363,7 @@ public class BuildJsonForYapi{
                             if(Strings.isNullOrEmpty(yapiQueryDTO.getDesc())){
                                 yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
                             }
-                            if(Strings.isNullOrEmpty(yapiQueryDTO.getExample()) && Objects.nonNull(NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText())) ){
+                            if(Strings.isNullOrEmpty(yapiQueryDTO.getExample()) && NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText()) ){
                                 yapiQueryDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
                             }
                             list.add(yapiQueryDTO);
