@@ -41,35 +41,22 @@ public class UploadYapi {
         if(Strings.isNullOrEmpty(yapiSaveParam.getTitle())){
             yapiSaveParam.setTitle(yapiSaveParam.getPath());
         }
-        if(yapiSaveParam.getReq_headers()==null || yapiSaveParam.getReq_headers().isEmpty()){
-            YapiHeaderDTO yapiHeaderDTO=new YapiHeaderDTO();
-            if("form".equals(yapiSaveParam.getReq_body_type())){
-                yapiHeaderDTO.setName("Content-Type");
-                yapiHeaderDTO.setValue("application/x-www-form-urlencoded");
-                yapiSaveParam.setReq_body_form(yapiSaveParam.getReq_body_form());
-            }else{
-                yapiHeaderDTO.setName("Content-Type");
-                yapiHeaderDTO.setValue("application/json");
-                yapiSaveParam.setReq_body_type("json");
-            }
-            if(Objects.isNull(yapiSaveParam.getReq_headers())){
-                List list=new ArrayList();
-                list.add(yapiHeaderDTO);
-                yapiSaveParam.setReq_headers(list);
-            }else{
-                yapiSaveParam.getReq_headers().add(yapiHeaderDTO);
-            }
+        YapiHeaderDTO yapiHeaderDTO=new YapiHeaderDTO();
+        if("form".equals(yapiSaveParam.getReq_body_type())){
+            yapiHeaderDTO.setName("Content-Type");
+            yapiHeaderDTO.setValue("application/x-www-form-urlencoded");
+            yapiSaveParam.setReq_body_form(yapiSaveParam.getReq_body_form());
+        }else{
+            yapiHeaderDTO.setName("Content-Type");
+            yapiHeaderDTO.setValue("application/json");
+            yapiSaveParam.setReq_body_type("json");
         }
-        if(!Strings.isNullOrEmpty(attachUpload) && !Strings.isNullOrEmpty(path)){
-            File file=new File(path+"/code.zip");
-            if(file.exists()&&file.isFile()) {
-                file.delete();
-                file=new File(path+"/response.zip");
-                file.delete();
-                file=new File(path+"/request.zip");
-                file.delete();
-            }
-            // 移除 文件
+        if(Objects.isNull(yapiSaveParam.getReq_headers())){
+            List list=new ArrayList();
+            list.add(yapiHeaderDTO);
+            yapiSaveParam.setReq_headers(list);
+        }else{
+            yapiSaveParam.getReq_headers().add(yapiHeaderDTO);
         }
         YapiResponse yapiResponse= this.getCatIdOrCreate(yapiSaveParam);
         if(yapiResponse.getErrcode()==0 && yapiResponse.getData()!=null){

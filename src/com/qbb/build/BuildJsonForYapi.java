@@ -210,13 +210,17 @@ public class BuildJsonForYapi{
             // 生成响应参数
             yapiApiDTO.setResponse(getResponse(project,psiMethodTarget.getReturnType()));
             Set<String> codeSet = new HashSet<>();
+            Long time= System.currentTimeMillis();
+            String responseFileName="/response_"+time+".zip";
+            String requestFileName="/request_"+time+".zip";
+            String codeFileName="/code_"+time+".zip";
             if(!Strings.isNullOrEmpty(attachUpload)) {
                 // 打包响应参数文件
                 if (filePaths.size() > 0) {
                     changeFilePath(project);
-                    FileToZipUtil.toZip(filePaths, project.getBasePath() + "/response.zip", true);
+                    FileToZipUtil.toZip(filePaths, project.getBasePath() + responseFileName, true);
                     filePaths.clear();
-                    codeSet.add(project.getBasePath() + "/response.zip");
+                    codeSet.add(project.getBasePath() +responseFileName);
                 }
                 // 清空路径
                 // 生成请求参数
@@ -227,15 +231,15 @@ public class BuildJsonForYapi{
             if(!Strings.isNullOrEmpty(attachUpload)){
                 if (filePaths.size() > 0) {
                     changeFilePath(project);
-                    FileToZipUtil.toZip(filePaths, project.getBasePath() + "/request.zip", true);
+                    FileToZipUtil.toZip(filePaths, project.getBasePath() + requestFileName, true);
                     filePaths.clear();
-                    codeSet.add(project.getBasePath() + "/request.zip");
+                    codeSet.add(project.getBasePath() + requestFileName);
                 }
                 // 打包请求参数文件
                 if (codeSet.size() > 0) {
-                    FileToZipUtil.toZip(codeSet, project.getBasePath() + "/code.zip", true);
+                    FileToZipUtil.toZip(codeSet, project.getBasePath() + codeFileName, true);
                     if (!Strings.isNullOrEmpty(attachUpload)) {
-                        String fileUrl = new UploadYapi().uploadFile(attachUpload, project.getBasePath() + "/code.zip");
+                        String fileUrl = new UploadYapi().uploadFile(attachUpload, project.getBasePath() +codeFileName);
                         if (!Strings.isNullOrEmpty(fileUrl)) {
                             yapiApiDTO.setDesc("java类:<a href='" + fileUrl + "'>下载地址</a><br/>" + yapiApiDTO.getDesc());
                         }
@@ -244,6 +248,19 @@ public class BuildJsonForYapi{
             }else{
                 filePaths.clear();
             }
+            //清空打包文件
+            if(!Strings.isNullOrEmpty(attachUpload)){
+                File file=new File(project.getBasePath()+codeFileName);
+                if(file.exists()&&file.isFile()) {
+                    file.delete();
+                    file=new File(project.getBasePath()+responseFileName);
+                    file.delete();
+                    file=new File(project.getBasePath()+requestFileName);
+                    file.delete();
+                }
+                // 移除 文件
+            }
+
             // 清空路径
             if(Strings.isNullOrEmpty(yapiApiDTO.getTitle())) {
                 yapiApiDTO.setTitle(DesUtil.getDescription(psiMethodTarget));
@@ -274,6 +291,9 @@ public class BuildJsonForYapi{
             ArrayList list=new ArrayList<YapiQueryDTO>();
             List<YapiHeaderDTO> yapiHeaderDTOList=new ArrayList<>();
             for(PsiParameter psiParameter:psiParameters){
+                if(JavaConstant.HttpServletRequest.equals(psiParameter.getType().getCanonicalText()) || JavaConstant.HttpServletResponse.equals(psiParameter.getType().getCanonicalText())){
+                    continue;
+                }
                 PsiAnnotation psiAnnotation= PsiAnnotationSearchUtil.findAnnotation(psiParameter,SpringMVCConstant.RequestBody);
                 if(psiAnnotation!=null){
                     yapiApiDTO.setRequestBody(getResponse(project,psiParameter.getType()));
