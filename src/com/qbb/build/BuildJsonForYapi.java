@@ -199,7 +199,10 @@ public class BuildJsonForYapi{
                                 path.append(results[results.length - 1].split(";")[0].replace("\"", "").trim());
                                 yapiApiDTO.setTitle(DesUtil.getUrlReFerenceRDesc(psiReference.resolve().getText()));
                                 yapiApiDTO.setMenu(DesUtil.getMenu(psiReference.resolve().getText()));
-                                yapiApiDTO.setDesc("<pre><code>  " + psiReference.resolve().getText() + " </code></pre> <hr>");
+                                if(!Strings.isNullOrEmpty(psiReference.resolve().getText())) {
+                                    String refernceDesc=psiReference.resolve().getText().replace("<", "&lt;").replace(">", "&gt;");
+                                    yapiApiDTO.setDesc("<pre><code>  " + refernceDesc + " </code></pre> <hr>");
+                                }
                             }
                             yapiApiDTO.setPath(path.toString().trim());
                         }
@@ -209,7 +212,11 @@ public class BuildJsonForYapi{
                 }
             }
         }
-        yapiApiDTO.setDesc(Objects.nonNull(yapiApiDTO.getDesc())?yapiApiDTO.getDesc():" <pre><code>  "+psiMethodTarget.getText().replace(Objects.nonNull(psiMethodTarget.getBody())?psiMethodTarget.getBody().getText():"","")+" </code></pre>");
+        String classDesc=psiMethodTarget.getText().replace(Objects.nonNull(psiMethodTarget.getBody())?psiMethodTarget.getBody().getText():"","");
+        if(!Strings.isNullOrEmpty(classDesc)){
+            classDesc=classDesc.replace("<", "&lt;").replace(">", "&gt;");
+        }
+        yapiApiDTO.setDesc(Objects.nonNull(yapiApiDTO.getDesc())?yapiApiDTO.getDesc():" <pre><code>  "+classDesc+"</code> </pre>");
         try {
             // 先清空之前的文件路径
             filePaths.clear();
