@@ -349,10 +349,12 @@ public class BuildJsonForYapi{
                                 } else {
                                     if(yapiHeaderDTO!=null) {
                                         yapiHeaderDTO.setName(psiNameValuePair.getLiteralValue());
-                                        yapiHeaderDTO.setDesc(psiParameter.getType().getPresentableText());
+                                        // 通过方法注释获得 描述 加上 类型
+                                        yapiHeaderDTO.setDesc(DesUtil.getParamDesc(psiMethodTarget,psiParameter.getName())+"("+psiParameter.getType().getPresentableText()+")");
                                     }else{
                                         yapiQueryDTO.setName(psiNameValuePair.getLiteralValue());
-                                        yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
+                                        // 通过方法注释获得 描述 加上 类型
+                                        yapiQueryDTO.setDesc(DesUtil.getParamDesc(psiMethodTarget,psiParameter.getName())+"("+psiParameter.getType().getPresentableText()+")");
                                     }
                                     if(NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText())){
                                         if(yapiHeaderDTO!=null) {
@@ -369,10 +371,12 @@ public class BuildJsonForYapi{
                         }else{
                             if(yapiHeaderDTO!=null) {
                                 yapiHeaderDTO.setName(psiParameter.getName());
-                                yapiHeaderDTO.setDesc(psiParameter.getType().getPresentableText());
+                                // 通过方法注释获得 描述 加上 类型
+                                yapiHeaderDTO.setDesc(DesUtil.getParamDesc(psiMethodTarget,psiParameter.getName())+"("+psiParameter.getType().getPresentableText()+")");
                             }else{
                                 yapiQueryDTO.setName(psiParameter.getName());
-                                yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
+                                // 通过方法注释获得 描述 加上 类型
+                                yapiQueryDTO.setDesc(DesUtil.getParamDesc(psiMethodTarget,psiParameter.getName())+"("+psiParameter.getType().getPresentableText()+")");
                             }
                             if(NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText())){
                                 if(yapiHeaderDTO!=null){
@@ -386,7 +390,8 @@ public class BuildJsonForYapi{
                         }
                         if(yapiHeaderDTO!=null){
                             if(Strings.isNullOrEmpty(yapiHeaderDTO.getDesc())){
-                                yapiHeaderDTO.setDesc(psiParameter.getType().getPresentableText());
+                                // 通过方法注释获得 描述  加上 类型
+                                yapiHeaderDTO.setDesc(DesUtil.getParamDesc(psiMethodTarget,psiParameter.getName())+"("+psiParameter.getType().getPresentableText()+")");
                             }
                             if(Strings.isNullOrEmpty(yapiHeaderDTO.getExample()) && NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText())){
                                 yapiHeaderDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
@@ -394,7 +399,8 @@ public class BuildJsonForYapi{
                             yapiHeaderDTOList.add(yapiHeaderDTO);
                         }else {
                             if(Strings.isNullOrEmpty(yapiQueryDTO.getDesc())){
-                                yapiQueryDTO.setDesc(psiParameter.getType().getPresentableText());
+                                // 通过方法注释获得 描述 加上 类型
+                                yapiQueryDTO.setDesc(DesUtil.getParamDesc(psiMethodTarget,psiParameter.getName())+"("+psiParameter.getType().getPresentableText()+")");
                             }
                             if(Strings.isNullOrEmpty(yapiQueryDTO.getExample()) && NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText()) ){
                                 yapiQueryDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());

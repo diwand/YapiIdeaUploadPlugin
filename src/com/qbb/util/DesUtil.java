@@ -66,8 +66,24 @@ public class DesUtil {
         return null;
     }
 
-
-
+    /**
+     * @description: 通过paramName 获得描述
+     * @param: [psiMethodTarget, paramName]
+     * @return: java.lang.String
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/5/22
+     */ 
+    public static String getParamDesc(PsiMethod psiMethodTarget,String paramName){
+        if(psiMethodTarget.getDocComment()!=null) {
+            PsiDocTag[] psiDocTags = psiMethodTarget.getDocComment().getTags();
+            for (PsiDocTag psiDocTag : psiDocTags) {
+                if ((psiDocTag.getText().contains("@param") || psiDocTag.getText().contains("@Param")) && (!psiDocTag.getText().contains("[")) && psiDocTag.getText().contains(paramName)) {
+                    return trimFirstAndLastChar(psiDocTag.getText().replace("@param", "").replace("@Param", "").replace(paramName,"").replace(":", "").replace("*", "").replace("\n", " "), ' ');
+                }
+            }
+        }
+        return "";
+    }
 
     /**
      * @description: 获得属性注释
