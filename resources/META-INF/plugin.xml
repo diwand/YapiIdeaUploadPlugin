@@ -52,6 +52,7 @@
       1.6.5:<br>
       <em>
         - 支持XXXMapping 不写value
+        - 支持request param 备注从注释中获取
       </em>
     ]]>
   </change-notes>
