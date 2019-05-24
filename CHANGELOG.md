@@ -1,4 +1,5 @@
 #### 变更历史
+- 1.6.7: 支持多种泛型写法，支持@PathVariable
 - 1.6.6: 支持XXXMapping 不写value，支持request param 备注从注释中获取，解决 response <> 在备注中显示 问题
 - 1.6.5: fixbug request 为 List<Long> 等 bug,fix code.zip 概率性一样问题,fix HttpServletRequest&HttpServletResponse 存在下Req_body_type 类型问题
 - 1.6.4: 新增自定义类别
