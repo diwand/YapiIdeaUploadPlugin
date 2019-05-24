@@ -28,4 +28,6 @@ public interface SpringMVCConstant {
 
     String RequestAttribute="org.springframework.web.bind.annotation.RequestAttribute";
 
+    String PathVariable="org.springframework.web.bind.annotation.PathVariable";
+
 }

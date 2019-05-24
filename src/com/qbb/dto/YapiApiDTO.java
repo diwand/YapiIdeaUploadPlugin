@@ -59,6 +59,11 @@ public class YapiApiDTO implements Serializable{
      */
     private String menu;
 
+    /**
+     * 请求参数
+     */
+    private List req_params;
+
 
     public String getPath() {
         return path;
@@ -134,6 +139,15 @@ public class YapiApiDTO implements Serializable{
 
     public List<Map<String, String>> getReq_body_form() {
         return req_body_form;
+    }
+
+
+    public List getReq_params() {
+        return req_params;
+    }
+
+    public void setReq_params(List req_params) {
+        this.req_params = req_params;
     }
 
     public void setReq_body_form(List<Map<String, String>> req_body_form) {

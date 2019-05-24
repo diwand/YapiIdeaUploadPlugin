@@ -18,6 +18,7 @@ import com.qbb.constant.JavaConstant;
 import com.qbb.constant.SpringMVCConstant;
 import com.qbb.dto.YapiApiDTO;
 import com.qbb.dto.YapiHeaderDTO;
+import com.qbb.dto.YapiPathVariableDTO;
 import com.qbb.dto.YapiQueryDTO;
 import com.qbb.upload.UploadYapi;
 import com.qbb.util.DesUtil;
@@ -303,6 +304,7 @@ public class BuildJsonForYapi{
         if(psiParameters.length>0) {
             ArrayList list=new ArrayList<YapiQueryDTO>();
             List<YapiHeaderDTO> yapiHeaderDTOList=new ArrayList<>();
+            List<YapiPathVariableDTO> yapiPathVariableDTOList=new ArrayList<>();
             for(PsiParameter psiParameter:psiParameters){
                 if(JavaConstant.HttpServletRequest.equals(psiParameter.getType().getCanonicalText()) || JavaConstant.HttpServletResponse.equals(psiParameter.getType().getCanonicalText())){
                     continue;
@@ -313,11 +315,17 @@ public class BuildJsonForYapi{
                 }else{
                     psiAnnotation= PsiAnnotationSearchUtil.findAnnotation(psiParameter,SpringMVCConstant.RequestParam);
                     YapiHeaderDTO yapiHeaderDTO=null;
+                    YapiPathVariableDTO yapiPathVariableDTO=null;
                     if(psiAnnotation==null){
                         psiAnnotation=PsiAnnotationSearchUtil.findAnnotation(psiParameter,SpringMVCConstant.RequestAttribute);
                         if(psiAnnotation==null){
                             psiAnnotation= PsiAnnotationSearchUtil.findAnnotation(psiParameter,SpringMVCConstant.RequestHeader);
-                            yapiHeaderDTO=new YapiHeaderDTO();
+                            if(psiAnnotation==null){
+                                psiAnnotation= PsiAnnotationSearchUtil.findAnnotation(psiParameter,SpringMVCConstant.PathVariable);
+                                yapiPathVariableDTO=new YapiPathVariableDTO();
+                            }else {
+                                yapiHeaderDTO = new YapiHeaderDTO();
+                            }
                         }
                     }
                     if(psiAnnotation!=null) {
@@ -326,24 +334,20 @@ public class BuildJsonForYapi{
 
                         if(psiNameValuePairs.length>0) {
                             for (PsiNameValuePair psiNameValuePair : psiNameValuePairs) {
-                                if ("name".equals(psiNameValuePair.getName())) {
+                                if ("name".equals(psiNameValuePair.getName()) || "value".equals(psiNameValuePair.getName())) {
                                     if(yapiHeaderDTO!=null){
                                         yapiHeaderDTO.setName(psiNameValuePair.getValue().getText().replace("\"", ""));
-                                    }else {
+                                    }else if(yapiPathVariableDTO!=null){
+                                        yapiPathVariableDTO.setName(psiNameValuePair.getValue().getText().replace("\"", ""));
+                                    }else{
                                         yapiQueryDTO.setName(psiNameValuePair.getValue().getText().replace("\"", ""));
                                     }
-                                } else if ("value".equals(psiNameValuePair.getName())) {
-                                    if(yapiHeaderDTO!=null){
-                                        yapiHeaderDTO.setName(psiNameValuePair.getValue().getText().replace("\"", ""));
-                                    }else {
-                                        yapiQueryDTO.setName(psiNameValuePair.getValue().getText().replace("\"", ""));
-                                    }
-                                } else if ("required".equals(psiNameValuePair.getName())) {
+                                }  else if ("required".equals(psiNameValuePair.getName())) {
                                     yapiQueryDTO.setRequired(psiNameValuePair.getValue().getText().replace("\"", "").replace("false", "0").replace("true", "1"));
                                 } else if ("defaultValue".equals(psiNameValuePair.getName())) {
                                     if(yapiHeaderDTO!=null) {
                                         yapiHeaderDTO.setExample(psiNameValuePair.getValue().getText().replace("\"", ""));
-                                    }else{
+                                    } else{
                                         yapiQueryDTO.setExample(psiNameValuePair.getValue().getText().replace("\"", ""));
                                     }
                                 } else {
@@ -351,7 +355,11 @@ public class BuildJsonForYapi{
                                         yapiHeaderDTO.setName(psiNameValuePair.getLiteralValue());
                                         // 通过方法注释获得 描述 加上 类型
                                         yapiHeaderDTO.setDesc(DesUtil.getParamDesc(psiMethodTarget,psiParameter.getName())+"("+psiParameter.getType().getPresentableText()+")");
-                                    }else{
+                                    }if(yapiPathVariableDTO!=null){
+                                        yapiPathVariableDTO.setName(psiNameValuePair.getLiteralValue());
+                                        // 通过方法注释获得 描述 加上 类型
+                                        yapiPathVariableDTO.setDesc(DesUtil.getParamDesc(psiMethodTarget,psiParameter.getName())+"("+psiParameter.getType().getPresentableText()+")");
+                                    } else{
                                         yapiQueryDTO.setName(psiNameValuePair.getLiteralValue());
                                         // 通过方法注释获得 描述 加上 类型
                                         yapiQueryDTO.setDesc(DesUtil.getParamDesc(psiMethodTarget,psiParameter.getName())+"("+psiParameter.getType().getPresentableText()+")");
@@ -359,6 +367,8 @@ public class BuildJsonForYapi{
                                     if(NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText())){
                                         if(yapiHeaderDTO!=null) {
                                             yapiHeaderDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
+                                        }else if(yapiPathVariableDTO!=null){
+                                            yapiPathVariableDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
                                         }else{
                                             yapiQueryDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
                                         }
@@ -373,6 +383,10 @@ public class BuildJsonForYapi{
                                 yapiHeaderDTO.setName(psiParameter.getName());
                                 // 通过方法注释获得 描述 加上 类型
                                 yapiHeaderDTO.setDesc(DesUtil.getParamDesc(psiMethodTarget,psiParameter.getName())+"("+psiParameter.getType().getPresentableText()+")");
+                            }else if(yapiPathVariableDTO!=null){
+                                yapiPathVariableDTO.setName(psiParameter.getName());
+                                // 通过方法注释获得 描述 加上 类型
+                                yapiPathVariableDTO.setDesc(DesUtil.getParamDesc(psiMethodTarget,psiParameter.getName())+"("+psiParameter.getType().getPresentableText()+")");
                             }else{
                                 yapiQueryDTO.setName(psiParameter.getName());
                                 // 通过方法注释获得 描述 加上 类型
@@ -381,6 +395,8 @@ public class BuildJsonForYapi{
                             if(NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText())){
                                 if(yapiHeaderDTO!=null){
                                     yapiHeaderDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
+                                }else if(yapiPathVariableDTO!=null){
+                                    yapiPathVariableDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
                                 }else {
                                     yapiQueryDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
                                 }
@@ -397,6 +413,15 @@ public class BuildJsonForYapi{
                                 yapiHeaderDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
                             }
                             yapiHeaderDTOList.add(yapiHeaderDTO);
+                        }else if(yapiPathVariableDTO!=null){
+                            if(Strings.isNullOrEmpty(yapiPathVariableDTO.getDesc())){
+                                // 通过方法注释获得 描述  加上 类型
+                                yapiPathVariableDTO.setDesc(DesUtil.getParamDesc(psiMethodTarget,psiParameter.getName())+"("+psiParameter.getType().getPresentableText()+")");
+                            }
+                            if(Strings.isNullOrEmpty(yapiPathVariableDTO.getExample()) && NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText())){
+                                yapiPathVariableDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
+                            }
+                            yapiPathVariableDTOList.add(yapiPathVariableDTO);
                         }else {
                             if(Strings.isNullOrEmpty(yapiQueryDTO.getDesc())){
                                 // 通过方法注释获得 描述 加上 类型
@@ -410,12 +435,13 @@ public class BuildJsonForYapi{
                     }else{
                         // 支持实体对象接收
                         yapiApiDTO.setReq_body_type("form");
-                        yapiApiDTO.setReq_body_form(getRequestForm(project,psiParameter.getType()));
+                        yapiApiDTO.setReq_body_form(getRequestForm(project,psiParameter,psiMethodTarget));
                     }
                 }
             }
             yapiApiDTO.setParams(list);
             yapiApiDTO.setHeader(yapiHeaderDTOList);
+            yapiApiDTO.setReq_params(yapiPathVariableDTOList);
         }
     }
     /**
@@ -425,28 +451,37 @@ public class BuildJsonForYapi{
      * @author: chengsheng@qbb6.com
      * @date: 2019/5/17
      */
-    public static List<Map<String,String>> getRequestForm(Project project,PsiType psiType){
-        PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(psiType.getCanonicalText(), GlobalSearchScope.allScope(project));
-        List<Map<String,String>> requestForm=new ArrayList<>();
-        for (PsiField field : psiClass.getAllFields()) {
-            if(field.getModifierList().hasModifierProperty("final")){
-                continue;
-            }
-            Map<String,String> map=new HashMap<>();
-            map.put("name",field.getName());
-            map.put("type","text");
-            String remark= DesUtil.getFiledDesc(field.getDocComment());
-            remark=DesUtil.getLinkRemark(remark,project,field);
-            map.put("desc",remark);
-            if(Objects.nonNull(field.getType().getPresentableText())){
-                Object obj=NormalTypes.normalTypes.get(field.getType().getPresentableText());
-                if(Objects.nonNull(obj)){
-                    map.put("example",NormalTypes.normalTypes.get(field.getType().getPresentableText()).toString());
-                }
-            }
+    public static List<Map<String,String>> getRequestForm(Project project,PsiParameter psiParameter,PsiMethod psiMethodTarget){
+        List<Map<String, String>> requestForm = new ArrayList<>();
+        if(NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText())){
+            Map<String, String> map = new HashMap<>();
+            map.put("name", psiParameter.getName());
+            map.put("type", "text");
+            String remark= DesUtil.getParamDesc(psiMethodTarget,psiParameter.getName())+"("+psiParameter.getType().getPresentableText()+")";
+            map.put("desc", remark);
+            map.put("example", NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
             requestForm.add(map);
+        }else {
+            PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(psiParameter.getType().getCanonicalText(), GlobalSearchScope.allScope(project));
+            for (PsiField field : psiClass.getAllFields()) {
+                if (field.getModifierList().hasModifierProperty("final")) {
+                    continue;
+                }
+                Map<String, String> map = new HashMap<>();
+                map.put("name", field.getName());
+                map.put("type", "text");
+                String remark = DesUtil.getFiledDesc(field.getDocComment());
+                remark = DesUtil.getLinkRemark(remark, project, field);
+                map.put("desc", remark);
+                if (Objects.nonNull(field.getType().getPresentableText())) {
+                    Object obj = NormalTypes.normalTypes.get(field.getType().getPresentableText());
+                    if (Objects.nonNull(obj)) {
+                        map.put("example", NormalTypes.normalTypes.get(field.getType().getPresentableText()).toString());
+                    }
+                }
+                requestForm.add(map);
+            }
         }
-
         return requestForm;
     }
 
@@ -605,7 +640,7 @@ public class BuildJsonForYapi{
                     getField(field,project,kv,childType,index,psiClass.getName());
                 }
             }else{
-                if("T".equals(psiClass.getName())&&childType!=null && childType.length>index){
+                if(NormalTypes.genericList.contains(psiClass.getName())&&childType!=null && childType.length>index){
                     String child = childType[index].split(">")[0];
                     PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(child, GlobalSearchScope.allScope(project));
                     return getFields(psiClassChild,project,childType,index+1,requiredList);
@@ -667,7 +702,7 @@ public class BuildJsonForYapi{
                     jsonObject.addProperty("description", remark);
                 }
                 kv.set(name, jsonObject);
-            }else if(fieldTypeName.equals("T")) {
+            }else if(NormalTypes.genericList.contains(fieldTypeName)) {
                 if(childType!=null) {
                     String child = childType[index].split(">")[0];
                     if (child.contains("List") || child.contains("Set") || child.contains("HashSet")) {

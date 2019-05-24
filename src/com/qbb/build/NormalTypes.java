@@ -4,9 +4,7 @@ import org.jetbrains.annotations.NonNls;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 基本类
@@ -24,6 +22,10 @@ public class NormalTypes {
     public static final Map<String,Object> collectTypes=new HashMap<>();
 
     public static final Map<String,Object> collectTypesPackages=new HashMap<>();
+    /**
+     * 泛型列表
+     */
+    public static final List<String> genericList=new ArrayList<>();
 
 
     static {
@@ -49,6 +51,12 @@ public class NormalTypes {
         collectTypes.put("HashMap","HashMap");
         collectTypes.put("Map","Map");
         collectTypes.put("LinkedHashMap","LinkedHashMap");
+        genericList.add("T");
+        genericList.add("E");
+        genericList.add("A");
+        genericList.add("B");
+        genericList.add("K");
+        genericList.add("V");
     }
 
     static {
