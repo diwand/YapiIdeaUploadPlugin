@@ -119,7 +119,15 @@ public class BuildJsonForYapi{
         if(psiAnnotation!=null){
             PsiNameValuePair[] psiNameValuePairs= psiAnnotation.getParameterList().getAttributes();
             if(psiNameValuePairs.length>0){
-                path.append(psiNameValuePairs[0].getLiteralValue());
+                if(psiNameValuePairs[0].getLiteralValue()!=null) {
+                    path.append(psiNameValuePairs[0].getLiteralValue());
+                }else{
+                    PsiAnnotationMemberValue psiAnnotationMemberValue=psiAnnotation.findAttributeValue("value");
+                    if(psiAnnotationMemberValue!=null){
+                        String[] results=psiAnnotationMemberValue.getReference().resolve().getText().split("=");
+                        path.append(results[results.length-1].split(";")[0].replace("\"","").trim());
+                    }
+                }
             }
         }
 
