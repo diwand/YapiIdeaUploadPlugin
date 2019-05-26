@@ -443,7 +443,11 @@ public class BuildJsonForYapi{
                     }else{
                         // 支持实体对象接收
                         yapiApiDTO.setReq_body_type("form");
-                        yapiApiDTO.setReq_body_form(getRequestForm(project,psiParameter,psiMethodTarget));
+                        if(yapiApiDTO.getReq_body_form()!=null) {
+                            yapiApiDTO.getReq_body_form().addAll(getRequestForm(project, psiParameter, psiMethodTarget));
+                        }else{
+                            yapiApiDTO.setReq_body_form(getRequestForm(project, psiParameter, psiMethodTarget));
+                        }
                     }
                 }
             }
