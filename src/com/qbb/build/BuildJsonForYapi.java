@@ -718,6 +718,7 @@ public class BuildJsonForYapi{
                 if(childType!=null) {
                     String child = childType[index].split(">")[0];
                     if (child.contains("List") || child.contains("Set") || child.contains("HashSet")) {
+                        index=index+1;
                         PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childType[index].split(">")[0], GlobalSearchScope.allScope(project));
                         getCollect(kv, psiClassChild.getName(), remark, psiClassChild, project, name,pName,childType,index+1);
                     } else {
