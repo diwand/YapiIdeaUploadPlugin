@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>YapiUpload</id>
   <name>YapiUpload</name>
-  <version>1.6.7</version>
+  <version>1.6.8</version>
   <vendor email="chengsheng@qbb6.com" url="http://www.qbb6.com">QBB</vendor>
 
   <description><![CDATA[
@@ -60,6 +60,12 @@
         - 补充支持A,B,E,K,V 泛型写法
         - 支持PathVariable
       <em>
+      1.6.8:<br>
+      <em>
+        - 支持类级别路径引用
+        - 支持多个实体接收
+        - 支持 Response<List<User>> 泛型
+      </em>
     ]]>
   </change-notes>
 
