@@ -420,6 +420,9 @@ public class BuildJsonForYapi{
                             if(Strings.isNullOrEmpty(yapiHeaderDTO.getExample()) && NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText())){
                                 yapiHeaderDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
                             }
+                            if(Strings.isNullOrEmpty(yapiHeaderDTO.getName())){
+                                yapiHeaderDTO.setName(psiParameter.getName());
+                            }
                             yapiHeaderDTOList.add(yapiHeaderDTO);
                         }else if(yapiPathVariableDTO!=null){
                             if(Strings.isNullOrEmpty(yapiPathVariableDTO.getDesc())){
@@ -429,6 +432,9 @@ public class BuildJsonForYapi{
                             if(Strings.isNullOrEmpty(yapiPathVariableDTO.getExample()) && NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText())){
                                 yapiPathVariableDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
                             }
+                            if(Strings.isNullOrEmpty(yapiPathVariableDTO.getName())){
+                                yapiPathVariableDTO.setName(psiParameter.getName());
+                            }
                             yapiPathVariableDTOList.add(yapiPathVariableDTO);
                         }else {
                             if(Strings.isNullOrEmpty(yapiQueryDTO.getDesc())){
@@ -437,6 +443,9 @@ public class BuildJsonForYapi{
                             }
                             if(Strings.isNullOrEmpty(yapiQueryDTO.getExample()) && NormalTypes.normalTypes.containsKey(psiParameter.getType().getPresentableText()) ){
                                 yapiQueryDTO.setExample(NormalTypes.normalTypes.get(psiParameter.getType().getPresentableText()).toString());
+                            }
+                            if(Strings.isNullOrEmpty(yapiQueryDTO.getName())){
+                                yapiQueryDTO.setName(psiParameter.getName());
                             }
                             list.add(yapiQueryDTO);
                         }
