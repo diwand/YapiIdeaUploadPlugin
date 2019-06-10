@@ -1,4 +1,5 @@
 #### 变更历史
+- 1.6.9: 
 - 1.6.8: 支持类级别路径引用，支持多个实体接收，支持Response<List<User>> 写法
 - 1.6.7: 支持多种泛型写法，支持@PathVariable
 - 1.6.6: 支持XXXMapping 不写value，支持request param 备注从注释中获取，解决 response <> 在备注中显示 问题

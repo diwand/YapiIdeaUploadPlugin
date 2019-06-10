@@ -54,12 +54,12 @@
         - 支持XXXMapping 不写value
         - 解决 response <> 在备注中显示 问题
         - 支持request param 备注从注释中获取
-      </em>
+      </em> <br>
       1.6.7:<br>
       <em>
         - 补充支持A,B,E,K,V 泛型写法
         - 支持PathVariable
-      <em>
+      <em> <br>
       1.6.8:<br>
       <em>
         - 支持类级别路径引用

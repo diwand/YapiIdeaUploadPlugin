@@ -14,6 +14,7 @@ import com.intellij.psi.impl.source.PsiJavaFileImpl;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtil;
+import com.qbb.constant.HttpMethodConstant;
 import com.qbb.constant.JavaConstant;
 import com.qbb.constant.SpringMVCConstant;
 import com.qbb.dto.YapiApiDTO;
@@ -149,21 +150,21 @@ public class BuildJsonForYapi{
                             yapiApiDTO.setDesc("<pre><code>  "+psiReference.resolve().getText()+" </code></pre> <hr>");
                         }
                         yapiApiDTO.setPath(path.toString());
-                    }else if("method".equals(psiNameValuePair.getName()) && psiNameValuePair.getValue().toString().toUpperCase().contains("GET")){
+                    }else if("method".equals(psiNameValuePair.getName()) && psiNameValuePair.getValue().toString().toUpperCase().contains(HttpMethodConstant.GET)){
                         // 判断是否为Get 请求
-                        yapiApiDTO.setMethod("GET");
-                    }else if("method".equals(psiNameValuePair.getName()) && psiNameValuePair.getValue().toString().toUpperCase().contains("POST")){
+                        yapiApiDTO.setMethod(HttpMethodConstant.GET);
+                    }else if("method".equals(psiNameValuePair.getName()) && psiNameValuePair.getValue().toString().toUpperCase().contains(HttpMethodConstant.POST)){
                         // 判断是否为Post 请求
-                        yapiApiDTO.setMethod("POST");
-                    }else if("method".equals(psiNameValuePair.getName()) && psiNameValuePair.getValue().toString().toUpperCase().contains("PUT")){
-                        // 判断是否为Post 请求
-                        yapiApiDTO.setMethod("PUT");
-                    }else if("method".equals(psiNameValuePair.getName()) && psiNameValuePair.getValue().toString().toUpperCase().contains("DELETE")){
-                        // 判断是否为Post 请求
-                        yapiApiDTO.setMethod("DELETE");
-                    }else if("method".equals(psiNameValuePair.getName()) && psiNameValuePair.getValue().toString().toUpperCase().contains("PATCH")){
-                        // 判断是否为Post 请求
-                        yapiApiDTO.setMethod("PATCH");
+                        yapiApiDTO.setMethod(HttpMethodConstant.POST);
+                    }else if("method".equals(psiNameValuePair.getName()) && psiNameValuePair.getValue().toString().toUpperCase().contains(HttpMethodConstant.PUT)){
+                        // 判断是否为 PUT 请求
+                        yapiApiDTO.setMethod(HttpMethodConstant.PUT);
+                    }else if("method".equals(psiNameValuePair.getName()) && psiNameValuePair.getValue().toString().toUpperCase().contains(HttpMethodConstant.DELETE)){
+                        // 判断是否为 DELETE 请求
+                        yapiApiDTO.setMethod(HttpMethodConstant.DELETE);
+                    }else if("method".equals(psiNameValuePair.getName()) && psiNameValuePair.getValue().toString().toUpperCase().contains(HttpMethodConstant.PATCH)){
+                        // 判断是否为 PATCH 请求
+                        yapiApiDTO.setMethod(HttpMethodConstant.PATCH);
                     }
                 }
             }else{
@@ -172,23 +173,23 @@ public class BuildJsonForYapi{
         }else{
             PsiAnnotation psiAnnotationMethodSemple= PsiAnnotationSearchUtil.findAnnotation(psiMethodTarget,SpringMVCConstant.GetMapping);
             if(psiAnnotationMethodSemple!=null){
-                yapiApiDTO.setMethod("GET");
+                yapiApiDTO.setMethod(HttpMethodConstant.GET);
             }else{
                 psiAnnotationMethodSemple= PsiAnnotationSearchUtil.findAnnotation(psiMethodTarget,SpringMVCConstant.PostMapping);
                 if(psiAnnotationMethodSemple!=null){
-                    yapiApiDTO.setMethod("POST");
+                    yapiApiDTO.setMethod(HttpMethodConstant.POST);
                 }else{
                     psiAnnotationMethodSemple= PsiAnnotationSearchUtil.findAnnotation(psiMethodTarget,SpringMVCConstant.PutMapping);
                     if(psiAnnotationMethodSemple!=null){
-                        yapiApiDTO.setMethod("PUT");
+                        yapiApiDTO.setMethod(HttpMethodConstant.PUT);
                     }else{
                         psiAnnotationMethodSemple= PsiAnnotationSearchUtil.findAnnotation(psiMethodTarget,SpringMVCConstant.DeleteMapping);
                         if(psiAnnotationMethodSemple!=null){
-                            yapiApiDTO.setMethod("DELETE");
+                            yapiApiDTO.setMethod(HttpMethodConstant.DELETE);
                         }else{
                             psiAnnotationMethodSemple= PsiAnnotationSearchUtil.findAnnotation(psiMethodTarget,SpringMVCConstant.PatchMapping);
                             if(psiAnnotationMethodSemple!=null){
-                                yapiApiDTO.setMethod("PATCH");
+                                yapiApiDTO.setMethod(HttpMethodConstant.PATCH);
                             }
                         }
                     }
