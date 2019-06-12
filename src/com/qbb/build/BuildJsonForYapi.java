@@ -288,7 +288,10 @@ public class BuildJsonForYapi{
             if(Strings.isNullOrEmpty(yapiApiDTO.getTitle())) {
                 yapiApiDTO.setTitle(DesUtil.getDescription(psiMethodTarget));
                 if(Objects.nonNull(psiMethodTarget.getDocComment())) {
-                    yapiApiDTO.setMenu(DesUtil.getMenu(psiMethodTarget.getDocComment().getText()));
+                    String menu=DesUtil.getMenu(psiMethodTarget.getDocComment().getText());
+                    if(!Strings.isNullOrEmpty(menu)) {
+                        yapiApiDTO.setMenu(menu);
+                    }
                 }
             }
             return yapiApiDTO;
