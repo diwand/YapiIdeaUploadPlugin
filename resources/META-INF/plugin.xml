@@ -66,6 +66,11 @@
         - 支持多个实体接收
         - 支持 Response<List<User>> 泛型
       </em>
+      1.6.9:<br>
+      <em>
+        - fix deleteMapping and patchMapping
+        - fix menu bug
+      </em>
     ]]>
   </change-notes>
 
