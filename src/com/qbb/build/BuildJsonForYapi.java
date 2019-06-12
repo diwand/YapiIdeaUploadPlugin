@@ -788,8 +788,10 @@ public class BuildJsonForYapi{
                 //list type
                 PsiType iterableType = PsiUtil.extractIterableTypeParameter(type, false);
                 PsiClass iterableClass = PsiUtil.resolveClassInClassTypeOnly(iterableType);
-                String classTypeName = iterableClass.getName();
-                getCollect(kv,classTypeName,remark,iterableClass,project,name,pName,childType,index);
+                if(Objects.nonNull(iterableClass)) {
+                    String classTypeName = iterableClass.getName();
+                    getCollect(kv, classTypeName, remark, iterableClass, project, name, pName, childType, index);
+                }
             } else if(fieldTypeName.startsWith("HashMap") || fieldTypeName.startsWith("Map") || fieldTypeName.startsWith("LinkedHashMap")){
                 //HashMap or Map
                 CompletableFuture.runAsync(()->{
