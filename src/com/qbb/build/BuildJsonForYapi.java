@@ -454,13 +454,21 @@ public class BuildJsonForYapi{
                             list.add(yapiQueryDTO);
                         }
                     }else{
-                        // 支持实体对象接收
-                        yapiApiDTO.setReq_body_type("form");
-                        if(yapiApiDTO.getReq_body_form()!=null) {
-                            yapiApiDTO.getReq_body_form().addAll(getRequestForm(project, psiParameter, psiMethodTarget));
-                        }else{
-                            yapiApiDTO.setReq_body_form(getRequestForm(project, psiParameter, psiMethodTarget));
+                        if(HttpMethodConstant.GET.equals(yapiApiDTO.getMethod())){
+                               List<Map<String,String>> requestList= getRequestForm(project, psiParameter, psiMethodTarget);
+                            for(Map<String,String> map:requestList){
+                                list.add(new YapiQueryDTO(map.get("desc"),map.get("example"),map.get("name")));
+                            }
+                        }else if(HttpMethodConstant.POST.equals(yapiApiDTO.getMethod())){
+                            // 支持实体对象接收
+                            yapiApiDTO.setReq_body_type("form");
+                            if(yapiApiDTO.getReq_body_form()!=null) {
+                                yapiApiDTO.getReq_body_form().addAll(getRequestForm(project, psiParameter, psiMethodTarget));
+                            }else{
+                                yapiApiDTO.setReq_body_form(getRequestForm(project, psiParameter, psiMethodTarget));
+                            }
                         }
+
                     }
                 }
             }

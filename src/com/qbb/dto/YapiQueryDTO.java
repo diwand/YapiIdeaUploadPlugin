@@ -72,4 +72,10 @@ public class YapiQueryDTO implements Serializable{
 
     public YapiQueryDTO() {
     }
+
+    public YapiQueryDTO( String desc, String example, String name) {
+        this.desc = desc;
+        this.example = example;
+        this.name = name;
+    }
 }
