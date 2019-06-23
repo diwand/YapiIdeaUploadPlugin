@@ -43,4 +43,14 @@ public class YapiPathVariableDTO {
     public void setExample(String example) {
         this.example = example;
     }
+
+
+    public YapiPathVariableDTO() {
+    }
+
+    public YapiPathVariableDTO(String name, String desc, String example) {
+        this.name = name;
+        this.desc = desc;
+        this.example = example;
+    }
 }

@@ -16,9 +16,9 @@ public interface SpringMVCConstant {
 
     String PutMapping="org.springframework.web.bind.annotation.PutMapping";
 
-    String DeleteMapping="org.springframework.web.bind.annotation.PutMapping.DeleteMapping";
+    String DeleteMapping="org.springframework.web.bind.annotation.DeleteMapping";
 
-    String PatchMapping="org.springframework.web.bind.annotation.PutMapping.PatchMapping";
+    String PatchMapping="org.springframework.web.bind.annotation.PatchMapping";
 
     String RequestBody="org.springframework.web.bind.annotation.RequestBody";
 
