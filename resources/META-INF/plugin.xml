@@ -70,6 +70,7 @@
       <em>
         - fix deleteMapping and patchMapping
         - fix menu bug
+        - 支持get 实体类接收
       </em>
     ]]>
   </change-notes>
