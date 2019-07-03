@@ -20,6 +20,9 @@ import com.qbb.dto.YapiResponse;
 import com.qbb.dto.YapiSaveParam;
 import com.qbb.upload.UploadYapi;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.util.ArrayList;
 
 /**
@@ -104,6 +107,7 @@ public class UploadToYapi extends AnAction {
                             Notifications.Bus.notify(error, project);
                         } else {
                             String url = yapiUrl + "/project/" + projectId + "/interface/api/cat_" + UploadYapi.catMap.get(projectId);
+                            this.setClipboard(url);
                             Notification error = notificationGroup.createNotification("success ,url: " + url, NotificationType.INFORMATION);
                             Notifications.Bus.notify(error, project);
                         }
@@ -135,6 +139,7 @@ public class UploadToYapi extends AnAction {
                             Notifications.Bus.notify(error, project);
                         } else {
                             String url = yapiUrl + "/project/" + projectId + "/interface/api/cat_" + UploadYapi.catMap.get(projectId).get(yapiSaveParam.getMenu());
+                            this.setClipboard(url);
                             Notification error = notificationGroup.createNotification("success ,url:  " + url, NotificationType.INFORMATION);
                             Notifications.Bus.notify(error, project);
                         }
@@ -145,5 +150,20 @@ public class UploadToYapi extends AnAction {
                 }
             }
         }
+    }
+    /**
+     * @description: 设置到剪切板
+     * @param: [content]
+     * @return: void
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/7/3
+     */ 
+    private void setClipboard(String content){
+        //获取系统剪切板
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        //构建String数据类型
+        StringSelection selection = new StringSelection(content);
+        //添加文本到系统剪切板
+        clipboard.setContents(selection, null);
     }
 }

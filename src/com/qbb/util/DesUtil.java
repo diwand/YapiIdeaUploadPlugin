@@ -9,8 +9,9 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.javadoc.PsiDocTag;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.qbb.build.BuildJsonForYapi;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -131,7 +132,7 @@ public class DesUtil {
         }
         String[] menuList = text.split("\\*/")[0].split("@menu");
         if (menuList.length > 1) {
-            return DesUtil.trimFirstAndLastChar(menuList[1].split("\\*")[0].replace("*", "").replace("/", "").replace("\n", " "), ' ');
+            return DesUtil.trimFirstAndLastChar(menuList[1].split("\\*")[0].replace("*", "").replace(":","").replace("/", "").replace("\n", " "), ' ').trim();
         } else {
             return null;
         }
@@ -195,5 +196,43 @@ public class DesUtil {
             }
         }
         return remark;
+    }
+
+
+    /**
+     * @description: 获得从start 开始 end 结束中间的内容
+     * @param: [content, start, end]
+     * @return: java.util.List<java.lang.String>
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/7/2
+     */ 
+    public static List<PsiClass> getFieldLinks(Project project,PsiField field){
+        if(Objects.isNull(field.getDocComment())){
+            return new ArrayList<>();
+        }
+       List<PsiClass> result=new ArrayList<>();
+       String[] linkstr=field.getDocComment().getText().split("@link");
+       for(int i=1;i<linkstr.length;i++){
+           String linkAddress=linkstr[i].split("}")[0].trim();
+           PsiClass psiClassLink= JavaPsiFacade.getInstance(project).findClass(linkAddress, GlobalSearchScope.allScope(project));
+           if(Objects.isNull(psiClassLink)) {
+               //可能没有获得全路径，尝试获得全路径
+               String[] importPaths=field.getParent().getContext().getText().split("import");
+               if(importPaths.length>1){
+                   for(String importPath:importPaths){
+                       if(importPath.contains(linkAddress.split("\\.")[0])){
+                           linkAddress=importPath.split(linkAddress.split("\\.")[0])[0]+linkAddress;
+                           psiClassLink= JavaPsiFacade.getInstance(project).findClass(linkAddress, GlobalSearchScope.allScope(project));
+                           result.add(psiClassLink);
+                           break;
+                       }
+                   }
+               }
+               //如果小于等于一为不存在import，不做处理
+           }else{
+               result.add(psiClassLink);
+           }
+       }
+       return result;
     }
 }

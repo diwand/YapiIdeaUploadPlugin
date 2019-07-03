@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>YapiUpload</id>
   <name>YapiUpload</name>
-  <version>1.6.9</version>
+  <version>1.7.0</version>
   <vendor email="chengsheng@qbb6.com" url="http://www.qbb6.com">QBB</vendor>
 
   <description><![CDATA[
@@ -71,6 +71,12 @@
         - fix deleteMapping and patchMapping
         - fix menu bug
         - 支持get 实体类接收
+      </em>
+      1.7.0:<br>
+      <em>
+        - @menu 中:问题
+        - 支持多link
+        - 上传结果放入剪切板
       </em>
     ]]>
   </change-notes>
