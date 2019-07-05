@@ -222,8 +222,10 @@ public class DesUtil {
                    for(String importPath:importPaths){
                        if(importPath.contains(linkAddress.split("\\.")[0])){
                            linkAddress=importPath.split(linkAddress.split("\\.")[0])[0]+linkAddress;
-                           psiClassLink= JavaPsiFacade.getInstance(project).findClass(linkAddress, GlobalSearchScope.allScope(project));
-                           result.add(psiClassLink);
+                           psiClassLink= JavaPsiFacade.getInstance(project).findClass(linkAddress.trim(), GlobalSearchScope.allScope(project));
+                           if(Objects.nonNull(psiClassLink)) {
+                               result.add(psiClassLink);
+                           }
                            break;
                        }
                    }
