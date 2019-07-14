@@ -19,10 +19,7 @@ import com.qbb.dto.YapiDubboDTO;
 import com.qbb.util.DesUtil;
 import org.codehaus.jettison.json.JSONException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -57,13 +54,24 @@ public class BuildJsonForDubbo{
         }
         PsiElement referenceAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
         PsiClass selectedClass = (PsiClass) PsiTreeUtil.getContextOfType(referenceAt, new Class[]{PsiClass.class});
+        String classMenu=null;
+        if(Objects.nonNull(selectedClass.getDocComment())){
+            classMenu=DesUtil.getMenu(selectedClass.getText());
+        }
         ArrayList<YapiDubboDTO> yapiDubboDTOS=new ArrayList<>();
         if(selectedText.equals(selectedClass.getName())){
             PsiMethod[] psiMethods=selectedClass.getMethods();
             for(PsiMethod psiMethodTarget:psiMethods) {
                 //去除私有方法
                 if(!psiMethodTarget.getModifierList().hasModifierProperty("private")) {
-                    yapiDubboDTOS.add(actionPerformed(selectedClass, psiMethodTarget, project, psiFile));
+                    YapiDubboDTO yapiDubboDTO=actionPerformed(selectedClass, psiMethodTarget, project, psiFile);
+                    if(Objects.nonNull(psiMethodTarget.getDocComment())) {
+                        yapiDubboDTO.setMenu(DesUtil.getMenu(psiMethodTarget.getDocComment().getText()));
+                    }
+                    if(Objects.isNull(yapiDubboDTO.getMenu())){
+                        yapiDubboDTO.setMenu(classMenu);
+                    }
+                    yapiDubboDTOS.add(yapiDubboDTO);
                 }
             }
         }else{
@@ -76,7 +84,14 @@ public class BuildJsonForDubbo{
                     break;
                 }
             }
-            yapiDubboDTOS.add(actionPerformed(selectedClass,psiMethodTarget,project,psiFile));
+            YapiDubboDTO yapiDubboDTO=actionPerformed(selectedClass,psiMethodTarget,project,psiFile);
+            if(Objects.nonNull(psiMethodTarget.getDocComment())) {
+                yapiDubboDTO.setMenu(DesUtil.getMenu(psiMethodTarget.getDocComment().getText()));
+            }
+            if(Objects.isNull(yapiDubboDTO.getMenu())){
+                yapiDubboDTO.setMenu(classMenu);
+            }
+            yapiDubboDTOS.add(yapiDubboDTO);
         }
         return yapiDubboDTOS;
 

@@ -29,6 +29,10 @@ public class YapiDubboDTO implements Serializable {
      * 描述
      */
     private String desc;
+    /**
+     * 菜单
+     */
+    private String menu;
 
 
     public String getPath() {
@@ -70,6 +74,14 @@ public class YapiDubboDTO implements Serializable {
 
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    public String getMenu() {
+        return menu;
+    }
+
+    public void setMenu(String menu) {
+        this.menu = menu;
     }
 
     public YapiDubboDTO() {

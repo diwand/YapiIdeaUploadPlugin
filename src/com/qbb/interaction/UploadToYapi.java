@@ -99,6 +99,11 @@ public class UploadToYapi extends AnAction {
             if(yapiDubboDTOs!=null) {
                 for (YapiDubboDTO yapiDubboDTO : yapiDubboDTOs) {
                     YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiDubboDTO.getTitle(), yapiDubboDTO.getPath(), yapiDubboDTO.getParams(), yapiDubboDTO.getResponse(), Integer.valueOf(projectId), yapiUrl, yapiDubboDTO.getDesc());
+                    if(!Strings.isNullOrEmpty(yapiDubboDTO.getMenu())) {
+                        yapiSaveParam.setMenu(yapiDubboDTO.getMenu());
+                    }else{
+                        yapiSaveParam.setMenu(YapiConstant.menu);
+                    }
                     try {
                         // 上传
                         YapiResponse yapiResponse = new UploadYapi().uploadSave(yapiSaveParam, null, project.getBasePath());
@@ -106,7 +111,7 @@ public class UploadToYapi extends AnAction {
                             Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + yapiResponse.getErrmsg(), NotificationType.ERROR);
                             Notifications.Bus.notify(error, project);
                         } else {
-                            String url = yapiUrl + "/project/" + projectId + "/interface/api/cat_" + UploadYapi.catMap.get(projectId);
+                            String url = yapiUrl + "/project/" + projectId + "/interface/api/cat_" + UploadYapi.catMap.get(projectId).get(yapiSaveParam.getMenu());
                             this.setClipboard(url);
                             Notification error = notificationGroup.createNotification("success ,url: " + url, NotificationType.INFORMATION);
                             Notifications.Bus.notify(error, project);
