@@ -75,8 +75,9 @@
       1.7.0:<br>
       <em>
         - @menu 中:问题,支持dubbo
-        - 支持多link
+        - 支持多link 下载
         - 上传结果放入剪切板
+        - link 同包问题
       </em>
     ]]>
   </change-notes>
