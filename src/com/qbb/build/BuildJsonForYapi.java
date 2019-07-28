@@ -226,7 +226,7 @@ public class BuildJsonForYapi{
         if(!Strings.isNullOrEmpty(classDesc)){
             classDesc=classDesc.replace("<", "&lt;").replace(">", "&gt;");
         }
-        yapiApiDTO.setDesc(Objects.nonNull(yapiApiDTO.getDesc())?yapiApiDTO.getDesc():" <pre><code>  "+classDesc+"</code> </pre>");
+        yapiApiDTO.setDesc(Objects.nonNull(yapiApiDTO.getDesc())?yapiApiDTO.getDesc():" <pre><code>  "+classDesc+"</code></pre>");
         try {
             // 先清空之前的文件路径
             filePaths.clear();

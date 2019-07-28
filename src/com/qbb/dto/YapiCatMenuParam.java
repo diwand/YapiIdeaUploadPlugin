@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.qbb.constant.YapiConstant;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * 新增菜单
@@ -28,7 +29,10 @@ public class YapiCatMenuParam implements Serializable {
      * token
      */
     private String token;
-
+    /**
+     * 父级菜单id
+     */
+    private Integer parent_id=-1;
 
     public String getDesc() {
         return desc;
@@ -62,6 +66,14 @@ public class YapiCatMenuParam implements Serializable {
         this.token = token;
     }
 
+    public Integer getParent_id() {
+        return parent_id;
+    }
+
+    public void setParent_id(Integer parent_id) {
+        this.parent_id = parent_id;
+    }
+
     public YapiCatMenuParam() {
     }
 
@@ -84,6 +96,16 @@ public class YapiCatMenuParam implements Serializable {
         this.token = token;
         if(Strings.isNullOrEmpty(name)){
             this.name= YapiConstant.menu;
+        }
+    }
+
+    public YapiCatMenuParam(String name, Integer project_id, String token, Integer parent_id) {
+        this.name = name;
+        this.project_id = project_id;
+        this.token = token;
+        this.parent_id = parent_id;
+        if(Objects.isNull(parent_id)){
+            this.parent_id=-1;
         }
     }
 }

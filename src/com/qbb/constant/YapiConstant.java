@@ -11,11 +11,6 @@ public interface YapiConstant {
      * 目录
      */
     String menu="tool-temp";
-
-    /**
-     * yapi 地址
-     */
-    String yapiAddress="http://47.96.254.39:3000";
     /**
      * 新增或者更新接口
      */
@@ -49,4 +44,9 @@ public interface YapiConstant {
      * 获取菜单列表
      */
     String yapiCatMenu="/api/interface/getCatMenu";
+
+    /**
+     * 通过路径获得接口
+     */
+    String yapiGetByPath="/api/interface/getbypath";
 }

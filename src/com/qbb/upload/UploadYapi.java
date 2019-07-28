@@ -58,9 +58,9 @@ public class UploadYapi {
         }else{
             yapiSaveParam.getReq_headers().add(yapiHeaderDTO);
         }
+        this.changeDesByPath(yapiSaveParam);
         YapiResponse yapiResponse= this.getCatIdOrCreate(yapiSaveParam);
-        if(yapiResponse.getErrcode()==0 && yapiResponse.getData()!=null){
-            yapiSaveParam.setCatid(String.valueOf(yapiResponse.getData()));
+        if(yapiResponse.getErrcode()==0){
             String response=HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpPost(yapiSaveParam.getYapiUrl()+YapiConstant.yapiSave,gson.toJson(yapiSaveParam))),"utf-8");
             return gson.fromJson(response,YapiResponse.class);
         }else{
@@ -115,8 +115,31 @@ public class UploadYapi {
         }
         return null;
     }
+    /**
+     * @description: 获得描述
+     * @param: [yapiSaveParam]
+     * @return: com.qbb.dto.YapiResponse
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/7/28
+     */ 
+    public void changeDesByPath(YapiSaveParam yapiSaveParam){
+        try{
+            String response = HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpGet(yapiSaveParam.getYapiUrl()+ YapiConstant.yapiGetByPath+"?token="+yapiSaveParam.getToken()+"&path="+yapiSaveParam.getPath())),"utf-8");
+            YapiResponse yapiResponse=gson.fromJson(response,YapiResponse.class);
+            if(yapiResponse.getErrcode()==0) {
+                YapiInterfaceResponse yapiInterfaceResponse=(YapiInterfaceResponse)yapiResponse.getData();
+                if(!Strings.isNullOrEmpty(yapiInterfaceResponse.getDesc())){
+                    //如果原来描述不为空，那么就将当前描述+上一个版本描述的自定义部分
+                    yapiSaveParam.setDesc(yapiInterfaceResponse.getDesc().substring(0,yapiInterfaceResponse.getDesc().indexOf("<pre>"))+yapiSaveParam.getDesc()+yapiInterfaceResponse.getDesc().substring(yapiInterfaceResponse.getDesc().indexOf("</pre>"),yapiInterfaceResponse.getDesc().length()));
+                }
+                if(Objects.nonNull(yapiInterfaceResponse.getCatid())){
+                    yapiSaveParam.setCatid(yapiInterfaceResponse.getCatid().toString());
+                }
+            }
+        }catch (Exception e){
 
-
+        }
+    }
 
     /**
      * @description: 获得分类或者创建分类或者
@@ -133,9 +156,15 @@ public class UploadYapi {
                     return new YapiResponse(catMenuMap.get(yapiSaveParam.getMenu()));
                 }
             }else{
-                if(Objects.nonNull(catMenuMap.get(YapiConstant.menu))){
+                //如果默认菜单缓存不为空，并且没有已有菜单
+                if(Objects.nonNull(catMenuMap.get(YapiConstant.menu)) && Objects.isNull(yapiSaveParam.getCatid())){
                     return new YapiResponse(catMenuMap.get(YapiConstant.menu));
                 }
+                if(Objects.nonNull(yapiSaveParam.getCatid())){
+                    // 自定义菜单不为空
+                    return new YapiResponse(yapiSaveParam.getCatid());
+                }
+                // 如果自定义菜单为空,并且默认菜单缓存不存在
                 yapiSaveParam.setMenu(YapiConstant.menu);
             }
         }
@@ -147,38 +176,68 @@ public class UploadYapi {
                 List<YapiCatResponse> list = (List<YapiCatResponse>) yapiResponse.getData();
                 list=gson.fromJson(gson.toJson(list),new TypeToken<List<YapiCatResponse>>() {
                 }.getType());
-                for (YapiCatResponse yapiCatResponse : list) {
-                    if (yapiCatResponse.getName().equals(yapiSaveParam.getMenu())) {
-                        Map<String,Integer> catMenuMapSub=catMap.get(yapiSaveParam.getProjectId().toString());
-                        if(catMenuMapSub!=null){
-                            catMenuMapSub.put(yapiCatResponse.getName(),yapiCatResponse.get_id());
-                        }else{
-                            catMenuMapSub=new HashMap<>();
-                            catMenuMapSub.put(yapiCatResponse.getName(),yapiCatResponse.get_id());
-                            catMap.put(yapiSaveParam.getProjectId().toString(),catMenuMapSub);
+                String[] menus=yapiSaveParam.getMenu().split("/");
+                // 循环多级菜单，判断是否存在，如果不存在就创建
+                //  解决多级菜单创建问题
+                Integer parent_id=-1;
+                Integer now_id=null;
+                for(int i=0;i<menus.length;i++){
+                    boolean needAdd=true;
+                    now_id=null;
+                    for (YapiCatResponse yapiCatResponse : list) {
+                        if (yapiCatResponse.getName().equals(menus[i])) {
+                            needAdd=false;
+                            now_id=yapiCatResponse.get_id();
+                            break;
                         }
-                        return new YapiResponse(yapiCatResponse.get_id());
+                    }
+                    if(needAdd){
+                         now_id=this.addMenu(yapiSaveParam,parent_id);
+                    }
+                    if(i==(menus.length-1)) {
+                        yapiSaveParam.setCatid(now_id.toString());
+                    }else{
+                        parent_id=now_id;
                     }
                 }
+                Map<String,Integer> catMenuMapSub=catMap.get(yapiSaveParam.getProjectId().toString());
+                if(catMenuMapSub!=null){
+                    catMenuMapSub.put(yapiSaveParam.getMenu(),now_id);
+                }else{
+                    catMenuMapSub=new HashMap<>();
+                    catMenuMapSub.put(yapiSaveParam.getMenu(),now_id);
+                    catMap.put(yapiSaveParam.getProjectId().toString(),catMenuMapSub);
+                }
             }
-            YapiCatMenuParam  yapiCatMenuParam=new YapiCatMenuParam(yapiSaveParam.getMenu(),yapiSaveParam.getProjectId(),yapiSaveParam.getToken());
-            String responseCat=HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpPost(yapiSaveParam.getYapiUrl()+YapiConstant.yapiAddCat,gson.toJson(yapiCatMenuParam))),"utf-8");
-            YapiCatResponse yapiCatResponse=gson.fromJson(gson.fromJson(responseCat,YapiResponse.class).getData().toString(),YapiCatResponse.class);
-            Map<String,Integer> catMenuMapSub=catMap.get(yapiSaveParam.getProjectId().toString());
-            if(catMenuMapSub!=null){
-                catMenuMapSub.put(yapiCatResponse.getName(),yapiCatResponse.get_id());
-            }else{
-                catMenuMapSub=new HashMap<>();
-                catMenuMapSub.put(yapiCatResponse.getName(),yapiCatResponse.get_id());
-                catMap.put(yapiSaveParam.getProjectId().toString(),catMenuMapSub);
-            }
-            return  new YapiResponse(yapiCatResponse.get_id());
+            return  new YapiResponse();
         } catch (IOException e) {
             e.printStackTrace();
            return  new YapiResponse(0,e.toString());
         }
     }
 
+
+    /**
+     * @description: 新增菜单
+     * @param: [yapiSaveParam, parent_id]
+     * @return: java.lang.Integer
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/7/28
+     */ 
+    private Integer addMenu(YapiSaveParam yapiSaveParam,Integer parent_id) throws IOException{
+        YapiCatMenuParam  yapiCatMenuParam=new YapiCatMenuParam(yapiSaveParam.getMenu(),yapiSaveParam.getProjectId(),yapiSaveParam.getToken(),parent_id);
+        String responseCat=HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpPost(yapiSaveParam.getYapiUrl()+YapiConstant.yapiAddCat,gson.toJson(yapiCatMenuParam))),"utf-8");
+        YapiCatResponse yapiCatResponse=gson.fromJson(gson.fromJson(responseCat,YapiResponse.class).getData().toString(),YapiCatResponse.class);
+        Map<String,Integer> catMenuMapSub=catMap.get(yapiSaveParam.getProjectId().toString());
+        if(catMenuMapSub!=null){
+            catMenuMapSub.put(yapiCatResponse.getName(),yapiCatResponse.get_id());
+        }else{
+            catMenuMapSub=new HashMap<>();
+            catMenuMapSub.put(yapiCatResponse.getName(),yapiCatResponse.get_id());
+            catMap.put(yapiSaveParam.getProjectId().toString(),catMenuMapSub);
+        }
+        return yapiCatResponse.get_id();
+    }
 
 
 }
