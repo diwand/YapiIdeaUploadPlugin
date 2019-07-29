@@ -47,6 +47,8 @@ public class YapiResponse implements Serializable {
     }
 
     public YapiResponse() {
+        this.errcode=0;
+        this.errmsg="success";
     }
 
     public YapiResponse(Object data) {

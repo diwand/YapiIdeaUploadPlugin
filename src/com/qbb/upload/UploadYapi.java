@@ -192,7 +192,7 @@ public class UploadYapi {
                         }
                     }
                     if(needAdd){
-                         now_id=this.addMenu(yapiSaveParam,parent_id);
+                         now_id=this.addMenu(yapiSaveParam,parent_id,menus[i]);
                     }
                     if(i==(menus.length-1)) {
                         yapiSaveParam.setCatid(now_id.toString());
@@ -224,8 +224,8 @@ public class UploadYapi {
      * @author: chengsheng@qbb6.com
      * @date: 2019/7/28
      */ 
-    private Integer addMenu(YapiSaveParam yapiSaveParam,Integer parent_id) throws IOException{
-        YapiCatMenuParam  yapiCatMenuParam=new YapiCatMenuParam(yapiSaveParam.getMenu(),yapiSaveParam.getProjectId(),yapiSaveParam.getToken(),parent_id);
+    private Integer addMenu(YapiSaveParam yapiSaveParam,Integer parent_id,String menu) throws IOException{
+        YapiCatMenuParam  yapiCatMenuParam=new YapiCatMenuParam(menu,yapiSaveParam.getProjectId(),yapiSaveParam.getToken(),parent_id);
         String responseCat=HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpPost(yapiSaveParam.getYapiUrl()+YapiConstant.yapiAddCat,gson.toJson(yapiCatMenuParam))),"utf-8");
         YapiCatResponse yapiCatResponse=gson.fromJson(gson.fromJson(responseCat,YapiResponse.class).getData().toString(),YapiCatResponse.class);
         Map<String,Integer> catMenuMapSub=catMap.get(yapiSaveParam.getProjectId().toString());
