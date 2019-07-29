@@ -164,7 +164,12 @@ public class UploadYapi {
                     // 自定义菜单不为空
                     return new YapiResponse(yapiSaveParam.getCatid());
                 }
-                // 如果自定义菜单为空,并且默认菜单缓存不存在
+                // 如果自定义菜单为空,并且默认菜单缓存不存在，则使用默认目录
+                yapiSaveParam.setMenu(YapiConstant.menu);
+            }
+        }else{
+            // 如果缓存不存在，切自定义菜单为空，则使用默认目录
+            if(Strings.isNullOrEmpty(yapiSaveParam.getMenu())){
                 yapiSaveParam.setMenu(YapiConstant.menu);
             }
         }
