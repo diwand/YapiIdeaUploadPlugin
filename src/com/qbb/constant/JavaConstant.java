@@ -10,6 +10,8 @@ public interface JavaConstant {
 
     String NotNull="javax.validation.constraints.NotNull";
 
+    String NotEmpty="javax.validation.constraints.NotEmpty";
+
     String HttpServletRequest="javax.servlet.http.HttpServletRequest";
 
     String HttpServletResponse="javax.servlet.http.HttpServletResponse";
