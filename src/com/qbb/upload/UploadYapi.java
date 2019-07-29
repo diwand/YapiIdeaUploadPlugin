@@ -111,7 +111,6 @@ public class UploadYapi {
         try {
             return HttpClientUtil.getHttpGet(url, "application/json", "application/json; charset=utf-8");
         } catch (IOException e) {
-            e.printStackTrace();
         }
         return null;
     }
@@ -158,11 +157,12 @@ public class UploadYapi {
             }else{
                 //如果默认菜单缓存不为空，并且没有已有菜单
                 if(Objects.nonNull(catMenuMap.get(YapiConstant.menu)) && Objects.isNull(yapiSaveParam.getCatid())){
-                    return new YapiResponse(catMenuMap.get(YapiConstant.menu));
+                    yapiSaveParam.setCatid(catMenuMap.get(YapiConstant.menu).toString());
+                    return new YapiResponse();
                 }
                 if(Objects.nonNull(yapiSaveParam.getCatid())){
                     // 自定义菜单不为空
-                    return new YapiResponse(yapiSaveParam.getCatid());
+                    return new YapiResponse();
                 }
                 // 如果自定义菜单为空,并且默认菜单缓存不存在，则使用默认目录
                 yapiSaveParam.setMenu(YapiConstant.menu);
@@ -216,7 +216,6 @@ public class UploadYapi {
             }
             return  new YapiResponse();
         } catch (IOException e) {
-            e.printStackTrace();
            return  new YapiResponse(0,e.toString());
         }
     }
