@@ -136,6 +136,9 @@ public class UploadToYapi extends AnAction {
                     }else{
                         yapiSaveParam.setMenu(YapiConstant.menu);
                     }
+                    if(!Strings.isNullOrEmpty(yapiApiDTO.getStatus())) {
+                        yapiSaveParam.setStatus(yapiApiDTO.getStatus());
+                    }
                     try {
                         // 上传
                         YapiResponse yapiResponse = new UploadYapi().uploadSave(yapiSaveParam, attachUpload, project.getBasePath());

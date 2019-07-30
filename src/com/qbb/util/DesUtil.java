@@ -11,6 +11,7 @@ import com.intellij.psi.impl.source.PsiJavaFileImpl;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.javadoc.PsiDocTag;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.qbb.constant.YapiConstant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -249,5 +250,20 @@ public class DesUtil {
            }
        }
        return result;
+    }
+
+    /**
+     * @description: 接口是否完成
+     * @param: [text] true-done false-undone
+     * @return: java.lang.String
+     * @author: fanyidong
+     * @date: 2019/7/30
+     */
+    public static boolean isDone(String text) {
+        if (Strings.isNullOrEmpty(text)) {
+            return false;
+        }
+        // 只存在done 不存在undone标志为已完成
+        return text.contains(YapiConstant.done) && !text.contains(YapiConstant.undone);
     }
 }

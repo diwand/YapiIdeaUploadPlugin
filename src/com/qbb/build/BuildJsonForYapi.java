@@ -17,6 +17,7 @@ import com.intellij.psi.util.PsiUtil;
 import com.qbb.constant.HttpMethodConstant;
 import com.qbb.constant.JavaConstant;
 import com.qbb.constant.SpringMVCConstant;
+import com.qbb.constant.YapiConstant;
 import com.qbb.dto.YapiApiDTO;
 import com.qbb.dto.YapiHeaderDTO;
 import com.qbb.dto.YapiPathVariableDTO;
@@ -68,8 +69,10 @@ public class BuildJsonForYapi{
         PsiElement referenceAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
         PsiClass selectedClass = (PsiClass) PsiTreeUtil.getContextOfType(referenceAt, new Class[]{PsiClass.class});
         String classMenu=null;
+        boolean classStatus=false;
         if(Objects.nonNull(selectedClass.getDocComment())){
              classMenu=DesUtil.getMenu(selectedClass.getText());
+             classStatus=DesUtil.isDone(selectedClass.getText());
         }
         ArrayList<YapiApiDTO> yapiApiDTOS=new ArrayList<>();
         if(selectedText.equals(selectedClass.getName())){
@@ -81,6 +84,8 @@ public class BuildJsonForYapi{
                     if(Objects.isNull(yapiApiDTO.getMenu())){
                         yapiApiDTO.setMenu(classMenu);
                     }
+                    // 更新完成状态
+                    yapiApiDTO.setStatus(classStatus? YapiConstant.done:YapiConstant.undone);
                     yapiApiDTOS.add(yapiApiDTO);
                 }
             }
@@ -99,6 +104,8 @@ public class BuildJsonForYapi{
                 if(Objects.isNull(yapiApiDTO.getMenu())){
                     yapiApiDTO.setMenu(classMenu);
                 }
+                // 更新完成状态
+                yapiApiDTO.setStatus(classStatus? YapiConstant.done:YapiConstant.undone);
                 yapiApiDTOS.add(yapiApiDTO);
             }else{
                 Notification error = notificationGroup.createNotification("can not find method:"+selectedText, NotificationType.ERROR);

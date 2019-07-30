@@ -49,4 +49,10 @@ public interface YapiConstant {
      * 获取菜单列表
      */
     String yapiCatMenu="/api/interface/getCatMenu";
+
+    /**
+     * 接口完成状态
+     */
+    String done = "done";
+    String undone = "undone";
 }

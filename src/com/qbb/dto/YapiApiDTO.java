@@ -64,6 +64,11 @@ public class YapiApiDTO implements Serializable{
      */
     private List req_params;
 
+    /**
+     * 完成状态 done/undone
+     */
+    private String status;
+
 
     public String getPath() {
         return path;
@@ -165,5 +170,11 @@ public class YapiApiDTO implements Serializable{
     public YapiApiDTO() {
     }
 
+    public String getStatus() {
+        return status;
+    }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
