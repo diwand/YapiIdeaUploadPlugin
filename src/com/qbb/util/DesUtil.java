@@ -134,7 +134,7 @@ public class DesUtil {
         }
         String[] menuList = text.split("\\*/")[0].split("@menu");
         if (menuList.length > 1) {
-            return DesUtil.trimFirstAndLastChar(menuList[1].split("\\*")[0].replace("*", "").replace(":","").replace("\n", " "), ' ').trim();
+            return DesUtil.trimFirstAndLastChar(menuList[1].split("\\*")[0].replace("*", "").replace(":","").replace("\n", " ").replace(" ",""), ' ').trim();
         } else {
             return null;
         }
