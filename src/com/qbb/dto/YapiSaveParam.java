@@ -54,7 +54,7 @@ public class YapiSaveParam implements Serializable{
     /**
      * 状态 undone,默认done
      */
-    private String status="done";
+    private String status="undone";
     /**
      * 返回参数类型  json
      */

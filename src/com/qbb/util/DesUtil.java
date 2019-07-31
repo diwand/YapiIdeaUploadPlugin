@@ -11,6 +11,7 @@ import com.intellij.psi.impl.source.PsiJavaFileImpl;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.javadoc.PsiDocTag;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.qbb.constant.YapiStatusEnum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,7 +128,7 @@ public class DesUtil {
      * @return: java.lang.String
      * @author: chengsheng@qbb6.com
      * @date: 2019/5/18
-     */ 
+     */
     public static String getMenu(String text) {
         if (Strings.isNullOrEmpty(text) || !text.contains("*/")) {
             return null;
@@ -139,6 +140,26 @@ public class DesUtil {
             return null;
         }
     }
+
+    /**
+     * @description: 获得状态
+     * @param: [text]
+     * @return: java.lang.String
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/5/18
+     */
+    public static String getStatus(String text) {
+        if (Strings.isNullOrEmpty(text) || !text.contains("*/")) {
+            return null;
+        }
+        String[] menuList = text.split("\\*/")[0].split("@status");
+        if (menuList.length > 1) {
+            return YapiStatusEnum.getStatus(DesUtil.trimFirstAndLastChar(menuList[1].split("\\*")[0].replace("*", "").replace(":","").replace("\n", " ").replace(" ",""), ' ').trim());
+        } else {
+            return null;
+        }
+    }
+
     /**
      * @description: 获得link 备注
      * @param: [remark, project, field]

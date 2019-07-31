@@ -33,6 +33,10 @@ public class YapiDubboDTO implements Serializable {
      * 菜单
      */
     private String menu;
+    /**
+     * 状态
+     */
+    private String status;
 
 
     public String getPath() {
@@ -82,6 +86,14 @@ public class YapiDubboDTO implements Serializable {
 
     public void setMenu(String menu) {
         this.menu = menu;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public YapiDubboDTO() {

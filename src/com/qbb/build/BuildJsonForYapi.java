@@ -147,6 +147,7 @@ public class BuildJsonForYapi{
                             path.append(results[results.length-1].split(";")[0].replace("\"","").trim());
                             yapiApiDTO.setTitle(DesUtil.getUrlReFerenceRDesc(psiReference.resolve().getText()));
                             yapiApiDTO.setMenu(DesUtil.getMenu(psiReference.resolve().getText()));
+                            yapiApiDTO.setStatus(DesUtil.getStatus(psiReference.resolve().getText()));
                             yapiApiDTO.setDesc("<pre><code>  "+psiReference.resolve().getText()+" </code></pre> <hr>");
                         }
                         yapiApiDTO.setPath(path.toString());
@@ -209,6 +210,7 @@ public class BuildJsonForYapi{
                                 path.append(results[results.length - 1].split(";")[0].replace("\"", "").trim());
                                 yapiApiDTO.setTitle(DesUtil.getUrlReFerenceRDesc(psiReference.resolve().getText()));
                                 yapiApiDTO.setMenu(DesUtil.getMenu(psiReference.resolve().getText()));
+                                yapiApiDTO.setStatus(DesUtil.getStatus(psiReference.resolve().getText()));
                                 if(!Strings.isNullOrEmpty(psiReference.resolve().getText())) {
                                     String refernceDesc=psiReference.resolve().getText().replace("<", "&lt;").replace(">", "&gt;");
                                     yapiApiDTO.setDesc("<pre><code>  " + refernceDesc + " </code></pre> <hr>");
@@ -291,6 +293,10 @@ public class BuildJsonForYapi{
                     String menu=DesUtil.getMenu(psiMethodTarget.getDocComment().getText());
                     if(!Strings.isNullOrEmpty(menu)) {
                         yapiApiDTO.setMenu(menu);
+                    }
+                    String status=DesUtil.getStatus(psiMethodTarget.getDocComment().getText());
+                    if(!Strings.isNullOrEmpty(status)){
+                        yapiApiDTO.setStatus(status);
                     }
                 }
             }

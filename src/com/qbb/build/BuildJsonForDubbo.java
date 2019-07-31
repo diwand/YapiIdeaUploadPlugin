@@ -67,6 +67,7 @@ public class BuildJsonForDubbo{
                     YapiDubboDTO yapiDubboDTO=actionPerformed(selectedClass, psiMethodTarget, project, psiFile);
                     if(Objects.nonNull(psiMethodTarget.getDocComment())) {
                         yapiDubboDTO.setMenu(DesUtil.getMenu(psiMethodTarget.getDocComment().getText()));
+                        yapiDubboDTO.setStatus(DesUtil.getStatus(psiMethodTarget.getDocComment().getText()));
                     }
                     if(Objects.isNull(yapiDubboDTO.getMenu())){
                         yapiDubboDTO.setMenu(classMenu);
@@ -87,6 +88,7 @@ public class BuildJsonForDubbo{
             YapiDubboDTO yapiDubboDTO=actionPerformed(selectedClass,psiMethodTarget,project,psiFile);
             if(Objects.nonNull(psiMethodTarget.getDocComment())) {
                 yapiDubboDTO.setMenu(DesUtil.getMenu(psiMethodTarget.getDocComment().getText()));
+                yapiDubboDTO.setStatus(DesUtil.getStatus(psiMethodTarget.getDocComment().getText()));
             }
             if(Objects.isNull(yapiDubboDTO.getMenu())){
                 yapiDubboDTO.setMenu(classMenu);

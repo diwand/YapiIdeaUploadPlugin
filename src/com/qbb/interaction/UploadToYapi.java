@@ -99,6 +99,7 @@ public class UploadToYapi extends AnAction {
             if(yapiDubboDTOs!=null) {
                 for (YapiDubboDTO yapiDubboDTO : yapiDubboDTOs) {
                     YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiDubboDTO.getTitle(), yapiDubboDTO.getPath(), yapiDubboDTO.getParams(), yapiDubboDTO.getResponse(), Integer.valueOf(projectId), yapiUrl, yapiDubboDTO.getDesc());
+                    yapiSaveParam.setStatus(yapiDubboDTO.getStatus());
                     if(!Strings.isNullOrEmpty(yapiDubboDTO.getMenu())) {
                         yapiSaveParam.setMenu(yapiDubboDTO.getMenu());
                     }else{
@@ -131,6 +132,7 @@ public class UploadToYapi extends AnAction {
                     yapiSaveParam.setReq_body_form(yapiApiDTO.getReq_body_form());
                     yapiSaveParam.setReq_body_type(yapiApiDTO.getReq_body_type());
                     yapiSaveParam.setReq_params(yapiApiDTO.getReq_params());
+                    yapiSaveParam.setStatus(yapiApiDTO.getStatus());
                     if(!Strings.isNullOrEmpty(yapiApiDTO.getMenu())) {
                         yapiSaveParam.setMenu(yapiApiDTO.getMenu());
                     }else{
