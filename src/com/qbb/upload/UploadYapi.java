@@ -126,10 +126,14 @@ public class UploadYapi {
             String response = HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpGet(yapiSaveParam.getYapiUrl()+ YapiConstant.yapiGetByPath+"?token="+yapiSaveParam.getToken()+"&path="+yapiSaveParam.getPath())),"utf-8");
             YapiResponse yapiResponse=gson.fromJson(response,YapiResponse.class);
             if(yapiResponse.getErrcode()==0) {
-                YapiInterfaceResponse yapiInterfaceResponse=(YapiInterfaceResponse)yapiResponse.getData();
+                YapiInterfaceResponse yapiInterfaceResponse=gson.fromJson(gson.toJson(yapiResponse.getData()),YapiInterfaceResponse.class);
                 if(!Strings.isNullOrEmpty(yapiInterfaceResponse.getDesc())){
                     //如果原来描述不为空，那么就将当前描述+上一个版本描述的自定义部分
-                    yapiSaveParam.setDesc(yapiInterfaceResponse.getDesc().substring(0,yapiInterfaceResponse.getDesc().indexOf("<pre>"))+yapiSaveParam.getDesc()+yapiInterfaceResponse.getDesc().substring(yapiInterfaceResponse.getDesc().indexOf("</pre>"),yapiInterfaceResponse.getDesc().length()));
+                    if(yapiInterfaceResponse.getDesc().contains("java类")){
+                        yapiSaveParam.setDesc(yapiInterfaceResponse.getDesc().substring(0,yapiInterfaceResponse.getDesc().indexOf("java类"))+yapiSaveParam.getDesc()+yapiInterfaceResponse.getDesc().substring(yapiInterfaceResponse.getDesc().indexOf("</pre>"),yapiInterfaceResponse.getDesc().length()));
+                    }else{
+                        yapiSaveParam.setDesc(yapiInterfaceResponse.getDesc().substring(0,yapiInterfaceResponse.getDesc().indexOf("<pre>"))+yapiSaveParam.getDesc()+yapiInterfaceResponse.getDesc().substring(yapiInterfaceResponse.getDesc().indexOf("</pre>"),yapiInterfaceResponse.getDesc().length()));
+                    }
                 }
                 if(Objects.nonNull(yapiInterfaceResponse.getCatid())){
                     yapiSaveParam.setCatid(yapiInterfaceResponse.getCatid().toString());
