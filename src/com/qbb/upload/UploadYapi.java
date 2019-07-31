@@ -156,7 +156,8 @@ public class UploadYapi {
         if(catMenuMap!=null){
             if(!Strings.isNullOrEmpty(yapiSaveParam.getMenu())) {
                 if(Objects.nonNull(catMenuMap.get(yapiSaveParam.getMenu()))){
-                    return new YapiResponse(catMenuMap.get(yapiSaveParam.getMenu()));
+                    yapiSaveParam.setCatid(catMenuMap.get(yapiSaveParam.getMenu()).toString());
+                    return new YapiResponse();
                 }
             }else{
                 //如果默认菜单缓存不为空，并且没有已有菜单
