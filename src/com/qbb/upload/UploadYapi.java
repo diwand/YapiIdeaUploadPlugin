@@ -192,6 +192,9 @@ public class UploadYapi {
                 Integer parent_id=-1;
                 Integer now_id=null;
                 for(int i=0;i<menus.length;i++){
+                    if(Strings.isNullOrEmpty(menus[i])){
+                        continue;
+                    }
                     boolean needAdd=true;
                     now_id=null;
                     for (YapiCatResponse yapiCatResponse : list) {
