@@ -552,9 +552,11 @@ public class BuildJsonForYapi{
             if(types.length>1){
                 String childPackage=types[1].split(">")[0];
                 if(NormalTypes.noramlTypesPackages.keySet().contains(childPackage)){
-                    listKv.set("type",NormalTypes.noramlTypesPackages.get(childPackage));
+                    String[] childTypes=childPackage.split("\\.");
+                    listKv.set("type",childTypes[childTypes.length-1]);
                 }else if(NormalTypes.collectTypesPackages.containsKey(childPackage)){
-                    listKv.set("type",NormalTypes.collectTypesPackages.get(childPackage));
+                    String[] childTypes=childPackage.split("\\.");
+                    listKv.set("type",childTypes[childTypes.length-1]);
                 }else {
                     PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childPackage, GlobalSearchScope.allScope(project));
                     List<String> requiredList=new ArrayList<>();
@@ -581,9 +583,11 @@ public class BuildJsonForYapi{
             if(types.length>1){
                 String childPackage=types[1].split(">")[0];
                 if(NormalTypes.noramlTypesPackages.keySet().contains(childPackage)){
-                    listKv.set("type",NormalTypes.noramlTypesPackages.get(childPackage));
+                    String[] childTypes=childPackage.split("\\.");
+                    listKv.set("type",childTypes[childTypes.length-1]);
                 }else if(NormalTypes.collectTypesPackages.containsKey(childPackage)){
-                    listKv.set("type",NormalTypes.collectTypesPackages.get(childPackage));
+                    String[] childTypes=childPackage.split("\\.");
+                    listKv.set("type",childTypes[childTypes.length-1]);
                 }else {
                     PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childPackage, GlobalSearchScope.allScope(project));
                     List<String> requiredList=new ArrayList<>();
