@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>YapiUpload</id>
   <name>YapiUpload</name>
-  <version>1.7.1</version>
+  <version>1.7.2</version>
   <vendor email="chengsheng@qbb6.com" url="http://www.qbb6.com">QBB</vendor>
 
   <description><![CDATA[
@@ -85,6 +85,10 @@
         - 菜单获取流程修改(crazy分支支持)
         - 支持状态@status 注释
         - 支持多级分类(crazy分支支持)
+      </em>
+      1.7.2:<br>
+      <em>
+
       </em>
     ]]>
   </change-notes>

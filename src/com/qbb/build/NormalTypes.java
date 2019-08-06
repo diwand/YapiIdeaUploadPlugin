@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NonNls;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -47,10 +48,14 @@ public class NormalTypes {
         normalTypes.put("String", "String");
         normalTypes.put("Date", new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(new Date()));
         normalTypes.put("BigDecimal",0.111111);
+        normalTypes.put("LocalDate", new SimpleDateFormat("YYYY-MM-dd").format(new Date()));
+        normalTypes.put("LocalTime", new SimpleDateFormat("HH:mm:ss").format(new Date()));
+        normalTypes.put("LocalDateTime", new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(new Date()));
         normalTypes.put("Timestamp",new Timestamp(System.currentTimeMillis()));
         collectTypes.put("HashMap","HashMap");
         collectTypes.put("Map","Map");
         collectTypes.put("LinkedHashMap","LinkedHashMap");
+
         genericList.add("T");
         genericList.add("E");
         genericList.add("A");
@@ -79,6 +84,9 @@ public class NormalTypes {
         noramlTypesPackages.put("java.util.Date", new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(new Date()));
         noramlTypesPackages.put("java.lang.String","String");
         noramlTypesPackages.put("java.math.BigDecimal",1);
+        noramlTypesPackages.put("java.time.LocalDate", new SimpleDateFormat("YYYY-MM-dd").format(new Date()));
+        noramlTypesPackages.put("java.time.LocalTime", new SimpleDateFormat("HH:mm:ss").format(new Date()));
+        noramlTypesPackages.put("java.time.LocalDateTime", new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(new Date()));
 
         collectTypesPackages.put("java.util.LinkedHashMap","LinkedHashMap");
         collectTypesPackages.put("java.util.HashMap","HashMap");
