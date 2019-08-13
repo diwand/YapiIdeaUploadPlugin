@@ -188,7 +188,8 @@ public class DesUtil {
                             break;
                         }
                     }
-                }else{
+                }
+                if(Objects.isNull(psiClassLink)){
                     //如果是同包情况
                     linkAddress= ((PsiJavaFileImpl) ((PsiClassImpl) field.getParent()).getContext()).getPackageName()+"."+linkAddress;
                     psiClassLink= JavaPsiFacade.getInstance(project).findClass(linkAddress, GlobalSearchScope.allScope(project));
@@ -256,7 +257,8 @@ public class DesUtil {
                            break;
                        }
                    }
-               }else{
+               }
+               if(Objects.isNull(psiClassLink)){
                    //如果是同包情况
                    linkAddress= ((PsiJavaFileImpl) ((PsiClassImpl) field.getParent()).getContext()).getPackageName()+"."+linkAddress;
                    psiClassLink= JavaPsiFacade.getInstance(project).findClass(linkAddress, GlobalSearchScope.allScope(project));
