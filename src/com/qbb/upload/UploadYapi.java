@@ -61,7 +61,9 @@ public class UploadYapi {
         YapiResponse yapiResponse= this.getCatIdOrCreate(yapiSaveParam);
         if(yapiResponse.getErrcode()==0){
             String response=HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpPost(yapiSaveParam.getYapiUrl()+YapiConstant.yapiSave,gson.toJson(yapiSaveParam))),"utf-8");
-            return gson.fromJson(response,YapiResponse.class);
+            YapiResponse yapiResponseResult= gson.fromJson(response,YapiResponse.class);
+            yapiResponseResult.setCatId(yapiSaveParam.getCatid());
+            return yapiResponseResult;
         }else{
             return yapiResponse;
         }
