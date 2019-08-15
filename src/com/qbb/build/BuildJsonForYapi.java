@@ -680,7 +680,8 @@ public class BuildJsonForYapi{
                 for (PsiField field : psiClass.getFields()) {
                     //如果是有notnull 和 notEmpty 注解就加入必填
                     if(Objects.nonNull(PsiAnnotationSearchUtil.findAnnotation(field, JavaConstant.NotNull))
-                            || Objects.nonNull(PsiAnnotationSearchUtil.findAnnotation(field, JavaConstant.NotEmpty))){
+                            || Objects.nonNull(PsiAnnotationSearchUtil.findAnnotation(field, JavaConstant.NotEmpty))
+                            || Objects.nonNull(PsiAnnotationSearchUtil.findAnnotation(field, JavaConstant.NotBlank))){
                         requiredList.add(field.getName());
                     }
                     getField(field,project,kv,childType,index,psiClass.getName());
@@ -694,7 +695,8 @@ public class BuildJsonForYapi{
                     for (PsiField field : psiClass.getAllFields()) {
                         //如果是有notnull 和 notEmpty 注解就加入必填
                         if(Objects.nonNull(PsiAnnotationSearchUtil.findAnnotation(field, JavaConstant.NotNull))
-                                || Objects.nonNull(PsiAnnotationSearchUtil.findAnnotation(field, JavaConstant.NotEmpty))){
+                                || Objects.nonNull(PsiAnnotationSearchUtil.findAnnotation(field, JavaConstant.NotEmpty))
+                                || Objects.nonNull(PsiAnnotationSearchUtil.findAnnotation(field, JavaConstant.NotBlank))){
                             requiredList.add(field.getName());
                         }
                         getField(field, project, kv, childType, index, psiClass.getName());
