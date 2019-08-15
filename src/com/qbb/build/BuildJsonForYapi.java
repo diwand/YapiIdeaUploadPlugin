@@ -821,15 +821,21 @@ public class BuildJsonForYapi{
                 }
             } else if(fieldTypeName.startsWith("HashMap") || fieldTypeName.startsWith("Map") || fieldTypeName.startsWith("LinkedHashMap")){
                 //HashMap or Map
-                CompletableFuture.runAsync(()->{
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(700);
-                        Notification warning = notificationGroup.createNotification("Map Type Can not Change,So pass", NotificationType.WARNING);
-                        Notifications.Bus.notify(warning, project);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                });
+                KV kv1=new KV();
+                kv1.set(KV.by("type","object"));
+                kv1.set(KV.by("description",remark+"(该参数为map)"));
+                if(((PsiClassReferenceType) type).getParameters().length>1) {
+                    KV keyObj=new KV();
+                    keyObj.set("type","object");
+                    keyObj.set("description",((PsiClassReferenceType) type).getParameters()[0].getPresentableText());
+                    keyObj.set("properties",getFields(PsiUtil.resolveClassInType(((PsiClassReferenceType) type).getParameters()[1]), project, childType, index, new ArrayList<>()));
+                    KV keyObjSup=new KV();
+                    keyObjSup.set("mapKey",keyObj);
+                    kv1.set("properties",keyObjSup);
+                }else{
+                    kv1.set(KV.by("description","请完善Map<?,?>"));
+                }
+                kv.set(name,kv1);
             }else {
                 //class type
                 KV kv1=new KV();
