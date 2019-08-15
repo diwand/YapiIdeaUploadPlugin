@@ -955,7 +955,7 @@ public class BuildJsonForYapi{
                      String deepTypeName = deepType.getPresentableText();
                      if (!(deepType instanceof PsiPrimitiveType) && !NormalTypes.isNormalType(deepTypeName)) {
                          psiClass = PsiUtil.resolveClassInType(deepType);
-                         addFilePaths(filePaths,psiClass);
+                         getFilePath(project,filePaths,Arrays.asList(psiClass));
                      }
                 } else if (fieldTypeName.startsWith("List")||fieldTypeName.startsWith("Set") || fieldTypeName.startsWith("HashSet")) {
                     //list type
@@ -964,7 +964,8 @@ public class BuildJsonForYapi{
                     if(Objects.nonNull(iterableClass)) {
                         String classTypeName = iterableClass.getName();
                         if (!NormalTypes.isNormalType(classTypeName) && !NormalTypes.collectTypes.containsKey(classTypeName)) {
-                           addFilePaths(filePaths,iterableClass);
+                          // addFilePaths(filePaths,iterableClass);
+                            getFilePath(project,filePaths,Arrays.asList(iterableClass));
                         }
                     }
                 } else if(fieldTypeName.startsWith("HashMap") || fieldTypeName.startsWith("Map") || fieldTypeName.startsWith("LinkedHashMap")){
@@ -973,7 +974,8 @@ public class BuildJsonForYapi{
                 } else if(!(field.getType() instanceof PsiPrimitiveType) && !NormalTypes.isNormalType(fieldTypeName) && !NormalTypes.isNormalType(field.getName())) {
                     //class type
                     psiClass=PsiUtil.resolveClassInType(field.getType());
-                    addFilePaths(filePaths,psiClass);
+                   // addFilePaths(filePaths,psiClass);
+                     getFilePath(project,filePaths,Arrays.asList(psiClass));
                 }
             }
         });
