@@ -11,85 +11,70 @@
 
   <change-notes><![CDATA[
       <a href="https://github.com/diwand/YapiIdeaUploadPlugin">使用方式</a> <br>
-      1.0:<br>
-      <em>support dubbo api</em>
-      1.1:<br>
-      <em>support  api</em> <br>
-      1.2:<br>
-      <em>support Batch upload</em><br>
-      1.3:<br>
-      <em>fix bug </em><br>
-      1.4:<br>
-      <em>fix hashmap bug </em> <br>
-      1.5:<br>
-      <em> support constant </em> <br>
-      1.5.1-1.5.3:<br>
-      <em> fixbug </em> <br>
-      1.6.0:<br>
-      <em> support java download<br>
-      1.6.1:<br>
-      <em> support RequestAttribute & RequestHeader <br>
-      1.6.2:<br>
-      <em> support modules </em> <br>
-      1.6.3:<br>
-      <em> fix 多级泛型问题
-      - 支持@NotNull 注解
-      - 支持PutMapping,DeleteMapping,
-      - 支持 model 接收参数和application/x-www-form-urlencoded
-      - 支持自定义分类 <br>
-      1.6.4:<br>
+       1.7.3:<br>
       <em>
-        - 支持类级别 分类定义
-        <em>
-       <br>
-      1.6.5:<br>
-      <em>
-        - fixbug request 为 List<Long> 等 bug
-        - fix code.zip 概率性一样问题
-        - fix HttpServletRequest&HttpServletResponse 存在下Req_body_type 类型问题
-      </em>
-      <br>
-      1.6.6:<br>
-      <em>
-        - 支持XXXMapping 不写value
-        - 解决 response <> 在备注中显示 问题
-        - 支持request param 备注从注释中获取
-      </em> <br>
-      1.6.7:<br>
-      <em>
-        - 补充支持A,B,E,K,V 泛型写法
-        - 支持PathVariable
-      <em> <br>
-      1.6.8:<br>
-      <em>
-        - 支持类级别路径引用
-        - 支持多个实体接收
-        - 支持 Response<List<User>> 泛型
-      </em>
-      1.6.9:<br>
-      <em>
-        - fix deleteMapping and patchMapping
-        - fix menu bug
-        - 支持get 实体类接收
+        -支持map,解决同包问题,去除缓存,支持notblank,支持package menu
       </em><br>
-      1.7.0:<br>
+        1.7.2:<br>
+      <em>
+        - 新增支持localdata,localTime,localDataTime <br>
+      </em><br>
+       1.7.1:<br>
+      <em>
+        - 支持自定义描述不被覆盖(crazy分支支持)
+        - 菜单获取流程修改(crazy分支支持)
+        - 支持状态@status 注释
+        - 支持多级分类(crazy分支支持)
+      </em><br>
+       1.7.0:<br>
       <em>
         - @menu 中:问题,支持dubbo
         - 支持多link 下载
         - 上传结果放入剪切板
         - link 同包问题
       </em><br>
-      1.7.1:<br>
+       1.6.9:<br>
       <em>
-        - 支持自定义描述不被覆盖(crazy分支支持)
-        - 菜单获取流程修改(crazy分支支持)
-        - 支持状态@status 注释
-        - 支持多级分类(crazy分支支持)
-      </em>
-      1.7.2:<br>
+        - fix deleteMapping and patchMapping
+        - fix menu bug
+        - 支持get 实体类接收
+      </em><br>
+      1.6.8:<br>
       <em>
-        - 新增支持localdata,localTime,localDataTime <br>
+        - 支持类级别路径引用
+        - 支持多个实体接收
+        - 支持 Response<List<User>> 泛型
       </em>
+        1.6.7:<br>
+      <em>
+        - 补充支持A,B,E,K,V 泛型写法
+        - 支持PathVariable
+      <em> <br>
+       1.6.6:<br>
+      <em>
+        - 支持XXXMapping 不写value
+        - 解决 response <> 在备注中显示 问题
+        - 支持request param 备注从注释中获取
+      </em> <br>
+       1.6.5:<br>
+      <em>
+        - fixbug request 为 List<Long> 等 bug
+        - fix code.zip 概率性一样问题
+        - fix HttpServletRequest&HttpServletResponse 存在下Req_body_type 类型问题
+      </em>
+      <br>
+      1.6.4:<br>
+      <em>
+        - 支持类级别 分类定义
+        <em>
+       <br>
+        1.6.3:<br>
+      <em> fix 多级泛型问题
+      - 支持@NotNull 注解
+      - 支持PutMapping,DeleteMapping,
+      - 支持 model 接收参数和application/x-www-form-urlencoded
+      - 支持自定义分类 <br>
+
     ]]>
   </change-notes>
 

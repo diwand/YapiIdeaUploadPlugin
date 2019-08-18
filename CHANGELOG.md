@@ -1,5 +1,5 @@
 #### 变更历史
-- 1.7.3: 支持map,解决同包问题,去除缓存,支持notblank
+- 1.7.3: 支持map,解决同包问题,去除缓存,支持notblank,支持package menu
 - 1.7.2: 支持LocalDate,LocalTime,LocalDateTime
 - 1.7.1: 支持自定义描述不被覆盖(crazy分支支持),菜单获取流程修改(crazy分支支持), 支持状态@status 注释,支持多级分类(crazy分支支持)
 - 1.7.0: 支持剪切板,支持多link 下载,支持dubbo menu
