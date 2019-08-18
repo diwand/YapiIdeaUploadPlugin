@@ -68,6 +68,9 @@ public class BuildJsonForYapi{
         PsiElement referenceAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
         PsiClass selectedClass = (PsiClass) PsiTreeUtil.getContextOfType(referenceAt, new Class[]{PsiClass.class});
         String classMenu=null;
+        if(Objects.nonNull(selectedClass.getContext())){
+            classMenu=DesUtil.getMenu(selectedClass.getContext().getText().replace(selectedClass.getText(),""));
+        }
         if(Objects.nonNull(selectedClass.getDocComment())){
              classMenu=DesUtil.getMenu(selectedClass.getText());
         }
@@ -970,7 +973,10 @@ public class BuildJsonForYapi{
                     }
                 } else if(fieldTypeName.startsWith("HashMap") || fieldTypeName.startsWith("Map") || fieldTypeName.startsWith("LinkedHashMap")){
                     //HashMap or Map
-
+                     if(((PsiClassReferenceType) field.getType()).getParameters().length>1) {
+                         PsiClass hashClass = PsiUtil.resolveClassInType(((PsiClassReferenceType) field.getType()).getParameters()[1]);
+                         getFilePath(project, filePaths, Arrays.asList(hashClass));
+                     }
                 } else if(!(field.getType() instanceof PsiPrimitiveType) && !NormalTypes.isNormalType(fieldTypeName) && !NormalTypes.isNormalType(field.getName())) {
                     //class type
                     psiClass=PsiUtil.resolveClassInType(field.getType());
