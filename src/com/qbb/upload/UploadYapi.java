@@ -28,7 +28,6 @@ public class UploadYapi {
 
     private Gson gson=new Gson();
 
-    public static Map<String,Map<String,Integer>> catMap=new HashMap<>();
 
     /**
      * @description: 调用保存接口
@@ -62,7 +61,9 @@ public class UploadYapi {
         YapiResponse yapiResponse= this.getCatIdOrCreate(yapiSaveParam);
         if(yapiResponse.getErrcode()==0){
             String response=HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpPost(yapiSaveParam.getYapiUrl()+YapiConstant.yapiSave,gson.toJson(yapiSaveParam))),"utf-8");
-            return gson.fromJson(response,YapiResponse.class);
+            YapiResponse yapiResponseResult= gson.fromJson(response,YapiResponse.class);
+            yapiResponseResult.setCatId(yapiSaveParam.getCatid());
+            return yapiResponseResult;
         }else{
             return yapiResponse;
         }
@@ -152,31 +153,9 @@ public class UploadYapi {
      * @date: 2019/5/15
      */ 
     public YapiResponse getCatIdOrCreate(YapiSaveParam yapiSaveParam){
-        Map<String,Integer> catMenuMap= catMap.get(yapiSaveParam.getProjectId().toString());
-        if(catMenuMap!=null){
-            if(!Strings.isNullOrEmpty(yapiSaveParam.getMenu())) {
-                if(Objects.nonNull(catMenuMap.get(yapiSaveParam.getMenu()))){
-                    yapiSaveParam.setCatid(catMenuMap.get(yapiSaveParam.getMenu()).toString());
-                    return new YapiResponse();
-                }
-            }else{
-                //如果默认菜单缓存不为空，并且没有已有菜单
-                if(Objects.nonNull(catMenuMap.get(YapiConstant.menu)) && Objects.isNull(yapiSaveParam.getCatid())){
-                    yapiSaveParam.setCatid(catMenuMap.get(YapiConstant.menu).toString());
-                    return new YapiResponse();
-                }
-                if(Objects.nonNull(yapiSaveParam.getCatid())){
-                    // 自定义菜单不为空
-                    return new YapiResponse();
-                }
-                // 如果自定义菜单为空,并且默认菜单缓存不存在，则使用默认目录
-                yapiSaveParam.setMenu(YapiConstant.menu);
-            }
-        }else{
-            // 如果缓存不存在，切自定义菜单为空，则使用默认目录
-            if(Strings.isNullOrEmpty(yapiSaveParam.getMenu())){
-                yapiSaveParam.setMenu(YapiConstant.menu);
-            }
+        // 如果缓存不存在，切自定义菜单为空，则使用默认目录
+        if(Strings.isNullOrEmpty(yapiSaveParam.getMenu())){
+            yapiSaveParam.setMenu(YapiConstant.menu);
         }
         String response= null;
         try {
@@ -213,14 +192,6 @@ public class UploadYapi {
                         parent_id=now_id;
                     }
                 }
-                Map<String,Integer> catMenuMapSub=catMap.get(yapiSaveParam.getProjectId().toString());
-                if(catMenuMapSub!=null){
-                    catMenuMapSub.put(yapiSaveParam.getMenu(),now_id);
-                }else{
-                    catMenuMapSub=new HashMap<>();
-                    catMenuMapSub.put(yapiSaveParam.getMenu(),now_id);
-                    catMap.put(yapiSaveParam.getProjectId().toString(),catMenuMapSub);
-                }
             }
             return  new YapiResponse();
         } catch (IOException e) {
@@ -240,14 +211,6 @@ public class UploadYapi {
         YapiCatMenuParam  yapiCatMenuParam=new YapiCatMenuParam(menu,yapiSaveParam.getProjectId(),yapiSaveParam.getToken(),parent_id);
         String responseCat=HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpPost(yapiSaveParam.getYapiUrl()+YapiConstant.yapiAddCat,gson.toJson(yapiCatMenuParam))),"utf-8");
         YapiCatResponse yapiCatResponse=gson.fromJson(gson.fromJson(responseCat,YapiResponse.class).getData().toString(),YapiCatResponse.class);
-        Map<String,Integer> catMenuMapSub=catMap.get(yapiSaveParam.getProjectId().toString());
-        if(catMenuMapSub!=null){
-            catMenuMapSub.put(yapiCatResponse.getName(),yapiCatResponse.get_id());
-        }else{
-            catMenuMapSub=new HashMap<>();
-            catMenuMapSub.put(yapiCatResponse.getName(),yapiCatResponse.get_id());
-            catMap.put(yapiSaveParam.getProjectId().toString(),catMenuMapSub);
-        }
         return yapiCatResponse.get_id();
     }
 

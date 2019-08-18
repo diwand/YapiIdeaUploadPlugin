@@ -182,13 +182,15 @@ public class DesUtil {
                 String[] importPaths=field.getParent().getContext().getText().split("import");
                 if(importPaths.length>1){
                     for(String importPath:importPaths){
+                        importPath=importPath.split(";")[0];
                         if(importPath.contains(linkAddress.split("\\.")[0])){
                             linkAddress=importPath.split(linkAddress.split("\\.")[0])[0]+linkAddress;
                             psiClassLink=JavaPsiFacade.getInstance(project).findClass(linkAddress.trim(),GlobalSearchScope.allScope(project));
                             break;
                         }
                     }
-                }else{
+                }
+                if(Objects.isNull(psiClassLink)){
                     //如果是同包情况
                     linkAddress= ((PsiJavaFileImpl) ((PsiClassImpl) field.getParent()).getContext()).getPackageName()+"."+linkAddress;
                     psiClassLink= JavaPsiFacade.getInstance(project).findClass(linkAddress, GlobalSearchScope.allScope(project));
@@ -247,6 +249,7 @@ public class DesUtil {
                String[] importPaths=field.getParent().getContext().getText().split("import");
                if(importPaths.length>1){
                    for(String importPath:importPaths){
+                       importPath=importPath.split(";")[0];
                        if(importPath.contains(linkAddress.split("\\.")[0])){
                            linkAddress=importPath.split(linkAddress.split("\\.")[0])[0]+linkAddress;
                            psiClassLink= JavaPsiFacade.getInstance(project).findClass(linkAddress.trim(), GlobalSearchScope.allScope(project));
@@ -256,7 +259,8 @@ public class DesUtil {
                            break;
                        }
                    }
-               }else{
+               }
+               if(Objects.isNull(psiClassLink)){
                    //如果是同包情况
                    linkAddress= ((PsiJavaFileImpl) ((PsiClassImpl) field.getParent()).getContext()).getPackageName()+"."+linkAddress;
                    psiClassLink= JavaPsiFacade.getInstance(project).findClass(linkAddress, GlobalSearchScope.allScope(project));

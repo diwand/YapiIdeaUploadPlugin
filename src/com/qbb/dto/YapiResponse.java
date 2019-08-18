@@ -21,6 +21,10 @@ public class YapiResponse implements Serializable {
      * 返回结果
      */
     private Object data;
+    /**
+     * 分类
+     */
+    private String catId;
 
     public Integer getErrcode() {
         return errcode;
@@ -44,6 +48,14 @@ public class YapiResponse implements Serializable {
 
     public void setData(Object data) {
         this.data = data;
+    }
+
+    public String getCatId() {
+        return catId;
+    }
+
+    public void setCatId(String catId) {
+        this.catId = catId;
     }
 
     public YapiResponse() {

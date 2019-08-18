@@ -112,7 +112,7 @@ public class UploadToYapi extends AnAction {
                             Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + yapiResponse.getErrmsg(), NotificationType.ERROR);
                             Notifications.Bus.notify(error, project);
                         } else {
-                            String url = yapiUrl + "/project/" + projectId + "/interface/api/cat_" + UploadYapi.catMap.get(projectId).get(yapiSaveParam.getMenu());
+                            String url = yapiUrl + "/project/" + projectId + "/interface/api/cat_" + yapiResponse.getCatId();
                             this.setClipboard(url);
                             Notification error = notificationGroup.createNotification("success ,url: " + url, NotificationType.INFORMATION);
                             Notifications.Bus.notify(error, project);
@@ -145,7 +145,7 @@ public class UploadToYapi extends AnAction {
                             Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + yapiResponse.getErrmsg(), NotificationType.ERROR);
                             Notifications.Bus.notify(error, project);
                         } else {
-                            String url = yapiUrl + "/project/" + projectId + "/interface/api/cat_" + UploadYapi.catMap.get(projectId).get(yapiSaveParam.getMenu());
+                            String url = yapiUrl + "/project/" + projectId + "/interface/api/cat_" +yapiResponse.getCatId();
                             this.setClipboard(url);
                             Notification error = notificationGroup.createNotification("success ,url:  " + url, NotificationType.INFORMATION);
                             Notifications.Bus.notify(error, project);

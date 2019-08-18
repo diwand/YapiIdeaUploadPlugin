@@ -68,6 +68,9 @@ public class BuildJsonForYapi{
         PsiElement referenceAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
         PsiClass selectedClass = (PsiClass) PsiTreeUtil.getContextOfType(referenceAt, new Class[]{PsiClass.class});
         String classMenu=null;
+        if(Objects.nonNull(selectedClass.getContext())){
+            classMenu=DesUtil.getMenu(selectedClass.getContext().getText().replace(selectedClass.getText(),""));
+        }
         if(Objects.nonNull(selectedClass.getDocComment())){
              classMenu=DesUtil.getMenu(selectedClass.getText());
         }
@@ -680,7 +683,8 @@ public class BuildJsonForYapi{
                 for (PsiField field : psiClass.getFields()) {
                     //如果是有notnull 和 notEmpty 注解就加入必填
                     if(Objects.nonNull(PsiAnnotationSearchUtil.findAnnotation(field, JavaConstant.NotNull))
-                            || Objects.nonNull(PsiAnnotationSearchUtil.findAnnotation(field, JavaConstant.NotEmpty))){
+                            || Objects.nonNull(PsiAnnotationSearchUtil.findAnnotation(field, JavaConstant.NotEmpty))
+                            || Objects.nonNull(PsiAnnotationSearchUtil.findAnnotation(field, JavaConstant.NotBlank))){
                         requiredList.add(field.getName());
                     }
                     getField(field,project,kv,childType,index,psiClass.getName());
@@ -694,7 +698,8 @@ public class BuildJsonForYapi{
                     for (PsiField field : psiClass.getAllFields()) {
                         //如果是有notnull 和 notEmpty 注解就加入必填
                         if(Objects.nonNull(PsiAnnotationSearchUtil.findAnnotation(field, JavaConstant.NotNull))
-                                || Objects.nonNull(PsiAnnotationSearchUtil.findAnnotation(field, JavaConstant.NotEmpty))){
+                                || Objects.nonNull(PsiAnnotationSearchUtil.findAnnotation(field, JavaConstant.NotEmpty))
+                                || Objects.nonNull(PsiAnnotationSearchUtil.findAnnotation(field, JavaConstant.NotBlank))){
                             requiredList.add(field.getName());
                         }
                         getField(field, project, kv, childType, index, psiClass.getName());
@@ -821,15 +826,21 @@ public class BuildJsonForYapi{
                 }
             } else if(fieldTypeName.startsWith("HashMap") || fieldTypeName.startsWith("Map") || fieldTypeName.startsWith("LinkedHashMap")){
                 //HashMap or Map
-                CompletableFuture.runAsync(()->{
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(700);
-                        Notification warning = notificationGroup.createNotification("Map Type Can not Change,So pass", NotificationType.WARNING);
-                        Notifications.Bus.notify(warning, project);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                });
+                KV kv1=new KV();
+                kv1.set(KV.by("type","object"));
+                kv1.set(KV.by("description",remark+"(该参数为map)"));
+                if(((PsiClassReferenceType) type).getParameters().length>1) {
+                    KV keyObj=new KV();
+                    keyObj.set("type","object");
+                    keyObj.set("description",((PsiClassReferenceType) type).getParameters()[0].getPresentableText());
+                    keyObj.set("properties",getFields(PsiUtil.resolveClassInType(((PsiClassReferenceType) type).getParameters()[1]), project, childType, index, new ArrayList<>()));
+                    KV keyObjSup=new KV();
+                    keyObjSup.set("mapKey",keyObj);
+                    kv1.set("properties",keyObjSup);
+                }else{
+                    kv1.set(KV.by("description","请完善Map<?,?>"));
+                }
+                kv.set(name,kv1);
             }else {
                 //class type
                 KV kv1=new KV();
@@ -947,7 +958,7 @@ public class BuildJsonForYapi{
                      String deepTypeName = deepType.getPresentableText();
                      if (!(deepType instanceof PsiPrimitiveType) && !NormalTypes.isNormalType(deepTypeName)) {
                          psiClass = PsiUtil.resolveClassInType(deepType);
-                         addFilePaths(filePaths,psiClass);
+                         getFilePath(project,filePaths,Arrays.asList(psiClass));
                      }
                 } else if (fieldTypeName.startsWith("List")||fieldTypeName.startsWith("Set") || fieldTypeName.startsWith("HashSet")) {
                     //list type
@@ -956,16 +967,21 @@ public class BuildJsonForYapi{
                     if(Objects.nonNull(iterableClass)) {
                         String classTypeName = iterableClass.getName();
                         if (!NormalTypes.isNormalType(classTypeName) && !NormalTypes.collectTypes.containsKey(classTypeName)) {
-                           addFilePaths(filePaths,iterableClass);
+                          // addFilePaths(filePaths,iterableClass);
+                            getFilePath(project,filePaths,Arrays.asList(iterableClass));
                         }
                     }
                 } else if(fieldTypeName.startsWith("HashMap") || fieldTypeName.startsWith("Map") || fieldTypeName.startsWith("LinkedHashMap")){
                     //HashMap or Map
-
+                     if(((PsiClassReferenceType) field.getType()).getParameters().length>1) {
+                         PsiClass hashClass = PsiUtil.resolveClassInType(((PsiClassReferenceType) field.getType()).getParameters()[1]);
+                         getFilePath(project, filePaths, Arrays.asList(hashClass));
+                     }
                 } else if(!(field.getType() instanceof PsiPrimitiveType) && !NormalTypes.isNormalType(fieldTypeName) && !NormalTypes.isNormalType(field.getName())) {
                     //class type
                     psiClass=PsiUtil.resolveClassInType(field.getType());
-                    addFilePaths(filePaths,psiClass);
+                   // addFilePaths(filePaths,psiClass);
+                     getFilePath(project,filePaths,Arrays.asList(psiClass));
                 }
             }
         });

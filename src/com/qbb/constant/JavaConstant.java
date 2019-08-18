@@ -12,6 +12,8 @@ public interface JavaConstant {
 
     String NotEmpty="javax.validation.constraints.NotEmpty";
 
+    String NotBlank="javax.validation.constraints.NotBlank";
+
     String HttpServletRequest="javax.servlet.http.HttpServletRequest";
 
     String HttpServletResponse="javax.servlet.http.HttpServletResponse";
