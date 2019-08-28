@@ -194,8 +194,9 @@ public class UploadYapi {
                 }
             }
             return  new YapiResponse();
-        } catch (IOException e) {
+        } catch (Exception e) {
             try {
+                //出现这种情况可能是yapi 版本不支持
                 yapiSaveParam.setCatid(addMenu(yapiSaveParam,-1,yapiSaveParam.getMenu()).toString());
                 return new YapiResponse();
             } catch (IOException e1) {
