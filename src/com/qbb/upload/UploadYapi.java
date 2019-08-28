@@ -195,7 +195,12 @@ public class UploadYapi {
             }
             return  new YapiResponse();
         } catch (IOException e) {
-           return  new YapiResponse(0,e.toString());
+            try {
+                yapiSaveParam.setCatid(addMenu(yapiSaveParam,-1,yapiSaveParam.getMenu()).toString());
+                return new YapiResponse();
+            } catch (IOException e1) {
+            }
+            return  new YapiResponse(0,e.toString());
         }
     }
 
