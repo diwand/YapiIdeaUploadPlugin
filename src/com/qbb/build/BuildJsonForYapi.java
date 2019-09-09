@@ -946,42 +946,44 @@ public class BuildJsonForYapi{
     public static void getFilePath(Project project,Set<String> filePaths,List<PsiClass> psiClasses){
         psiClasses.forEach(psiClass -> {
             addFilePaths(filePaths,psiClass);
-            for(PsiField field:psiClass.getFields()){
-                // 添加link 属性link
-                getFilePath(project,filePaths,DesUtil.getFieldLinks(project,field));
-                String fieldTypeName=field.getType().getPresentableText();
-                // 添加属性对象
-                 if (field.getType() instanceof PsiArrayType) {
-                     //array type
-                     PsiType deepType = field.getType().getDeepComponentType();
-                     KV kvlist = new KV();
-                     String deepTypeName = deepType.getPresentableText();
-                     if (!(deepType instanceof PsiPrimitiveType) && !NormalTypes.isNormalType(deepTypeName)) {
-                         psiClass = PsiUtil.resolveClassInType(deepType);
-                         getFilePath(project,filePaths,Arrays.asList(psiClass));
-                     }
-                } else if (fieldTypeName.startsWith("List")||fieldTypeName.startsWith("Set") || fieldTypeName.startsWith("HashSet")) {
-                    //list type
-                    PsiType iterableType = PsiUtil.extractIterableTypeParameter(field.getType(), false);
-                    PsiClass iterableClass = PsiUtil.resolveClassInClassTypeOnly(iterableType);
-                    if(Objects.nonNull(iterableClass)) {
-                        String classTypeName = iterableClass.getName();
-                        if (!NormalTypes.isNormalType(classTypeName) && !NormalTypes.collectTypes.containsKey(classTypeName)) {
-                          // addFilePaths(filePaths,iterableClass);
-                            getFilePath(project,filePaths,Arrays.asList(iterableClass));
+            if(!psiClass.isEnum()) {
+                for (PsiField field : psiClass.getFields()) {
+                    // 添加link 属性link
+                    getFilePath(project, filePaths, DesUtil.getFieldLinks(project, field));
+                    String fieldTypeName = field.getType().getPresentableText();
+                    // 添加属性对象
+                    if (field.getType() instanceof PsiArrayType) {
+                        //array type
+                        PsiType deepType = field.getType().getDeepComponentType();
+                        KV kvlist = new KV();
+                        String deepTypeName = deepType.getPresentableText();
+                        if (!(deepType instanceof PsiPrimitiveType) && !NormalTypes.isNormalType(deepTypeName)) {
+                            psiClass = PsiUtil.resolveClassInType(deepType);
+                            getFilePath(project, filePaths, Arrays.asList(psiClass));
                         }
+                    } else if (fieldTypeName.startsWith("List") || fieldTypeName.startsWith("Set") || fieldTypeName.startsWith("HashSet")) {
+                        //list type
+                        PsiType iterableType = PsiUtil.extractIterableTypeParameter(field.getType(), false);
+                        PsiClass iterableClass = PsiUtil.resolveClassInClassTypeOnly(iterableType);
+                        if (Objects.nonNull(iterableClass)) {
+                            String classTypeName = iterableClass.getName();
+                            if (!NormalTypes.isNormalType(classTypeName) && !NormalTypes.collectTypes.containsKey(classTypeName)) {
+                                // addFilePaths(filePaths,iterableClass);
+                                getFilePath(project, filePaths, Arrays.asList(iterableClass));
+                            }
+                        }
+                    } else if (fieldTypeName.startsWith("HashMap") || fieldTypeName.startsWith("Map") || fieldTypeName.startsWith("LinkedHashMap")) {
+                        //HashMap or Map
+                        if (((PsiClassReferenceType) field.getType()).getParameters().length > 1) {
+                            PsiClass hashClass = PsiUtil.resolveClassInType(((PsiClassReferenceType) field.getType()).getParameters()[1]);
+                            getFilePath(project, filePaths, Arrays.asList(hashClass));
+                        }
+                    } else if (!(field.getType() instanceof PsiPrimitiveType) && !NormalTypes.isNormalType(fieldTypeName) && !NormalTypes.isNormalType(field.getName())) {
+                        //class type
+                        psiClass = PsiUtil.resolveClassInType(field.getType());
+                        // addFilePaths(filePaths,psiClass);
+                        getFilePath(project, filePaths, Arrays.asList(psiClass));
                     }
-                } else if(fieldTypeName.startsWith("HashMap") || fieldTypeName.startsWith("Map") || fieldTypeName.startsWith("LinkedHashMap")){
-                    //HashMap or Map
-                     if(((PsiClassReferenceType) field.getType()).getParameters().length>1) {
-                         PsiClass hashClass = PsiUtil.resolveClassInType(((PsiClassReferenceType) field.getType()).getParameters()[1]);
-                         getFilePath(project, filePaths, Arrays.asList(hashClass));
-                     }
-                } else if(!(field.getType() instanceof PsiPrimitiveType) && !NormalTypes.isNormalType(fieldTypeName) && !NormalTypes.isNormalType(field.getName())) {
-                    //class type
-                    psiClass=PsiUtil.resolveClassInType(field.getType());
-                   // addFilePaths(filePaths,psiClass);
-                     getFilePath(project,filePaths,Arrays.asList(psiClass));
                 }
             }
         });
