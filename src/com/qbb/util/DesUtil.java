@@ -242,35 +242,38 @@ public class DesUtil {
        List<PsiClass> result=new ArrayList<>();
        String[] linkstr=field.getDocComment().getText().split("@link");
        for(int i=1;i<linkstr.length;i++){
-           String linkAddress=linkstr[i].split("}")[0].trim();
-           PsiClass psiClassLink= JavaPsiFacade.getInstance(project).findClass(linkAddress, GlobalSearchScope.allScope(project));
-           if(Objects.isNull(psiClassLink)) {
-               //可能没有获得全路径，尝试获得全路径
-               String[] importPaths=field.getParent().getContext().getText().split("import");
-               if(importPaths.length>1){
-                   for(String importPath:importPaths){
-                       importPath=importPath.split(";")[0];
-                       if(importPath.contains(linkAddress.split("\\.")[0])){
-                           linkAddress=importPath.split(linkAddress.split("\\.")[0])[0]+linkAddress;
-                           psiClassLink= JavaPsiFacade.getInstance(project).findClass(linkAddress.trim(), GlobalSearchScope.allScope(project));
-                           if(Objects.nonNull(psiClassLink)) {
-                               result.add(psiClassLink);
+           try {
+               String linkAddress = linkstr[i].split("}")[0].trim();
+               PsiClass psiClassLink = JavaPsiFacade.getInstance(project).findClass(linkAddress, GlobalSearchScope.allScope(project));
+               if (Objects.isNull(psiClassLink)) {
+                   //可能没有获得全路径，尝试获得全路径
+                   String[] importPaths = field.getParent().getContext().getText().split("import");
+                   if (importPaths.length > 1) {
+                       for (String importPath : importPaths) {
+                           importPath = importPath.split(";")[0];
+                           if (importPath.contains(linkAddress.split("\\.")[0])) {
+                               linkAddress = importPath.split(linkAddress.split("\\.")[0])[0] + linkAddress;
+                               psiClassLink = JavaPsiFacade.getInstance(project).findClass(linkAddress.trim(), GlobalSearchScope.allScope(project));
+                               if (Objects.nonNull(psiClassLink)) {
+                                   result.add(psiClassLink);
+                               }
+                               break;
                            }
-                           break;
                        }
                    }
-               }
-               if(Objects.isNull(psiClassLink)){
-                   //如果是同包情况
-                   linkAddress= ((PsiJavaFileImpl) ((PsiClassImpl) field.getParent()).getContext()).getPackageName()+"."+linkAddress;
-                   psiClassLink= JavaPsiFacade.getInstance(project).findClass(linkAddress, GlobalSearchScope.allScope(project));
-                   if(Objects.nonNull(psiClassLink)) {
-                       result.add(psiClassLink);
+                   if (Objects.isNull(psiClassLink)) {
+                       //如果是同包情况
+                       linkAddress = ((PsiJavaFileImpl) ((PsiClassImpl) field.getParent()).getContext()).getPackageName() + "." + linkAddress;
+                       psiClassLink = JavaPsiFacade.getInstance(project).findClass(linkAddress, GlobalSearchScope.allScope(project));
+                       if (Objects.nonNull(psiClassLink)) {
+                           result.add(psiClassLink);
+                       }
                    }
+                   //如果小于等于一为不存在import，不做处理
+               } else {
+                   result.add(psiClassLink);
                }
-               //如果小于等于一为不存在import，不做处理
-           }else{
-               result.add(psiClassLink);
+           }catch (Exception e){
            }
        }
        return result;
