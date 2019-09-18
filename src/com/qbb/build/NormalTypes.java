@@ -1,10 +1,10 @@
 package com.qbb.build;
 
+import io.netty.util.internal.StringUtil;
 import org.jetbrains.annotations.NonNls;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -16,7 +16,7 @@ import java.util.*;
 public class NormalTypes {
 
     @NonNls
-    public static final Map<String, Object> normalTypes = new HashMap<>();
+    public static final Map<String, String> normalTypes = new HashMap<>();
 
     public static final Map<String,Object> noramlTypesPackages=new HashMap<>();
 
@@ -30,31 +30,31 @@ public class NormalTypes {
 
 
     static {
-        normalTypes.put("int",1);
-        normalTypes.put("boolean",false);
-        normalTypes.put("byte",1);
-        normalTypes.put("short",1);
-        normalTypes.put("long",1L);
-        normalTypes.put("float",1.0F);
-        normalTypes.put("double",1.0D);
-        normalTypes.put("char",'a');
-        normalTypes.put("Boolean", false);
-        normalTypes.put("Byte", 0);
-        normalTypes.put("Short", Short.valueOf((short) 0));
-        normalTypes.put("Integer", 0);
-        normalTypes.put("Long", 0L);
-        normalTypes.put("Float", 0.0F);
-        normalTypes.put("Double", 0.0D);
-        normalTypes.put("String", "String");
-        normalTypes.put("Date", new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(new Date()));
-        normalTypes.put("BigDecimal",0.111111);
-        normalTypes.put("LocalDate", new SimpleDateFormat("YYYY-MM-dd").format(new Date()));
-        normalTypes.put("LocalTime", new SimpleDateFormat("HH:mm:ss").format(new Date()));
-        normalTypes.put("LocalDateTime", new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(new Date()));
-        normalTypes.put("Timestamp",new Timestamp(System.currentTimeMillis()));
-        collectTypes.put("HashMap","HashMap");
-        collectTypes.put("Map","Map");
-        collectTypes.put("LinkedHashMap","LinkedHashMap");
+        normalTypes.put("int","integer");
+        normalTypes.put("boolean","boolean");
+        normalTypes.put("byte","string");
+        normalTypes.put("short","integer");
+        normalTypes.put("long","integer");
+        normalTypes.put("float","number");
+        normalTypes.put("double","number");
+        normalTypes.put("char","string");
+        normalTypes.put("Boolean", "boolean");
+        normalTypes.put("Byte", "string");
+        normalTypes.put("Short", "integer");
+        normalTypes.put("Integer", "integer");
+        normalTypes.put("Long", "integer");
+        normalTypes.put("Float", "number");
+        normalTypes.put("Double", "number");
+        normalTypes.put("String", "string");
+        normalTypes.put("Date", "string");
+        normalTypes.put("BigDecimal","number");
+        normalTypes.put("LocalDate", "string");
+        normalTypes.put("LocalTime", "string");
+        normalTypes.put("LocalDateTime", "string");
+        normalTypes.put("Timestamp","integer");
+        collectTypes.put("HashMap","object");
+        collectTypes.put("Map","object");
+        collectTypes.put("LinkedHashMap","object");
 
         genericList.add("T");
         genericList.add("E");
@@ -97,6 +97,11 @@ public class NormalTypes {
 
 
     public static boolean isNormalType(String typeName) {
-        return normalTypes.containsKey(typeName);
+        return normalTypes.containsKey(typeName) || noramlTypesPackages.containsKey(typeName);
+    }
+
+    public static String getYapiType(String typeName) {
+        String type = normalTypes.get(typeName);
+        return StringUtil.isNullOrEmpty(type)?typeName:type;
     }
 }

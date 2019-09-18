@@ -52,7 +52,7 @@ public class UploadToYapi extends AnAction {
         String attachUpload=null;
         // 获取配置
         try {
-            String projectConfig=new String(editor.getProject().getProjectFile().contentsToByteArray(),"utf-8");
+            String projectConfig=new String(editor.getProject().getBaseDir().findFileByRelativePath("src/main/resources/yapi.xml").contentsToByteArray(),"utf-8");
             String[] modules=projectConfig.split("moduleList\">");
             if(modules.length>1){
                 String[] moduleList=modules[1].split("</")[0].split(",");
