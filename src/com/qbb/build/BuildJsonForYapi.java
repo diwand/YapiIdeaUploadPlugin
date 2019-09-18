@@ -771,20 +771,9 @@ public class BuildJsonForYapi{
                 }
                 kv.set(name, jsonObject);
             }else if(!(type instanceof PsiArrayType)&&((PsiClassReferenceType) type).resolve().isEnum()) {
-                PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(type.getCanonicalText(), GlobalSearchScope.allScope(project));
                 JsonObject jsonObject=new JsonObject();
                 jsonObject.addProperty("type","integer");
-                int enumIndex = 0;
-                for (PsiField field1 : psiClass.getFields()) {
-                    if(field1.getDocComment()!=null) {
-                        remark += " \r\n" + enumIndex + ":" + field1.getName() + " ";
-                        remark += DesUtil.getFiledDesc(field1.getDocComment());
-                        //获得link 备注
-                        remark = DesUtil.getLinkRemark(remark, project, field1);
-                        getFilePath(project,filePaths,DesUtil.getFieldLinks(project,field1));
-                        enumIndex++;
-                    }
-                }
+                remark = getEnumRemark(project, type, remark);
                 if(!Strings.isNullOrEmpty(remark)) {
                     jsonObject.addProperty("description", remark);
                 }
@@ -837,7 +826,11 @@ public class BuildJsonForYapi{
                     if(!Strings.isNullOrEmpty(remark)) {
                         kvlist.set("description", remark);
                     }
-                } else {
+                } else if(!(deepType instanceof PsiArrayType)&&((PsiClassReferenceType) deepType).resolve().isEnum()) {
+                    remark = getEnumRemark(project, deepType, remark);
+                    kvlist.set("type", "integer");
+                }
+                else{
                     kvlist.set(KV.by("type","object"));
                     PsiClass psiClass= PsiUtil.resolveClassInType(deepType);
                     cType=psiClass.getName();
@@ -1025,6 +1018,22 @@ public class BuildJsonForYapi{
                 }
             }
         });
+    }
+
+    public static String getEnumRemark(Project project, PsiType type, String remark) {
+        PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(type.getCanonicalText(), GlobalSearchScope.allScope(project));
+        int enumIndex = 0;
+        for (PsiField field1 : psiClass.getFields()) {
+            if(field1.getDocComment()!=null) {
+                remark += " \r\n" + enumIndex + ":" + field1.getName() + " ";
+                remark += DesUtil.getFiledDesc(field1.getDocComment());
+                //获得link 备注
+                remark = DesUtil.getLinkRemark(remark, project, field1);
+                getFilePath(project,filePaths,DesUtil.getFieldLinks(project,field1));
+                enumIndex++;
+            }
+        }
+        return type.getCanonicalText() + "\r\n" + remark;
     }
 
 }
