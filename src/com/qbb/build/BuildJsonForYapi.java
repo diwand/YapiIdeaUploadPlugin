@@ -771,8 +771,20 @@ public class BuildJsonForYapi{
                 }
                 kv.set(name, jsonObject);
             }else if(!(type instanceof PsiArrayType)&&((PsiClassReferenceType) type).resolve().isEnum()) {
+                PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(type.getCanonicalText(), GlobalSearchScope.allScope(project));
                 JsonObject jsonObject=new JsonObject();
-                jsonObject.addProperty("type","enum");
+                jsonObject.addProperty("type","integer");
+                int enumIndex = 0;
+                for (PsiField field1 : psiClass.getFields()) {
+                    if(field1.getDocComment()!=null) {
+                        remark += " \r\n" + enumIndex + ":" + field1.getName() + " ";
+                        remark += DesUtil.getFiledDesc(field1.getDocComment());
+                        //获得link 备注
+                        remark = DesUtil.getLinkRemark(remark, project, field1);
+                        getFilePath(project,filePaths,DesUtil.getFieldLinks(project,field1));
+                        enumIndex++;
+                    }
+                }
                 if(!Strings.isNullOrEmpty(remark)) {
                     jsonObject.addProperty("description", remark);
                 }
