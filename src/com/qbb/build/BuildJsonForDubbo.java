@@ -107,7 +107,7 @@ public class BuildJsonForDubbo{
         if(psiMethodTarget!=null){
             try {
                 // 获得响应
-                yapiDubboDTO.setResponse(BuildJsonForYapi.getResponse(project,psiMethodTarget.getReturnType()));
+                yapiDubboDTO.setResponse(BuildJsonForYapi.getResponse(project,psiMethodTarget.getReturnType(), null));
             } catch (JSONException e1) {
                 e1.printStackTrace();
             }
