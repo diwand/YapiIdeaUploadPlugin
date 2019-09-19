@@ -538,7 +538,7 @@ public class BuildJsonForYapi{
     public static String getResponse(Project project,PsiType psiType, String returnClass) throws JSONException{
         String response = null;
         /** 最外层的包装类只会有一个泛型对应接口返回值 */
-        if (!StringUtil.isNullOrEmpty(returnClass) && !psiType.getCanonicalText().split("<")[0].equals(returnClass)) {
+        if (!Strings.isNullOrEmpty(returnClass) && !psiType.getCanonicalText().split("<")[0].equals(returnClass)) {
             PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(returnClass, GlobalSearchScope.allScope(project));
             KV result = new KV();
             List<String> requiredList=new ArrayList<>();
