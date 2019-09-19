@@ -61,9 +61,7 @@ public class BuildJsonForYapi{
         String selectedText=e.getRequiredData(CommonDataKeys.EDITOR).getSelectionModel().getSelectedText();
         Project project = editor.getProject();
         if(Strings.isNullOrEmpty(selectedText)){
-            Notification error = notificationGroup.createNotification("please select method or class", NotificationType.ERROR);
-            Notifications.Bus.notify(error, project);
-            return null;
+            selectedText = psiFile.getVirtualFile().getName().split("\\.")[0];
         }
         PsiElement referenceAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
         PsiClass selectedClass = (PsiClass) PsiTreeUtil.getContextOfType(referenceAt, new Class[]{PsiClass.class});
