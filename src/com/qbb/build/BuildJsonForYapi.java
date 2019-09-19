@@ -752,9 +752,17 @@ public class BuildJsonForYapi{
             }else if(!(type instanceof PsiArrayType)&&((PsiClassReferenceType) type).resolve().isEnum()) {
                 JsonObject jsonObject=new JsonObject();
                 jsonObject.addProperty("type","enum");
-                if(!Strings.isNullOrEmpty(remark)) {
-                    jsonObject.addProperty("description", remark);
+                if (Strings.isNullOrEmpty(remark)) {
+                    PsiField[] fields = ((PsiClassReferenceType) type).resolve().getAllFields();
+                    List<PsiField> fieldList = Arrays.stream(fields).filter(f -> f instanceof PsiEnumConstant).collect(Collectors.toList());
+                    StringBuilder remarkBuilder = new StringBuilder();
+                    for (PsiField psiField : fieldList) {
+                        remarkBuilder.append(psiField.getName()).append("-").append(DesUtil.getFiledDesc(psiField.getDocComment()));
+                        remarkBuilder.append("\n");
+                    }
+                    remark = remarkBuilder.toString();
                 }
+                jsonObject.addProperty("description", remark);
                 kv.set(name, jsonObject);
             }else if(NormalTypes.genericList.contains(fieldTypeName)) {
                 if(childType!=null) {
