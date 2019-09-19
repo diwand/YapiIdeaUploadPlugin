@@ -757,7 +757,9 @@ public class BuildJsonForYapi{
                     List<PsiField> fieldList = Arrays.stream(fields).filter(f -> f instanceof PsiEnumConstant).collect(Collectors.toList());
                     StringBuilder remarkBuilder = new StringBuilder();
                     for (PsiField psiField : fieldList) {
-                        remarkBuilder.append(psiField.getName()).append("-").append(DesUtil.getFiledDesc(psiField.getDocComment()));
+                        String comment=DesUtil.getFiledDesc(psiField.getDocComment());
+                        comment=Strings.isNullOrEmpty(comment)?comment:"-"+comment;
+                        remarkBuilder.append(psiField.getName()).append(comment);
                         remarkBuilder.append("\n");
                     }
                     remark = remarkBuilder.toString();
