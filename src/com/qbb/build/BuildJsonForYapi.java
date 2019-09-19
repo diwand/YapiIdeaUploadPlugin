@@ -773,6 +773,12 @@ public class BuildJsonForYapi{
                         index=index+1;
                         PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childType[index].split(">")[0], GlobalSearchScope.allScope(project));
                         getCollect(kv, psiClassChild.getName(), remark, psiClassChild, project, name,pName,childType,index+1);
+                    } else if(NormalTypes.isNormalType(child)){
+                        KV kv1 = new KV();
+                        PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(child, GlobalSearchScope.allScope(project));
+                        kv1.set(KV.by("type", psiClassChild.getName()));
+                        kv.set(name, kv1);
+                        kv1.set(KV.by("description", (Strings.isNullOrEmpty(remark)?name:remark)));
                     } else {
                         //class type
                         KV kv1 = new KV();
