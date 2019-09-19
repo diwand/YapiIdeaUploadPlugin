@@ -49,6 +49,7 @@ public class UploadToYapi extends AnAction {
         String projectId=null;
         String yapiUrl=null;
         String projectType=null;
+        String returnClass=null;
         String attachUpload=null;
         // 获取配置
         try {
@@ -64,6 +65,7 @@ public class UploadToYapi extends AnAction {
                         projectId = projectConfig.split(moduleList[i]+"\\.Id\">")[1].split("</")[0];
                         yapiUrl = projectConfig.split(moduleList[i]+"\\.Url\">")[1].split("</")[0];
                         projectType = projectConfig.split(moduleList[i]+"\\.Type\">")[1].split("</")[0];
+                        returnClass = projectConfig.split(moduleList[i]+"\\.Class\">")[1].split("</")[0];
                         String[] attachs = projectConfig.split(moduleList[i]+"\\.AttachUploadUrl\">");
                         if (attachs.length > 1) {
                             attachUpload = attachs[1].split("</")[0];
@@ -76,6 +78,7 @@ public class UploadToYapi extends AnAction {
                 projectId = projectConfig.split("projectId\">")[1].split("</")[0];
                 yapiUrl = projectConfig.split("yapiUrl\">")[1].split("</")[0];
                 projectType = projectConfig.split("projectType\">")[1].split("</")[0];
+                returnClass = projectConfig.split("returnClass\">")[1].split("</")[0];
                 String[] attachs = projectConfig.split("attachUploadUrl\">");
                 if (attachs.length > 1) {
                     attachUpload = attachs[1].split("</")[0];
@@ -125,7 +128,7 @@ public class UploadToYapi extends AnAction {
             }
         }else if(ProjectTypeConstant.api.equals(projectType)){
             //获得api 需上传的接口列表 参数对象
-            ArrayList<YapiApiDTO> yapiApiDTOS=new BuildJsonForYapi().actionPerformedList(e,attachUpload);
+            ArrayList<YapiApiDTO> yapiApiDTOS=new BuildJsonForYapi().actionPerformedList(e, attachUpload, returnClass);
             if(yapiApiDTOS!=null) {
                 for (YapiApiDTO yapiApiDTO : yapiApiDTOS) {
                     YapiSaveParam yapiSaveParam = new YapiSaveParam(projectToken, yapiApiDTO.getTitle(), yapiApiDTO.getPath(), yapiApiDTO.getParams(), yapiApiDTO.getRequestBody(), yapiApiDTO.getResponse(), Integer.valueOf(projectId), yapiUrl, true, yapiApiDTO.getMethod(), yapiApiDTO.getDesc(), yapiApiDTO.getHeader());
