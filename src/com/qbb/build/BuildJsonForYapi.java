@@ -60,9 +60,6 @@ public class BuildJsonForYapi{
         PsiFile psiFile = (PsiFile) e.getDataContext().getData(CommonDataKeys.PSI_FILE);
         String selectedText=e.getRequiredData(CommonDataKeys.EDITOR).getSelectionModel().getSelectedText();
         Project project = editor.getProject();
-        if(Strings.isNullOrEmpty(selectedText)){
-            selectedText = psiFile.getVirtualFile().getName().split("\\.")[0];
-        }
         PsiElement referenceAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
         PsiClass selectedClass = (PsiClass) PsiTreeUtil.getContextOfType(referenceAt, new Class[]{PsiClass.class});
         String classMenu=null;
@@ -73,7 +70,7 @@ public class BuildJsonForYapi{
              classMenu=DesUtil.getMenu(selectedClass.getText());
         }
         ArrayList<YapiApiDTO> yapiApiDTOS=new ArrayList<>();
-        if(selectedText.equals(selectedClass.getName())){
+        if(Strings.isNullOrEmpty(selectedText) || selectedText.equals(selectedClass.getName())){
             PsiMethod[] psiMethods=selectedClass.getMethods();
             for(PsiMethod psiMethodTarget:psiMethods) {
                 //去除私有方法
@@ -554,7 +551,8 @@ public class BuildJsonForYapi{
             result.set("properties", kvObject);
             response = result.toPrettyJson();
         } else {
-            response = getPojoJson(project, psiType).toPrettyJson();
+            KV kv=getPojoJson(project, psiType);
+            response =Objects.isNull(kv)?"":kv.toPrettyJson();
         }
         return response;
     }

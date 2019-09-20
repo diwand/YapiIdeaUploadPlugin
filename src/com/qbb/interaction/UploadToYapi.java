@@ -61,14 +61,14 @@ public class UploadToYapi extends AnAction {
                 String virtualFile=psiFile.getVirtualFile().getPath();
                 for(int i=0;i<moduleList.length;i++) {
                     if(virtualFile.contains(moduleList[i])){
-                        projectToken = projectConfig.split(moduleList[i]+"\\.Token\">")[1].split("</")[0];
-                        projectId = projectConfig.split(moduleList[i]+"\\.Id\">")[1].split("</")[0];
-                        yapiUrl = projectConfig.split(moduleList[i]+"\\.Url\">")[1].split("</")[0];
-                        projectType = projectConfig.split(moduleList[i]+"\\.Type\">")[1].split("</")[0];
-                        if (projectConfig.split(moduleList[i]+"\\.Class\">").length > 1) {
-                            returnClass = projectConfig.split(moduleList[i] + "\\.Class\">")[1].split("</")[0];
+                        projectToken = projectConfig.split(moduleList[i]+"\\.projectToken\">")[1].split("</")[0];
+                        projectId = projectConfig.split(moduleList[i]+"\\.projectId\">")[1].split("</")[0];
+                        yapiUrl = projectConfig.split(moduleList[i]+"\\.yapiUrl\">")[1].split("</")[0];
+                        projectType = projectConfig.split(moduleList[i]+"\\.projectType\">")[1].split("</")[0];
+                        if (projectConfig.split(moduleList[i]+"\\.returnClass\">").length > 1) {
+                            returnClass = projectConfig.split(moduleList[i] + "\\.returnClass\">")[1].split("</")[0];
                         }
-                        String[] attachs = projectConfig.split(moduleList[i]+"\\.AttachUploadUrl\">");
+                        String[] attachs = projectConfig.split(moduleList[i]+"\\.attachUploadUrl\">");
                         if (attachs.length > 1) {
                             attachUpload = attachs[1].split("</")[0];
                         }
