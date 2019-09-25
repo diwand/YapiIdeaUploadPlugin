@@ -278,4 +278,19 @@ public class DesUtil {
        }
        return result;
     }
+    
+    /**
+     * @description: 组装路径
+     * @param: [path, subPath]
+     * @return: void
+     * @author: chengsheng@qbb6.com
+     * @date: 2019/9/25
+     */ 
+    public static void addPath(StringBuilder path,String subPath){
+        if(subPath.startsWith("/")){
+            path.append(subPath);
+        }else{
+            path.append("/").append(subPath);
+        }
+    }
 }

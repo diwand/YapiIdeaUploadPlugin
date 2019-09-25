@@ -119,12 +119,12 @@ public class BuildJsonForYapi{
             PsiNameValuePair[] psiNameValuePairs= psiAnnotation.getParameterList().getAttributes();
             if(psiNameValuePairs.length>0){
                 if(psiNameValuePairs[0].getLiteralValue()!=null) {
-                    path.append(psiNameValuePairs[0].getLiteralValue());
+                    DesUtil.addPath(path,psiNameValuePairs[0].getLiteralValue());
                 }else{
                     PsiAnnotationMemberValue psiAnnotationMemberValue=psiAnnotation.findAttributeValue("value");
                     if(psiAnnotationMemberValue!=null){
                         String[] results=psiAnnotationMemberValue.getReference().resolve().getText().split("=");
-                        path.append(results[results.length-1].split(";")[0].replace("\"","").trim());
+                        DesUtil.addPath(path,results[results.length-1].split(";")[0].replace("\"","").trim());
                     }
                 }
             }
@@ -139,10 +139,10 @@ public class BuildJsonForYapi{
                     if(Objects.isNull(psiNameValuePair.getName())||"value".equals(psiNameValuePair.getName())){
                         PsiReference psiReference= psiNameValuePair.getValue().getReference();
                         if(psiReference==null){
-                            path.append(psiNameValuePair.getLiteralValue());
+                            DesUtil.addPath(path,psiNameValuePair.getLiteralValue());
                         }else{
                             String[] results=psiReference.resolve().getText().split("=");
-                            path.append(results[results.length-1].split(";")[0].replace("\"","").trim());
+                            DesUtil.addPath(path,results[results.length-1].split(";")[0].replace("\"","").trim());
                             yapiApiDTO.setTitle(DesUtil.getUrlReFerenceRDesc(psiReference.resolve().getText()));
                             yapiApiDTO.setMenu(DesUtil.getMenu(psiReference.resolve().getText()));
                             yapiApiDTO.setStatus(DesUtil.getStatus(psiReference.resolve().getText()));
@@ -202,10 +202,10 @@ public class BuildJsonForYapi{
                         if (Objects.isNull(psiNameValuePair.getName()) || psiNameValuePair.getName().equals("value")) {
                             PsiReference psiReference = psiNameValuePair.getValue().getReference();
                             if (psiReference == null) {
-                                path.append(psiNameValuePair.getLiteralValue());
+                                DesUtil.addPath(path,psiNameValuePair.getLiteralValue());
                             } else {
                                 String[] results = psiReference.resolve().getText().split("=");
-                                path.append(results[results.length - 1].split(";")[0].replace("\"", "").trim());
+                                DesUtil.addPath(path,results[results.length - 1].split(";")[0].replace("\"", "").trim());
                                 yapiApiDTO.setTitle(DesUtil.getUrlReFerenceRDesc(psiReference.resolve().getText()));
                                 yapiApiDTO.setMenu(DesUtil.getMenu(psiReference.resolve().getText()));
                                 yapiApiDTO.setStatus(DesUtil.getStatus(psiReference.resolve().getText()));
