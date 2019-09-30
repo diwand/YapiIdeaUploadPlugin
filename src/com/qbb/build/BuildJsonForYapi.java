@@ -869,10 +869,16 @@ public class BuildJsonForYapi{
                 if(((PsiClassReferenceType) type).getParameters().length>1) {
                     KV keyObj=new KV();
                     keyObj.set("type","object");
-                    keyObj.set("description",((PsiClassReferenceType) type).getParameters()[0].getPresentableText());
+                    keyObj.set("description",((PsiClassReferenceType) type).getParameters()[1].getPresentableText());
                     keyObj.set("properties",getFields(PsiUtil.resolveClassInType(((PsiClassReferenceType) type).getParameters()[1]), project, childType, index, new ArrayList<>()));
+
+                    KV key=new KV();
+                    key.set("type","object");
+                    key.set("description",((PsiClassReferenceType) type).getParameters()[0].getPresentableText());
+
                     KV keyObjSup=new KV();
-                    keyObjSup.set("mapKey",keyObj);
+                    keyObjSup.set("mapKey",key);
+                    keyObjSup.set("mapValue",keyObj);
                     kv1.set("properties",keyObjSup);
                 }else{
                     kv1.set(KV.by("description","请完善Map<?,?>"));
