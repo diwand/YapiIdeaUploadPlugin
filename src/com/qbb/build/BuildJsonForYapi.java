@@ -627,20 +627,28 @@ public class BuildJsonForYapi{
             result.set("description", psiType.getPresentableText());
             result.set("items", listKv);
             return result;
-        }else if(psiType.getPresentableText().startsWith("Map")){
-            HashMap hashMapChild=new HashMap();
-            String[] types=psiType.getCanonicalText().split("<");
-            if(types.length>1){
-                hashMapChild.put("paramMap",psiType.getPresentableText());
+        }else if(psiType.getPresentableText().startsWith("Map") || psiType.getPresentableText().startsWith("HashMap") || psiType.getPresentableText().startsWith("LinkedHashMap")){
+            KV kv1=new KV();
+            kv1.set(KV.by("type","object"));
+            kv1.set(KV.by("description","(该参数为map)"));
+            if(((PsiClassReferenceType) psiType).getParameters().length>1) {
+                KV keyObj=new KV();
+                keyObj.set("type","object");
+                keyObj.set("description",((PsiClassReferenceType) psiType).getParameters()[1].getPresentableText());
+                keyObj.set("properties",getFields(PsiUtil.resolveClassInType(((PsiClassReferenceType) psiType).getParameters()[1]), project, null, 0, new ArrayList<>()));
+
+                KV key=new KV();
+                key.set("type","object");
+                key.set("description",((PsiClassReferenceType) psiType).getParameters()[0].getPresentableText());
+
+                KV keyObjSup=new KV();
+                keyObjSup.set("mapKey",key);
+                keyObjSup.set("mapValue",keyObj);
+                kv1.set("properties",keyObjSup);
+            }else{
+                kv1.set(KV.by("description","请完善Map<?,?>"));
             }
-            KV kvClass=KV.create();
-            kvClass.set(types[0],hashMapChild);
-            KV result = new KV();
-            result.set("type", "object");
-            result.set("title", psiType.getPresentableText());
-            result.set("description", psiType.getPresentableText());
-            result.set("properties", hashMapChild);
-            return result;
+            return kv1;
         }else if(NormalTypes.collectTypes.containsKey(psiType.getPresentableText())){
             //如果是集合类型
             KV kvClass=KV.create();
