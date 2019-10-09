@@ -31,9 +31,7 @@ import org.codehaus.jettison.json.JSONException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -300,7 +298,7 @@ public class BuildJsonForYapi{
             }
             return yapiApiDTO;
         } catch (Exception ex) {
-            Notification error = notificationGroup.createNotification("Convert to JSON failed.", NotificationType.ERROR);
+            Notification error = notificationGroup.createNotification(Objects.nonNull(ex.getMessage())?ex.getMessage():"build response/request data error", NotificationType.ERROR);
             Notifications.Bus.notify(error, project);
         }
         return null;
@@ -537,18 +535,22 @@ public class BuildJsonForYapi{
             PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(returnClass, GlobalSearchScope.allScope(project));
             KV result = new KV();
             List<String> requiredList=new ArrayList<>();
-            KV kvObject = getFields(psiClass, project,null,null,requiredList);
-            for (PsiField field : psiClass.getAllFields()) {
-                if (NormalTypes.genericList.contains(field.getType().getPresentableText())) {
-                    KV child = getPojoJson(project, psiType);
-                    kvObject.set(field.getName(), child);
+            if(Objects.nonNull(psiClass)) {
+                KV kvObject = getFields(psiClass, project,null,null,requiredList);
+                for (PsiField field : psiClass.getAllFields()) {
+                    if (NormalTypes.genericList.contains(field.getType().getPresentableText())) {
+                        KV child = getPojoJson(project, psiType);
+                        kvObject.set(field.getName(), child);
+                    }
                 }
+                result.set("type", "object");
+                result.set("title", psiClass.getName());
+                result.set("required",requiredList);
+                result.set("description", psiClass.getQualifiedName());
+                result.set("properties", kvObject);
+            }else{
+                throw new RuntimeException("can not find class:"+returnClass);
             }
-            result.set("type", "object");
-            result.set("title", psiClass.getName());
-            result.set("required",requiredList);
-            result.set("description", psiClass.getQualifiedName());
-            result.set("properties", kvObject);
             response = result.toPrettyJson();
         } else {
             KV kv=getPojoJson(project, psiType);
