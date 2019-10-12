@@ -17,4 +17,6 @@ public interface JavaConstant {
     String HttpServletRequest="javax.servlet.http.HttpServletRequest";
 
     String HttpServletResponse="javax.servlet.http.HttpServletResponse";
+
+    String Deprecate="java.lang.Deprecated";
 }
