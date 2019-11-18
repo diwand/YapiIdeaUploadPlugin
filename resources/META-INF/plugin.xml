@@ -13,7 +13,7 @@
       <a href="https://github.com/diwand/YapiIdeaUploadPlugin">使用方式</a> <br>
       1.7.6:<br>
       <em>
-        - 新增mock 功能
+        - support base mock power
       </em><br>
       1.7.5:<br>
       <em>
@@ -40,10 +40,10 @@
       </em><br>
        1.7.1:<br>
       <em>
-        - 支持自定义描述不被覆盖(crazy分支支持)
-        - 菜单获取流程修改(crazy分支支持)
+        - 支持自定义描述不被覆盖(crazy branch)
+        - 菜单获取流程修改(crazy branch)
         - 支持状态@status 注释
-        - 支持多级分类(crazy分支支持)
+        - 支持多级分类(crazy branch)
       </em><br>
        1.7.0:<br>
       <em>
