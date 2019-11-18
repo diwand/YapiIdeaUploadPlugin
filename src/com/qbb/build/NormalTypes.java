@@ -1,5 +1,6 @@
 package com.qbb.build;
 
+import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NonNls;
 
 import java.sql.Timestamp;
@@ -99,4 +100,90 @@ public class NormalTypes {
     public static boolean isNormalType(String typeName) {
         return normalTypes.containsKey(typeName);
     }
+
+    /**
+     * mock type
+     * @param type
+     * @return
+     */
+    public static JsonObject formatMockType(String type) {
+        JsonObject mock = new JsonObject();
+        if (type.equals("int")){
+            mock.addProperty("mock", "@integer");
+        }else if (type.equals("boolean")){
+            mock.addProperty("mock", "@boolean");
+        }else if (type.equals("byte")){
+            mock.addProperty("mock", "@byte");
+        }else if (type.equals("short")){
+            mock.addProperty("mock", "@integer");
+        }else if (type.equals("long")){
+            mock.addProperty("mock", "@integer");
+        }else if (type.equals("float")){
+            mock.addProperty("mock", "@float");
+        }else if (type.equals("double")){
+            mock.addProperty("mock", "@float");
+        }else if (type.equals("char")){
+            mock.addProperty("mock", "@char");
+        }else if (type.equals("Boolean")){
+            mock.addProperty("mock", "@boolean");
+        }else if (type.equals("Byte")){
+            mock.addProperty("mock", "@byte");
+        }else if (type.equals("Short")){
+            mock.addProperty("mock", "@integer");
+        }else if (type.equals("Integer")){
+            mock.addProperty("mock", "@integer");
+        }else if (type.equals("Long")){
+            mock.addProperty("mock", "@integer");
+        }else if (type.equals("Float")){
+            mock.addProperty("mock", "@float");
+        }else if (type.equals("Double")){
+            mock.addProperty("mock", "@float");
+        }else if (type.equals("String")){
+            mock.addProperty("mock", "@string");
+        }else if (type.equals("Date")){
+            mock.addProperty("mock", "@timestamp");
+        }else if (type.equals("BigDecimal")){
+            mock.addProperty("mock", "@float");
+        }else if (type.equals("LocalDate")){
+            mock.addProperty("mock", "@timestamp");
+        }else if (type.equals("LocalTime")){
+            mock.addProperty("mock", "@timestamp");
+        }else if (type.equals("LocalDateTime")){
+            mock.addProperty("mock", "@timestamp");
+        }else if (type.equals("Timestamp")){
+            mock.addProperty("mock", "@timestamp");
+        }else if (type.equals("java.lang.Boolean")){
+            mock.addProperty("mock", "@boolean");
+        }else if (type.equals("java.lang.Byte")){
+            mock.addProperty("mock", "@byte");
+        }else if (type.equals("java.lang.Short")){
+            mock.addProperty("mock", "@integer");
+        }else if (type.equals("java.lang.Integer")){
+            mock.addProperty("mock", "@integer");
+        }else if (type.equals("java.lang.Long")){
+            mock.addProperty("mock", "@integer");
+        }else if (type.equals("java.lang.Float")){
+            mock.addProperty("mock", "@float");
+        }else if (type.equals("java.lang.Double")){
+            mock.addProperty("mock", "@float");
+        }else if (type.equals("java.sql.Timestamp")){
+            mock.addProperty("mock", "@timestamp");
+        }else if (type.equals("java.util.Date")){
+            mock.addProperty("mock", "@timestamp");
+        }else if (type.equals("java.lang.String")){
+            mock.addProperty("mock", "@string");
+        }else if (type.equals("java.math.BigDecimal")){
+            mock.addProperty("mock", "@float");
+        }else if (type.equals("java.time.LocalDate")){
+            mock.addProperty("mock", "@timestamp");
+        }else if (type.equals("java.time.LocalTime")){
+            mock.addProperty("mock", "@timestamp");
+        }else if (type.equals("java.time.LocalDateTime")){
+            mock.addProperty("mock", "@timestamp");
+        }else{
+            mock.addProperty("mock", "mock");
+        }
+        return mock;
+    }
+
 }
