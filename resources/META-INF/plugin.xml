@@ -11,88 +11,164 @@
 
   <change-notes><![CDATA[
       <a href="https://github.com/diwand/YapiIdeaUploadPlugin">how to use</a> <br>
-      1.7.6:<br>
+     1.7.6:<br>
       <em>
-        - support base mock power
+      - support base mock power
       </em><br>
-      1.7.5:<br>
+
+     1.7.5:<br>
       <em>
-        - response 完善支持map
-        - 支持Deprecated 不上传
-        - 处理循环调用问题
-        - 支持路径缺少 / 补全
+      - Response complete support map
+
+      - Support deprecated do not upload
+
+      - Dealing with loop calls
+
+      - Support path missing / complete
+
       </em><br>
+
       1.7.4:<br>
+
       <em>
-        -兼容老版本
-        -支持统一返回值设置
-        -新增默认为类名上传
-        -枚举字段解析
-        -统一多模块参数,解决枚举打包问题,
+
+      - Compatible with older versions
+
+      - Support unified return value setting
+
+      - Class name upload by default
+
+      - Enumeration field resolution
+
+      - Unify multi module parameters to solve enumeration packing problem,
+
       </em><br>
-       1.7.3:<br>
+
+      1.7.3:<br>
+
       <em>
-        -支持map,解决同包问题,去除缓存,支持notblank,支持package menu
+
+      - Support map, solve the same package problem, remove cache, support notblank, support package menu
+
       </em><br>
-        1.7.2:<br>
+
+      1.7.2:<br>
+
       <em>
-        - 新增支持localdata,localTime,localDataTime <br>
+
+      - New support for localdata, Localtime, localdatatime < br >
+
       </em><br>
-       1.7.1:<br>
+
+      1.7.1:<br>
+
       <em>
-        - 支持自定义描述不被覆盖(crazy branch)
-        - 菜单获取流程修改(crazy branch)
-        - 支持状态@status 注释
-        - 支持多级分类(crazy branch)
+
+      - Support for custom description not to be overwritten (crazy branch)
+
+      - Menu acquisition process modification (crazy branch)
+
+      - Support status @ status annotation
+
+      - Support multi-level classification (crazy branch)
+
       </em><br>
-       1.7.0:<br>
+
+      1.7.0:<br>
+
       <em>
-        - @menu 中:问题,支持dubbo
-        - 支持多link 下载
-        - 上传结果放入剪切板
-        - link 同包问题
+
+      - In @ menu: questions, Dubbo support
+
+      - Support for multi link Download
+
+      - Upload results to the clipboard
+
+      - Link same package problem
+
       </em><br>
-       1.6.9:<br>
+
+      1.6.9:<br>
+
       <em>
-        - fix deleteMapping and patchMapping
-        - fix menu bug
-        - 支持get 实体类接收
+
+      - fix deleteMapping and patchMapping
+
+      - fix menu bug
+
+      - Support get entity class receiving
+
       </em><br>
+
       1.6.8:<br>
+
       <em>
-        - 支持类级别路径引用
-        - 支持多个实体接收
-        - 支持 Response<List<User>> 泛型
+
+      - Support class level path reference
+
+      - Support multiple entity reception
+
+      - Support response < list < user > > generics
+
       </em>
-        1.6.7:<br>
+
+      1.6.7:<br>
+
       <em>
-        - 补充支持A,B,E,K,V 泛型写法
-        - 支持PathVariable
+
+      - Supplementary support for a, B, e, K, V generic writing
+
+      - Support for pathvariable
+
       <em> <br>
-       1.6.6:<br>
+
+      1.6.6:<br>
+
       <em>
-        - 支持XXXMapping 不写value
-        - 解决 response <> 在备注中显示 问题
-        - 支持request param 备注从注释中获取
+
+      - Support xxxmapping without writing value
+
+      - Solve the problem that response < > displays in the comments
+
+      - Support request param comments to get from comments
+
       </em> <br>
-       1.6.5:<br>
+
+      1.6.5:<br>
+
       <em>
-        - fixbug request 为 List<Long> 等 bug
-        - fix code.zip 概率性一样问题
-        - fix HttpServletRequest&HttpServletResponse 存在下Req_body_type 类型问题
+
+      - Fixbug request is list < long > and other bugs
+
+      - Fix code.zip the same problem of probability
+
+      - The req? Body? Type problem exists in fix HttpServletRequest & httpservletresponse
+
       </em>
+
       <br>
+
       1.6.4:<br>
+
       <em>
-        - 支持类级别 分类定义
-        <em>
-       <br>
-        1.6.3:<br>
-      <em> fix 多级泛型问题
-      - 支持@NotNull 注解
-      - 支持PutMapping,DeleteMapping,
-      - 支持 model 接收参数和application/x-www-form-urlencoded
-      - 支持自定义分类 <br>
+
+      - Support class level classification definition
+
+      <em>
+
+      <br>
+
+      1.6.3:<br>
+
+      <em>Fix multilevel generic problems
+
+      - Support @ notnull annotation
+
+      - Support putmapping, deletemapping,
+
+      - Support model receiving parameters and application / x-www-form-urlencoded
+
+      - Support user-defined classification < br >
 
     ]]>
   </change-notes>
