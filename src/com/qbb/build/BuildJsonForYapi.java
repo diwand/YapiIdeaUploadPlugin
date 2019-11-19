@@ -74,12 +74,14 @@ public class BuildJsonForYapi{
             PsiMethod[] psiMethods=selectedClass.getMethods();
             for(PsiMethod psiMethodTarget:psiMethods) {
                 //去除私有方法
-                if(!psiMethodTarget.getModifierList().hasModifierProperty("private")) {
+                if(!psiMethodTarget.getModifierList().hasModifierProperty("private")&& Objects.nonNull(psiMethodTarget.getReturnType())) {
                     YapiApiDTO yapiApiDTO=actionPerformed(selectedClass, psiMethodTarget, project, psiFile,attachUpload, returnClass);
-                    if(Objects.isNull(yapiApiDTO.getMenu())){
-                        yapiApiDTO.setMenu(classMenu);
+                    if(Objects.nonNull(yapiApiDTO)) {
+                        if (Objects.isNull(yapiApiDTO.getMenu())) {
+                            yapiApiDTO.setMenu(classMenu);
+                        }
+                        yapiApiDTOS.add(yapiApiDTO);
                     }
-                    yapiApiDTOS.add(yapiApiDTO);
                 }
             }
         }else{
@@ -94,10 +96,12 @@ public class BuildJsonForYapi{
             }
             if(Objects.nonNull(psiMethodTarget)) {
                 YapiApiDTO yapiApiDTO= actionPerformed(selectedClass, psiMethodTarget, project, psiFile,attachUpload, returnClass);
-                if(Objects.isNull(yapiApiDTO.getMenu())){
-                    yapiApiDTO.setMenu(classMenu);
+                if(Objects.nonNull(yapiApiDTO)) {
+                    if (Objects.isNull(yapiApiDTO.getMenu())) {
+                        yapiApiDTO.setMenu(classMenu);
+                    }
+                    yapiApiDTOS.add(yapiApiDTO);
                 }
-                yapiApiDTOS.add(yapiApiDTO);
             }else{
                 Notification error = notificationGroup.createNotification("can not find method:"+selectedText, NotificationType.ERROR);
                 Notifications.Bus.notify(error, project);
