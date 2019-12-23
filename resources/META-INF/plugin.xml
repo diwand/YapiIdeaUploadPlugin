@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>YapiUpload</id>
   <name>YapiUpload</name>
-  <version>1.7.6</version>
+  <version>1.7.7</version>
   <vendor email="chengsheng@qbb6.com" url="http://www.qbb6.com">QBB</vendor>
 
   <description><![CDATA[
@@ -11,6 +11,10 @@
 
   <change-notes><![CDATA[
       <a href="https://github.com/diwand/YapiIdeaUploadPlugin">how to use</a> <br>
+     1.7.7:<br>
+     <em>
+      - support swagger
+     </em><br>
      1.7.6:<br>
       <em>
       - support base mock power
