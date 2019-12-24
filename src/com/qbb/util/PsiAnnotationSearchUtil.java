@@ -1,5 +1,6 @@
 package com.qbb.util;
 
+import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiAnnotation;
@@ -190,4 +191,34 @@ public class PsiAnnotationSearchUtil {
         }
         return false;
     }
+
+
+
+    /**
+     * 获取psi注解value
+     *
+     * @param psiParameter
+     * @param annotationName
+     * @return
+     */
+    public static String getPsiParameterAnnotationValue(PsiModifierListOwner psiParameter, String annotationName) {
+        return getPsiParameterAnnotationParam(psiParameter, annotationName, PsiAnnotation.DEFAULT_REFERENCED_METHOD_NAME);
+    }
+
+    /**
+     * 获取注解某个值
+     *
+     * @param psiParameter
+     * @param annotationName
+     * @return
+     */
+    public static String getPsiParameterAnnotationParam(PsiModifierListOwner psiParameter, String annotationName, String paramName) {
+        PsiAnnotation annotation = PsiAnnotationSearchUtil.findAnnotation(psiParameter, annotationName);
+        if (annotation == null) {
+            return null;
+        }
+
+        return AnnotationUtil.getStringAttributeValue(annotation, paramName);
+    }
+
 }

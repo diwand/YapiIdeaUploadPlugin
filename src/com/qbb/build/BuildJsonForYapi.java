@@ -61,8 +61,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -74,14 +72,11 @@ public class BuildJsonForYapi {
     private static NotificationGroup notificationGroup;
 
     static {
-        notificationGroup = new NotificationGroup("Java2Json.NotificationGroup", NotificationDisplayType.BALLOON, true);
+        notificationGroup = new NotificationGroup("BuildJson.NotificationGroup", NotificationDisplayType.BALLOON, true);
     }
 
     static Set<String> filePaths = new CopyOnWriteArraySet<>();
 
-    static Pattern humpPattern = Pattern.compile("[A-Z]");
-
-    static final String DASH = "-";
 
     /**
      * 批量生成 接口数据
@@ -104,7 +99,7 @@ public class BuildJsonForYapi {
             classMenu = DesUtil.getMenu(selectedClass.getText());
         }
         if (StringUtils.isEmpty(classMenu)) {
-            classMenu = camelToLine(selectedClass.getName(), DASH);
+            classMenu = DesUtil.camelToLine(selectedClass.getName(),null);
         }
         ArrayList<YapiApiDTO> yapiApiDTOS = new ArrayList<>();
         if (Strings.isNullOrEmpty(selectedText) || selectedText.equals(selectedClass.getName())) {
@@ -171,11 +166,11 @@ public class BuildJsonForYapi {
             }
         }
         //获取swagger注解
-        String operation = getPsiParameterAnnotationValue(psiMethodTarget, SwaggerConstants.API_OPERATION);
+        String operation = PsiAnnotationSearchUtil.getPsiParameterAnnotationValue(psiMethodTarget, SwaggerConstants.API_OPERATION);
         if (StringUtils.isNotEmpty(operation)) {
             Notification info = notificationGroup.createNotification("apiOperation:" + operation, NotificationType.INFORMATION);
             Notifications.Bus.notify(info, project);
-            yapiApiDTO.setDesc(operation);
+            yapiApiDTO.setTitle(operation);
         }
 
         PsiAnnotation psiAnnotationMethod = PsiAnnotationSearchUtil.findAnnotation(psiMethodTarget, SpringMVCConstant.RequestMapping);
@@ -490,7 +485,7 @@ public class BuildJsonForYapi {
                             if (Strings.isNullOrEmpty(yapiPathVariableDTO.getName())) {
                                 yapiPathVariableDTO.setName(psiParameter.getName());
                             }
-                            String desc = getPsiParameterAnnotationValue(psiParameter, SwaggerConstants.API_PARAM);
+                            String desc = PsiAnnotationSearchUtil.getPsiParameterAnnotationValue(psiParameter, SwaggerConstants.API_PARAM);
                             if (StringUtils.isNotEmpty(desc)) {
                                 yapiPathVariableDTO.setDesc(desc);
                             }
@@ -506,7 +501,7 @@ public class BuildJsonForYapi {
                             if (Strings.isNullOrEmpty(yapiQueryDTO.getName())) {
                                 yapiQueryDTO.setName(psiParameter.getName());
                             }
-                            String desc = getPsiParameterAnnotationValue(psiParameter, SwaggerConstants.API_PARAM);
+                            String desc = PsiAnnotationSearchUtil.getPsiParameterAnnotationValue(psiParameter, SwaggerConstants.API_PARAM);
                             if (StringUtils.isNotEmpty(desc)) {
                                 yapiQueryDTO.setDesc(desc);
                             }
@@ -825,7 +820,7 @@ public class BuildJsonForYapi {
         }
 
         //swagger支持
-        remark = StringUtils.defaultIfEmpty(getPsiParameterAnnotationValue(field, SwaggerConstants.API_MODEL_PROPERTY), "");
+        remark = StringUtils.defaultIfEmpty(PsiAnnotationSearchUtil.getPsiParameterAnnotationValue(field, SwaggerConstants.API_MODEL_PROPERTY), "");
 
         // 如果是基本类型
         if (type instanceof PsiPrimitiveType) {
@@ -835,7 +830,7 @@ public class BuildJsonForYapi {
                 jsonObject.addProperty("description", remark);
             }
             jsonObject.add("mock", NormalTypes.formatMockType(type.getPresentableText()
-                    , getPsiParameterAnnotationParam(field, SwaggerConstants.API_MODEL_PROPERTY, "example")));
+                    , PsiAnnotationSearchUtil.getPsiParameterAnnotationParam(field, SwaggerConstants.API_MODEL_PROPERTY, "example")));
             kv.set(name, jsonObject);
         } else {
             //reference Type
@@ -848,7 +843,7 @@ public class BuildJsonForYapi {
                     jsonObject.addProperty("description", remark);
                 }
                 jsonObject.add("mock", NormalTypes.formatMockType(type.getPresentableText()
-                        , getPsiParameterAnnotationParam(field, SwaggerConstants.API_MODEL_PROPERTY, "example")));
+                        , PsiAnnotationSearchUtil.getPsiParameterAnnotationParam(field, SwaggerConstants.API_MODEL_PROPERTY, "example")));
                 kv.set(name, jsonObject);
             } else if (!(type instanceof PsiArrayType) && ((PsiClassReferenceType) type).resolve().isEnum()) {
                 JsonObject jsonObject = new JsonObject();
@@ -881,7 +876,7 @@ public class BuildJsonForYapi {
                         kv.set(name, kv1);
                         kv1.set(KV.by("description", (Strings.isNullOrEmpty(remark) ? name : remark)));
                         kv1.set(KV.by("mock", NormalTypes.formatMockType(child
-                                , getPsiParameterAnnotationParam(field, SwaggerConstants.API_MODEL_PROPERTY, "example"))));
+                                , PsiAnnotationSearchUtil.getPsiParameterAnnotationParam(field, SwaggerConstants.API_MODEL_PROPERTY, "example"))));
                     } else {
                         //class type
                         KV kv1 = new KV();
@@ -1125,51 +1120,6 @@ public class BuildJsonForYapi {
         });
     }
 
-    /**
-     * 驼峰转化  兼容swagger
-     *
-     * @param camelCase
-     * @return
-     */
-    private static String camelToLine(String camelCase, String split) {
-        Matcher matcher = humpPattern.matcher(camelCase);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            matcher.appendReplacement(sb, split + matcher.group(0).toLowerCase());
-        }
-        matcher.appendTail(sb);
-        String result = sb.toString();
-        if (result.startsWith(split)) {
-            result = result.substring(split.length());
-        }
-        return result;
-    }
 
-    /**
-     * 获取psi注解value
-     *
-     * @param psiParameter
-     * @param annotationName
-     * @return
-     */
-    private static String getPsiParameterAnnotationValue(PsiModifierListOwner psiParameter, String annotationName) {
-        return getPsiParameterAnnotationParam(psiParameter, annotationName, PsiAnnotation.DEFAULT_REFERENCED_METHOD_NAME);
-    }
-
-    /**
-     * 获取注解某个值
-     *
-     * @param psiParameter
-     * @param annotationName
-     * @return
-     */
-    private static String getPsiParameterAnnotationParam(PsiModifierListOwner psiParameter, String annotationName, String paramName) {
-        PsiAnnotation annotation = PsiAnnotationSearchUtil.findAnnotation(psiParameter, annotationName);
-        if (annotation == null) {
-            return null;
-        }
-
-        return AnnotationUtil.getStringAttributeValue(annotation, paramName);
-    }
 
 }
