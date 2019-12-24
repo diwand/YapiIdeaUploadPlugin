@@ -172,6 +172,7 @@ public class BuildJsonForYapi {
             Notifications.Bus.notify(info, project);
             yapiApiDTO.setTitle(operation);
         }
+        yapiApiDTO.setPath(path.toString());
 
         PsiAnnotation psiAnnotationMethod = PsiAnnotationSearchUtil.findAnnotation(psiMethodTarget, SpringMVCConstant.RequestMapping);
         if (psiAnnotationMethod != null) {
@@ -209,8 +210,6 @@ public class BuildJsonForYapi {
                         yapiApiDTO.setMethod(HttpMethodConstant.PATCH);
                     }
                 }
-            } else {
-                yapiApiDTO.setPath(path.toString());
             }
         } else {
             PsiAnnotation psiAnnotationMethodSemple = PsiAnnotationSearchUtil.findAnnotation(psiMethodTarget, SpringMVCConstant.GetMapping);
@@ -260,8 +259,6 @@ public class BuildJsonForYapi {
                             yapiApiDTO.setPath(path.toString().trim());
                         }
                     }
-                } else {
-                    yapiApiDTO.setPath(path.toString().trim());
                 }
             }
         }
@@ -775,6 +772,7 @@ public class BuildJsonForYapi {
                 if (NormalTypes.genericList.contains(psiClass.getName()) && childType != null && childType.length > index) {
                     String child = childType[index].split(">")[0];
                     PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(child, GlobalSearchScope.allScope(project));
+                    getFilePath(project, filePaths, Arrays.asList(psiClassChild));
                     return getFields(psiClassChild, project, childType, index + 1, requiredList, pNames);
                 } else {
                     for (PsiField field : psiClass.getAllFields()) {
