@@ -1,5 +1,5 @@
 #### 变更历史
-- 1.7.7: swagger 支持
+- 1.7.7: swagger 支持,swagger mock(@24kpure),fixbug
 - 1.7.6: 支持基本mock
 - 1.7.5: response 支持map,deprecated 注释的方式不上传，循环处理
 - 1.7.4: 兼容老版本,支持统一返回值设置(@zouzou6321),新增默认为类名上传,枚举字段解析(@sun7132568),统一多模块参数,解决枚举打包问题,
