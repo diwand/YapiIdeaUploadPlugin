@@ -104,7 +104,7 @@ public class BuildJsonForYapi {
             classMenu = DesUtil.getMenu(selectedClass.getText());
         }
         if (StringUtils.isEmpty(classMenu)) {
-            classMenu = camelToLine(selectedClass.getName());
+            classMenu = camelToLine(selectedClass.getName(), DASH);
         }
         ArrayList<YapiApiDTO> yapiApiDTOS = new ArrayList<>();
         if (Strings.isNullOrEmpty(selectedText) || selectedText.equals(selectedClass.getName())) {
@@ -834,7 +834,8 @@ public class BuildJsonForYapi {
             if (!Strings.isNullOrEmpty(remark)) {
                 jsonObject.addProperty("description", remark);
             }
-            jsonObject.add("mock", NormalTypes.formatMockType(type.getPresentableText()));
+            jsonObject.add("mock", NormalTypes.formatMockType(type.getPresentableText()
+                    , getPsiParameterAnnotationParam(field, SwaggerConstants.API_MODEL_PROPERTY, "example")));
             kv.set(name, jsonObject);
         } else {
             //reference Type
@@ -846,7 +847,8 @@ public class BuildJsonForYapi {
                 if (!Strings.isNullOrEmpty(remark)) {
                     jsonObject.addProperty("description", remark);
                 }
-                jsonObject.add("mock", NormalTypes.formatMockType(type.getPresentableText()));
+                jsonObject.add("mock", NormalTypes.formatMockType(type.getPresentableText()
+                        , getPsiParameterAnnotationParam(field, SwaggerConstants.API_MODEL_PROPERTY, "example")));
                 kv.set(name, jsonObject);
             } else if (!(type instanceof PsiArrayType) && ((PsiClassReferenceType) type).resolve().isEnum()) {
                 JsonObject jsonObject = new JsonObject();
@@ -878,7 +880,8 @@ public class BuildJsonForYapi {
                         kv1.set(KV.by("type", psiClassChild.getName()));
                         kv.set(name, kv1);
                         kv1.set(KV.by("description", (Strings.isNullOrEmpty(remark) ? name : remark)));
-                        kv1.set(KV.by("mock", NormalTypes.formatMockType(child)));
+                        kv1.set(KV.by("mock", NormalTypes.formatMockType(child
+                                , getPsiParameterAnnotationParam(field, SwaggerConstants.API_MODEL_PROPERTY, "example"))));
                     } else {
                         //class type
                         KV kv1 = new KV();
@@ -1123,21 +1126,21 @@ public class BuildJsonForYapi {
     }
 
     /**
-     * 驼峰转-  兼容swagger
+     * 驼峰转化  兼容swagger
      *
      * @param camelCase
      * @return
      */
-    private static String camelToLine(String camelCase) {
+    private static String camelToLine(String camelCase, String split) {
         Matcher matcher = humpPattern.matcher(camelCase);
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
-            matcher.appendReplacement(sb, DASH + matcher.group(0).toLowerCase());
+            matcher.appendReplacement(sb, split + matcher.group(0).toLowerCase());
         }
         matcher.appendTail(sb);
         String result = sb.toString();
-        if (result.startsWith(DASH)) {
-            result = result.substring(DASH.length());
+        if (result.startsWith(split)) {
+            result = result.substring(split.length());
         }
         return result;
     }
@@ -1150,12 +1153,23 @@ public class BuildJsonForYapi {
      * @return
      */
     private static String getPsiParameterAnnotationValue(PsiModifierListOwner psiParameter, String annotationName) {
+        return getPsiParameterAnnotationParam(psiParameter, annotationName, PsiAnnotation.DEFAULT_REFERENCED_METHOD_NAME);
+    }
+
+    /**
+     * 获取注解某个值
+     *
+     * @param psiParameter
+     * @param annotationName
+     * @return
+     */
+    private static String getPsiParameterAnnotationParam(PsiModifierListOwner psiParameter, String annotationName, String paramName) {
         PsiAnnotation annotation = PsiAnnotationSearchUtil.findAnnotation(psiParameter, annotationName);
         if (annotation == null) {
             return null;
         }
 
-        return AnnotationUtil.getStringAttributeValue(annotation, PsiAnnotation.DEFAULT_REFERENCED_METHOD_NAME);
+        return AnnotationUtil.getStringAttributeValue(annotation, paramName);
     }
 
 }

@@ -1,11 +1,11 @@
 package com.qbb.build;
 
 import com.google.gson.JsonObject;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NonNls;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -101,13 +101,23 @@ public class NormalTypes {
         return normalTypes.containsKey(typeName);
     }
 
+    public static JsonObject formatMockType(String type){
+        return formatMockType(type,null);
+    }
+
     /**
      * mock type
      * @param type
      * @return
      */
-    public static JsonObject formatMockType(String type) {
+    public static JsonObject formatMockType(String type,String exampleMock) {
         JsonObject mock = new JsonObject();
+
+        //支持传入自定义mock
+        if (StringUtils.isNotEmpty(exampleMock)) {
+            mock.addProperty("mock", exampleMock);
+            return mock;
+        }
         if (type.equals("int")){
             mock.addProperty("mock", "@integer");
         }else if (type.equals("boolean")){
