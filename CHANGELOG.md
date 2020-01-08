@@ -1,4 +1,5 @@
 #### 变更历史
+- 1.7.8: 支持方法上@path 注解 来自定义路径
 - 1.7.7: swagger 支持,swagger mock(@24kpure),fixbug
 - 1.7.6: 支持基本mock
 - 1.7.5: response 支持map,deprecated 注释的方式不上传，循环处理

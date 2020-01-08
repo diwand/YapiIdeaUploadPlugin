@@ -148,6 +148,23 @@ public class DesUtil {
     }
 
     /**
+     * 获得路径
+     * @param text
+     * @return
+     */
+    public static String getPath(String text){
+        if (Strings.isNullOrEmpty(text) || !text.contains("*/")) {
+            return null;
+        }
+        String[] menuList = text.split("\\*/")[0].split("@path");
+        if (menuList.length > 1) {
+            return DesUtil.trimFirstAndLastChar(menuList[1].split("\\*")[0].replace("*", "").replace(":","").replace("\n", " ").replace(" ",""), ' ').trim();
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * @description: 获得状态
      * @param: [text]
      * @return: java.lang.String

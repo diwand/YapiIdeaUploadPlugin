@@ -2,7 +2,6 @@ package com.qbb.build;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
-import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
@@ -22,7 +21,6 @@ import com.intellij.psi.PsiEnumConstant;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiModifierListOwner;
 import com.intellij.psi.PsiNameValuePair;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiPrimitiveType;
@@ -328,13 +326,20 @@ public class BuildJsonForYapi {
             if (Strings.isNullOrEmpty(yapiApiDTO.getTitle())) {
                 yapiApiDTO.setTitle(DesUtil.getDescription(psiMethodTarget));
                 if (Objects.nonNull(psiMethodTarget.getDocComment())) {
+                    // 支持菜单
                     String menu = DesUtil.getMenu(psiMethodTarget.getDocComment().getText());
                     if (!Strings.isNullOrEmpty(menu)) {
                         yapiApiDTO.setMenu(menu);
                     }
+                    // 支持状态
                     String status = DesUtil.getStatus(psiMethodTarget.getDocComment().getText());
                     if (!Strings.isNullOrEmpty(status)) {
                         yapiApiDTO.setStatus(status);
+                    }
+                    // 支持自定义路径
+                    String pathCustom=DesUtil.getPath(psiMethodTarget.getDocComment().getText());
+                    if(!Strings.isNullOrEmpty(pathCustom.trim())){
+                        yapiApiDTO.setPath(pathCustom);
                     }
                 }
             }
