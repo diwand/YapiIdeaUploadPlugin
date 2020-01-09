@@ -338,7 +338,7 @@ public class BuildJsonForYapi {
                     }
                     // 支持自定义路径
                     String pathCustom=DesUtil.getPath(psiMethodTarget.getDocComment().getText());
-                    if(!Strings.isNullOrEmpty(pathCustom.trim())){
+                    if(!Strings.isNullOrEmpty(pathCustom)){
                         yapiApiDTO.setPath(pathCustom);
                     }
                 }
@@ -815,15 +815,18 @@ public class BuildJsonForYapi {
         PsiType type = field.getType();
         String name = field.getName();
         String remark = "";
+        //swagger支持
+        remark = StringUtils.defaultIfEmpty(PsiAnnotationSearchUtil.getPsiParameterAnnotationValue(field, SwaggerConstants.API_MODEL_PROPERTY), "");
         if (field.getDocComment() != null) {
-            remark = DesUtil.getFiledDesc(field.getDocComment());
+            if(Strings.isNullOrEmpty(remark)) {
+                remark = DesUtil.getFiledDesc(field.getDocComment());
+            }
             //获得link 备注
             remark = DesUtil.getLinkRemark(remark, project, field);
             getFilePath(project, filePaths, DesUtil.getFieldLinks(project, field));
         }
 
-        //swagger支持
-        remark = StringUtils.defaultIfEmpty(PsiAnnotationSearchUtil.getPsiParameterAnnotationValue(field, SwaggerConstants.API_MODEL_PROPERTY), "");
+
 
         // 如果是基本类型
         if (type instanceof PsiPrimitiveType) {
