@@ -38,8 +38,6 @@ public class UploadToYapi extends AnAction {
 
     private static NotificationGroup notificationGroup;
 
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
     static {
         notificationGroup = new NotificationGroup("Java2Json.NotificationGroup", NotificationDisplayType.BALLOON, true);
     }
@@ -64,7 +62,7 @@ public class UploadToYapi extends AnAction {
                 PsiFile psiFile = (PsiFile) e.getDataContext().getData(CommonDataKeys.PSI_FILE);
                 String virtualFile = psiFile.getVirtualFile().getPath();
                 for (int i = 0; i < moduleList.length; i++) {
-                    if (virtualFile.contains(moduleList[i])) {
+                    if (virtualFile.equals(moduleList[i])) {
                         projectToken = projectConfig.split(moduleList[i] + "\\.projectToken\">")[1].split("</")[0];
                         projectId = projectConfig.split(moduleList[i] + "\\.projectId\">")[1].split("</")[0];
                         yapiUrl = projectConfig.split(moduleList[i] + "\\.yapiUrl\">")[1].split("</")[0];
