@@ -531,6 +531,10 @@ public class BuildJsonForYapi {
             yapiApiDTO.setParams(yapiParamList);
             yapiApiDTO.setHeader(yapiHeaderDTOList);
             yapiApiDTO.setReq_params(yapiPathVariableDTOList);
+        }else{
+            yapiApiDTO.setParams(new ArrayList<>());
+            yapiApiDTO.setHeader(new ArrayList<>());
+            yapiApiDTO.setReq_params(new ArrayList<>());
         }
     }
 
