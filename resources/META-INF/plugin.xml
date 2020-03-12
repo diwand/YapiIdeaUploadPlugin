@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>YapiUpload</id>
   <name>YapiUpload</name>
-  <version>1.7.8</version>
+  <version>1.7.9</version>
   <vendor email="chengsheng@qbb6.com" url="http://www.qbb6.com">QBB</vendor>
 
   <description><![CDATA[
@@ -11,6 +11,9 @@
 
   <change-notes><![CDATA[
       <a href="https://github.com/diwand/YapiIdeaUploadPlugin">how to use</a> <br>
+      1.7.9:<br>
+      <em>
+      - fixbug
      1.7.8:<br>
      <em>
      - support method @path，fix remark bug
