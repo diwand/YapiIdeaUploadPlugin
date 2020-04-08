@@ -56,6 +56,7 @@ public class UploadToYapi extends AnAction {
         // 获取配置
         try {
             String projectConfig = new String(editor.getProject().getProjectFile().contentsToByteArray(), "utf-8");
+            projectConfig = skipComments(projectConfig);
             String[] modules = projectConfig.split("moduleList\">");
             if (modules.length > 1) {
                 String[] moduleList = modules[1].split("</")[0].split(",");
@@ -183,5 +184,13 @@ public class UploadToYapi extends AnAction {
         StringSelection selection = new StringSelection(content);
         //添加文本到系统剪切板
         clipboard.setContents(selection, null);
+    }
+
+    public String skipComments(String str){
+        if (str.indexOf("<!--")!=-1){
+            str = str.substring(0,str.indexOf("<!--"))+str.substring(str.indexOf("-->")+3);
+            return skipComments(str);
+        }
+        return str;
     }
 }
