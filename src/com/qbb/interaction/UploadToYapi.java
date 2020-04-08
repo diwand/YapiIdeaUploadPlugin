@@ -56,6 +56,7 @@ public class UploadToYapi extends AnAction {
         // 获取配置
         try {
             String projectConfig = new String(editor.getProject().getProjectFile().contentsToByteArray(), "utf-8");
+            projectConfig = projectConfig.substring(0,s.indexOf("<!--"))+s.substring(s.indexOf("-->")+3);
             String[] modules = projectConfig.split("moduleList\">");
             if (modules.length > 1) {
                 String[] moduleList = modules[1].split("</")[0].split(",");
