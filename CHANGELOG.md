@@ -1,4 +1,9 @@
 #### 变更历史
+- 1.7.9: fixbug
+- 1.7.8: 支持方法上@path 注解 来自定义路径
+- 1.7.7: swagger 支持,swagger mock(@24kpure),fixbug
+- 1.7.6: 支持基本mock
+- 1.7.5: response 支持map,deprecated 注释的方式不上传，循环处理
 - 1.7.4: 兼容老版本,支持统一返回值设置(@zouzou6321),新增默认为类名上传,枚举字段解析(@sun7132568),统一多模块参数,解决枚举打包问题,
 - 1.7.3: 支持map,解决同包问题,去除缓存,支持notblank,支持package menu
 - 1.7.2: 支持LocalDate,LocalTime,LocalDateTime
