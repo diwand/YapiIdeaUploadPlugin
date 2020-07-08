@@ -858,17 +858,19 @@ public class BuildJsonForYapi {
             } else if (!(type instanceof PsiArrayType) && ((PsiClassReferenceType) type).resolve().isEnum()) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("type", "enum");
+                PsiField[] fields = ((PsiClassReferenceType) type).resolve().getAllFields();
+                List<PsiField> fieldList = Arrays.stream(fields).filter(f -> f instanceof PsiEnumConstant).collect(Collectors.toList());
+                StringBuilder remarkBuilder = new StringBuilder();
+                for (PsiField psiField : fieldList) {
+                    String comment = DesUtil.getFiledDesc(psiField.getDocComment());
+                    comment = Strings.isNullOrEmpty(comment) ? comment : "-" + comment;
+                    remarkBuilder.append(psiField.getName()).append(comment);
+                    remarkBuilder.append("\t");
+                }
                 if (Strings.isNullOrEmpty(remark)) {
-                    PsiField[] fields = ((PsiClassReferenceType) type).resolve().getAllFields();
-                    List<PsiField> fieldList = Arrays.stream(fields).filter(f -> f instanceof PsiEnumConstant).collect(Collectors.toList());
-                    StringBuilder remarkBuilder = new StringBuilder();
-                    for (PsiField psiField : fieldList) {
-                        String comment = DesUtil.getFiledDesc(psiField.getDocComment());
-                        comment = Strings.isNullOrEmpty(comment) ? comment : "-" + comment;
-                        remarkBuilder.append(psiField.getName()).append(comment);
-                        remarkBuilder.append("\n");
-                    }
                     remark = remarkBuilder.toString();
+                }else{
+                    remark += " {枚举值:" + remarkBuilder.toString()+"}";
                 }
                 jsonObject.addProperty("description", remark);
                 kv.set(name, jsonObject);
