@@ -1,4 +1,5 @@
 #### 变更历史
+- 1.8.1: 支持idea 2020
 - 1.7.9: fixbug
 - 1.7.8: 支持方法上@path 注解 来自定义路径
 - 1.7.7: swagger 支持,swagger mock(@24kpure),fixbug

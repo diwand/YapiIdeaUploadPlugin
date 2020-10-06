@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>YapiUpload</id>
   <name>YapiUpload</name>
-  <version>1.7.9</version>
+  <version>1.8.1</version>
   <vendor email="chengsheng@qbb6.com" url="http://www.qbb6.com">QBB</vendor>
 
   <description><![CDATA[
@@ -11,6 +11,7 @@
 
   <change-notes><![CDATA[
       <a href="https://github.com/diwand/YapiIdeaUploadPlugin">how to use</a> <br>
+      1.8.1:<br> support idea 2020 <br>
       1.7.9:<br>
       <em>
       - fixbug
@@ -193,6 +194,10 @@
   <!-- uncomment to enable plugin in all products
   <depends>com.intellij.modules.lang</depends>
   -->
+
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.lang</depends>
+  <depends>com.intellij.modules.java</depends>
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
