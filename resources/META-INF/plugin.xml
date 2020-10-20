@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>YapiUpload</id>
   <name>YapiUpload</name>
-  <version>1.8.1</version>
+  <version>1.8.2</version>
   <vendor email="chengsheng@qbb6.com" url="http://www.qbb6.com">QBB</vendor>
 
   <description><![CDATA[
@@ -11,6 +11,7 @@
 
   <change-notes><![CDATA[
       <a href="https://github.com/diwand/YapiIdeaUploadPlugin">how to use</a> <br>
+      1.8.2:<br> java type convert to json type <br>
       1.8.1:<br> support idea 2020 <br>
       1.7.9:<br>
       <em>
