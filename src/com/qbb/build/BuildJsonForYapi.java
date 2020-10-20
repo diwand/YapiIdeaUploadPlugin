@@ -50,14 +50,7 @@ import org.codehaus.jettison.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
@@ -635,7 +628,7 @@ public class BuildJsonForYapi {
                 String childPackage = types[1].split(">")[0];
                 if (NormalTypes.noramlTypesPackages.keySet().contains(childPackage)) {
                     String[] childTypes = childPackage.split("\\.");
-                    listKv.set("type", childTypes[childTypes.length - 1]);
+                    listKv.set("type", Optional.ofNullable(NormalTypes.java2JsonTypes.get(childTypes[childTypes.length - 1])).orElse(childTypes[childTypes.length - 1]));
                 } else if (NormalTypes.collectTypesPackages.containsKey(childPackage)) {
                     String[] childTypes = childPackage.split("\\.");
                     listKv.set("type", childTypes[childTypes.length - 1]);
@@ -665,7 +658,7 @@ public class BuildJsonForYapi {
                 String childPackage = types[1].split(">")[0];
                 if (NormalTypes.noramlTypesPackages.keySet().contains(childPackage)) {
                     String[] childTypes = childPackage.split("\\.");
-                    listKv.set("type", childTypes[childTypes.length - 1]);
+                    listKv.set("type", Optional.ofNullable(NormalTypes.java2JsonTypes.get(childTypes[childTypes.length - 1])).orElse(childTypes[childTypes.length - 1]));
                 } else if (NormalTypes.collectTypesPackages.containsKey(childPackage)) {
                     String[] childTypes = childPackage.split("\\.");
                     listKv.set("type", childTypes[childTypes.length - 1]);
@@ -835,7 +828,7 @@ public class BuildJsonForYapi {
         // 如果是基本类型
         if (type instanceof PsiPrimitiveType) {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("type", type.getPresentableText());
+            jsonObject.addProperty("type", Optional.ofNullable(NormalTypes.java2JsonTypes.get(type.getPresentableText())).orElse(type.getPresentableText()));
             if (!Strings.isNullOrEmpty(remark)) {
                 jsonObject.addProperty("description", remark);
             }
@@ -848,7 +841,7 @@ public class BuildJsonForYapi {
             //normal Type
             if (NormalTypes.isNormalType(fieldTypeName)) {
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("type", fieldTypeName);
+                jsonObject.addProperty("type", Optional.ofNullable(NormalTypes.java2JsonTypes.get(fieldTypeName)).orElse(fieldTypeName));
                 if (!Strings.isNullOrEmpty(remark)) {
                     jsonObject.addProperty("description", remark);
                 }
@@ -882,7 +875,7 @@ public class BuildJsonForYapi {
                     } else if (NormalTypes.isNormalType(child) || NormalTypes.noramlTypesPackages.containsKey(child)) {
                         KV kv1 = new KV();
                         PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(child, GlobalSearchScope.allScope(project));
-                        kv1.set(KV.by("type", psiClassChild.getName()));
+                        kv1.set(KV.by("type", Optional.ofNullable(NormalTypes.java2JsonTypes.get(psiClassChild.getName())).orElse(psiClassChild.getName())));
                         kv.set(name, kv1);
                         kv1.set(KV.by("description", (Strings.isNullOrEmpty(remark) ? name : remark)));
                         kv1.set(KV.by("mock", NormalTypes.formatMockType(child
@@ -917,7 +910,7 @@ public class BuildJsonForYapi {
                         kvlist.set("description", remark);
                     }
                 } else if (NormalTypes.isNormalType(deepTypeName)) {
-                    kvlist.set("type", deepTypeName);
+                    kvlist.set("type", Optional.ofNullable(NormalTypes.java2JsonTypes.get(deepTypeName)).orElse(deepTypeName));
                     if (!Strings.isNullOrEmpty(remark)) {
                         kvlist.set("description", remark);
                     }
@@ -1001,7 +994,7 @@ public class BuildJsonForYapi {
     public static void getCollect(KV kv, String classTypeName, String remark, PsiClass psiClass, Project project, String name, Set<String> pNames, String[] childType, Integer index) {
         KV kvlist = new KV();
         if (NormalTypes.isNormalType(classTypeName) || NormalTypes.collectTypes.containsKey(classTypeName)) {
-            kvlist.set("type", classTypeName);
+            kvlist.set("type", Optional.ofNullable(NormalTypes.java2JsonTypes.get(classTypeName)).orElse(classTypeName));
             if (!Strings.isNullOrEmpty(remark)) {
                 kvlist.set("description", remark);
             }
