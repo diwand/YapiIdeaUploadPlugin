@@ -628,65 +628,46 @@ public class BuildJsonForYapi {
             //如果是包装类型
             KV kvClass = KV.create();
             kvClass.set(psiType.getCanonicalText(), NormalTypes.normalTypes.get(psiType.getPresentableText()));
-        } else if (psiType.getPresentableText().startsWith("List")) {
-            String[] types = psiType.getCanonicalText().split("<");
-            KV listKv = new KV();
-            if (types.length > 1) {
-                String childPackage = types[1].split(">")[0];
-                if (NormalTypes.noramlTypesPackages.keySet().contains(childPackage)) {
-                    String[] childTypes = childPackage.split("\\.");
-                    listKv.set("type", childTypes[childTypes.length - 1]);
-                } else if (NormalTypes.collectTypesPackages.containsKey(childPackage)) {
-                    String[] childTypes = childPackage.split("\\.");
-                    listKv.set("type", childTypes[childTypes.length - 1]);
-                } else {
-                    PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childPackage, GlobalSearchScope.allScope(project));
-                    List<String> requiredList = new ArrayList<>();
-                    KV kvObject = getFields(psiClassChild, project, null, null, requiredList, new HashSet<>());
-                    listKv.set("type", "object");
-                    addFilePaths(filePaths, psiClassChild);
-                    if (Objects.nonNull(psiClassChild.getSuperClass()) && !psiClassChild.getSuperClass().getName().toString().equals("Object")) {
-                        addFilePaths(filePaths, psiClassChild.getSuperClass());
-                    }
-                    listKv.set("properties", kvObject);
-                    listKv.set("required", requiredList);
-                }
-            }
+        } else if (psiType.getPresentableText().startsWith("List") || psiType.getPresentableText().startsWith("Set")) {
             KV result = new KV();
             result.set("type", "array");
             result.set("title", psiType.getPresentableText());
             result.set("description", psiType.getPresentableText());
-            result.set("items", listKv);
+            result.set("items", getT(project, psiType));
             return result;
-        } else if (psiType.getPresentableText().startsWith("Set")) {
-            String[] types = psiType.getCanonicalText().split("<");
-            KV listKv = new KV();
-            if (types.length > 1) {
-                String childPackage = types[1].split(">")[0];
-                if (NormalTypes.noramlTypesPackages.keySet().contains(childPackage)) {
-                    String[] childTypes = childPackage.split("\\.");
-                    listKv.set("type", childTypes[childTypes.length - 1]);
-                } else if (NormalTypes.collectTypesPackages.containsKey(childPackage)) {
-                    String[] childTypes = childPackage.split("\\.");
-                    listKv.set("type", childTypes[childTypes.length - 1]);
-                } else {
-                    PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childPackage, GlobalSearchScope.allScope(project));
-                    List<String> requiredList = new ArrayList<>();
-                    KV kvObject = getFields(psiClassChild, project, null, null, requiredList, new HashSet<>());
-                    listKv.set("type", "object");
-                    addFilePaths(filePaths, psiClassChild);
-                    if (Objects.nonNull(psiClassChild.getSuperClass()) && !psiClassChild.getSuperClass().getName().toString().equals("Object")) {
-                        addFilePaths(filePaths, psiClassChild.getSuperClass());
-                    }
-                    listKv.set("properties", kvObject);
-                    listKv.set("required", requiredList);
-                }
-            }
+        }  else if (psiType.getCanonicalText().matches("^org.springframework.data.domain.Page<.*>$")) {
+            KV contents = KV.by("type", "array")
+                    .set("title", "contents")
+                    .set("items", getT(project, psiType))
+                    .set("description", psiType.getPresentableText().substring(5, psiType.getPresentableText().length() - 1));
+
+            KV boolKV = KV.by("type", "boolean").set("mock", NormalTypes.formatMockType("boolean"));
+            KV intKV = KV.by("type", "int").set("mock", NormalTypes.formatMockType("int"));
+            KV sort = KV.by("type", "object")
+                    .set("description", "Sort")
+                    .set("properties", KV.by("sorted", boolKV).set("unsorted", boolKV).set("empty", boolKV));
+            KV pageable = KV.by("type", "object")
+                    .set("description", "Pageable")
+                    .set("properties", KV.by("unpaged", boolKV).set("paged", boolKV).set("offset", intKV)
+                            .set("pageSize", intKV).set("pageNumber", intKV).set("sort", sort));
+
+            KV page = KV.by("contents", contents)
+                    .set("sort", sort)
+                    .set("pageable", pageable)
+                    .set("last", boolKV)
+                    .set("first", boolKV)
+                    .set("empty", boolKV)
+                    .set("size", intKV)
+                    .set("number", intKV)
+                    .set("totalPages", intKV)
+                    .set("totalElements", intKV)
+                    .set("numberOfElements", intKV);
+
             KV result = new KV();
-            result.set("type", "array");
+            result.set("type", "object");
             result.set("title", psiType.getPresentableText());
             result.set("description", psiType.getPresentableText());
-            result.set("items", listKv);
+            result.set("properties", page);
             return result;
         } else if (psiType.getPresentableText().startsWith("Map") || psiType.getPresentableText().startsWith("HashMap") || psiType.getPresentableText().startsWith("LinkedHashMap")) {
             KV kv1 = new KV();
@@ -749,6 +730,39 @@ public class BuildJsonForYapi {
             }
         }
         return null;
+    }
+
+
+    /**
+     * @description: 获取单泛型容器中的泛型定义
+     * @param: [project, psiType]
+     * @return: com.qbb.build.KV
+     */
+    public static KV getT(Project project, PsiType psiType) {
+        String[] types = psiType.getCanonicalText().split("<");
+        KV kv = new KV();
+        if (types.length > 1) {
+            String childPackage = types[1].split(">")[0];
+            if (NormalTypes.noramlTypesPackages.keySet().contains(childPackage)) {
+                String[] childTypes = childPackage.split("\\.");
+                kv.set("type", childTypes[childTypes.length - 1]);
+            } else if (NormalTypes.collectTypesPackages.containsKey(childPackage)) {
+                String[] childTypes = childPackage.split("\\.");
+                kv.set("type", childTypes[childTypes.length - 1]);
+            } else {
+                PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childPackage, GlobalSearchScope.allScope(project));
+                List<String> requiredList = new ArrayList<>();
+                KV kvObject = getFields(psiClassChild, project, null, null, requiredList, new HashSet<>());
+                kv.set("type", "object");
+                addFilePaths(filePaths, psiClassChild);
+                if (Objects.nonNull(psiClassChild.getSuperClass()) && !psiClassChild.getSuperClass().getName().toString().equals("Object")) {
+                    addFilePaths(filePaths, psiClassChild.getSuperClass());
+                }
+                kv.set("properties", kvObject);
+                kv.set("required", requiredList);
+            }
+        }
+        return kv;
     }
 
     /**
