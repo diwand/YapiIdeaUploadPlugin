@@ -79,6 +79,7 @@ public class NormalTypes {
         java2JsonTypes.put("Float", "number");
         java2JsonTypes.put("Double", "number");
         java2JsonTypes.put("BigDecimal","number");
+        java2JsonTypes.put("Timestamp","number");
         java2JsonTypes.put("char","string");
         java2JsonTypes.put("String","string");
         java2JsonTypes.put("Date","string");
