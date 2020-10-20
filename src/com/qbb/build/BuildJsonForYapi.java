@@ -50,14 +50,7 @@ import org.codehaus.jettison.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
@@ -835,7 +828,7 @@ public class BuildJsonForYapi {
         // 如果是基本类型
         if (type instanceof PsiPrimitiveType) {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("type", type.getPresentableText());
+            jsonObject.addProperty("type", Optional.ofNullable(NormalTypes.java2JsonTypes.get(type.getPresentableText())).orElse(type.getPresentableText()));
             if (!Strings.isNullOrEmpty(remark)) {
                 jsonObject.addProperty("description", remark);
             }

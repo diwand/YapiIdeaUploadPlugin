@@ -24,6 +24,8 @@ public class NormalTypes {
     public static final Map<String,Object> collectTypes=new HashMap<>();
 
     public static final Map<String,Object> collectTypesPackages=new HashMap<>();
+
+    public static final Map<String,String> java2JsonTypes = new HashMap<>();
     /**
      * 泛型列表
      */
@@ -63,6 +65,26 @@ public class NormalTypes {
         genericList.add("B");
         genericList.add("K");
         genericList.add("V");
+
+        java2JsonTypes.put("int","number");
+        java2JsonTypes.put("byte","number");
+        java2JsonTypes.put("short","number");
+        java2JsonTypes.put("long","number");
+        java2JsonTypes.put("float","number");
+        java2JsonTypes.put("double","number");
+        java2JsonTypes.put("Byte", "number");
+        java2JsonTypes.put("Short", "number");
+        java2JsonTypes.put("Integer", "number");
+        java2JsonTypes.put("Long", "number");
+        java2JsonTypes.put("Float", "number");
+        java2JsonTypes.put("Double", "number");
+        java2JsonTypes.put("BigDecimal","number");
+        java2JsonTypes.put("char","string");
+        java2JsonTypes.put("String","string");
+        java2JsonTypes.put("Date","string");
+        java2JsonTypes.put("LocalDate","string");
+        java2JsonTypes.put("LocalDateTime","string");
+        java2JsonTypes.put("Boolean","boolean");
     }
 
     static {
