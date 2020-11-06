@@ -868,7 +868,13 @@ public class BuildJsonForYapi {
             } else if (NormalTypes.genericList.contains(fieldTypeName)) {
                 if (childType != null) {
                     String child = childType[index].split(">")[0];
-                    if (child.contains("java.util.List") || child.contains("java.util.Set") || child.contains("java.util.HashSet")) {
+                    if ("?".equals(child)) {
+                        KV kv1 = new KV();
+                        kv.set(name, kv1);
+                        kv1.set(KV.by("type", "?"));
+                        kv1.set(KV.by("description", (Strings.isNullOrEmpty(remark) ? name : remark)));
+                        kv1.set(KV.by("mock", NormalTypes.formatMockType("?", "?")));
+                    } else if (child.contains("java.util.List") || child.contains("java.util.Set") || child.contains("java.util.HashSet")) {
                         index = index + 1;
                         PsiClass psiClassChild = JavaPsiFacade.getInstance(project).findClass(childType[index].split(">")[0], GlobalSearchScope.allScope(project));
                         getCollect(kv, psiClassChild.getName(), remark, psiClassChild, project, name, pNames, childType, index + 1);
