@@ -31,7 +31,7 @@ public class BuildJsonForDubbo{
     Gson gson= new GsonBuilder().setPrettyPrinting().create();
 
     static {
-        notificationGroup = new NotificationGroup("Java2Json.NotificationGroup", NotificationDisplayType.BALLOON, true);
+        notificationGroup = new NotificationGroup("YapiUpload.NotificationGroup", NotificationDisplayType.BALLOON, true);
     }
 
 
