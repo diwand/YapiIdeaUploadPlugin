@@ -40,7 +40,7 @@ import com.qbb.dto.YapiApiDTO;
 import com.qbb.dto.YapiHeaderDTO;
 import com.qbb.dto.YapiPathVariableDTO;
 import com.qbb.dto.YapiQueryDTO;
-import com.qbb.upload.UploadYapi;
+import com.qbb.util.UploadUtil;
 import com.qbb.util.DesUtil;
 import com.qbb.util.FileToZipUtil;
 import com.qbb.util.FileUnZipUtil;
@@ -75,6 +75,7 @@ public class BuildJsonForYapi {
      * @param e
      * @return
      */
+    @Deprecated
     public ArrayList<YapiApiDTO> actionPerformedList(AnActionEvent e, String attachUpload, String returnClass) {
         Editor editor = e.getDataContext().getData(CommonDataKeys.EDITOR);
         PsiFile psiFile = e.getDataContext().getData(CommonDataKeys.PSI_FILE);
@@ -134,7 +135,7 @@ public class BuildJsonForYapi {
         return yapiApiDTOS;
     }
 
-
+    @Deprecated
     public static YapiApiDTO actionPerformed(PsiClass selectedClass, PsiMethod psiMethodTarget, Project project, PsiFile psiFile, String attachUpload, String returnClass) {
         YapiApiDTO yapiApiDTO = new YapiApiDTO();
         // 获得路径
@@ -293,7 +294,7 @@ public class BuildJsonForYapi {
                 if (codeSet.size() > 0) {
                     FileToZipUtil.toZip(codeSet, project.getBasePath() + codeFileName, true);
                     if (!Strings.isNullOrEmpty(attachUpload)) {
-                        String fileUrl = new UploadYapi().uploadFile(attachUpload, project.getBasePath() + codeFileName);
+                        String fileUrl = new UploadUtil().uploadFile(attachUpload, project.getBasePath() + codeFileName);
                         if (!Strings.isNullOrEmpty(fileUrl)) {
                             yapiApiDTO.setDesc("java类:<a href='" + fileUrl + "'>下载地址</a><br/>" + yapiApiDTO.getDesc());
                         }
