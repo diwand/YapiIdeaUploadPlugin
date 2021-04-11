@@ -1,4 +1,4 @@
-package com.qbb.upload;
+package com.qbb.util;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -23,7 +23,7 @@ import java.util.*;
  * @author chengsheng@qbb6.com
  * @date 2019/1/31 11:41 AM
  */
-public class UploadYapi {
+public class UploadUtil {
 
 
     private Gson gson=new Gson();
