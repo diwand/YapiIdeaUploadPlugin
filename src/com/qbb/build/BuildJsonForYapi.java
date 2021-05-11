@@ -139,7 +139,16 @@ public class BuildJsonForYapi {
         YapiApiDTO yapiApiDTO = new YapiApiDTO();
         // 获得路径
         StringBuilder path = new StringBuilder();
-
+        //获得Controller上的API注解
+        String apiValue = PsiAnnotationSearchUtil.getPsiParameterAnnotationParam(selectedClass, SwaggerConstants.API,"tags");
+        if(StringUtils.isNotBlank(apiValue)){
+            yapiApiDTO.setMenu(apiValue);
+        }else{
+             apiValue = PsiAnnotationSearchUtil.getPsiParameterAnnotationValue(selectedClass, SwaggerConstants.API);
+            if(StringUtils.isNotBlank(apiValue)){
+                yapiApiDTO.setMenu(apiValue);
+            }
+        }
         // 获取类上面的RequestMapping 中的value
         PsiAnnotation psiAnnotation = PsiAnnotationSearchUtil.findAnnotation(selectedClass, SpringMVCConstant.RequestMapping);
         if (psiAnnotation != null) {
@@ -179,7 +188,9 @@ public class BuildJsonForYapi {
                             String[] results = psiReference.resolve().getText().split("=");
                             DesUtil.addPath(path, results[results.length - 1].split(";")[0].replace("\"", "").trim());
                             yapiApiDTO.setTitle(DesUtil.getUrlReFerenceRDesc(psiReference.resolve().getText()));
-                            yapiApiDTO.setMenu(DesUtil.getMenu(psiReference.resolve().getText()));
+                            if(StringUtils.isBlank(yapiApiDTO.getMenu())){
+                                yapiApiDTO.setMenu(DesUtil.getMenu(psiReference.resolve().getText()));
+                            }
                             yapiApiDTO.setStatus(DesUtil.getStatus(psiReference.resolve().getText()));
                             yapiApiDTO.setDesc("<pre><code>  " + psiReference.resolve().getText() + " </code></pre> <hr>");
                         }
@@ -240,7 +251,9 @@ public class BuildJsonForYapi {
                                 String[] results = psiReference.resolve().getText().split("=");
                                 DesUtil.addPath(path, results[results.length - 1].split(";")[0].replace("\"", "").trim());
                                 yapiApiDTO.setTitle(DesUtil.getUrlReFerenceRDesc(psiReference.resolve().getText()));
-                                yapiApiDTO.setMenu(DesUtil.getMenu(psiReference.resolve().getText()));
+                                if(StringUtils.isBlank(yapiApiDTO.getMenu())){
+                                    yapiApiDTO.setMenu(DesUtil.getMenu(psiReference.resolve().getText()));
+                                }
                                 yapiApiDTO.setStatus(DesUtil.getStatus(psiReference.resolve().getText()));
                                 if (!Strings.isNullOrEmpty(psiReference.resolve().getText())) {
                                     String refernceDesc = psiReference.resolve().getText().replace("<", "&lt;").replace(">", "&gt;");
