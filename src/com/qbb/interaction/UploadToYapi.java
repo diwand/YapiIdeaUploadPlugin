@@ -11,17 +11,17 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiFile;
 import com.qbb.build.BuildJsonForDubbo;
 import com.qbb.build.BuildJsonForYapi;
+import com.qbb.component.ConfigPersistence;
 import com.qbb.constant.ProjectTypeConstant;
 import com.qbb.constant.YapiConstant;
-import com.qbb.dto.YapiApiDTO;
-import com.qbb.dto.YapiDubboDTO;
-import com.qbb.dto.YapiResponse;
-import com.qbb.dto.YapiSaveParam;
+import com.qbb.dto.*;
 import com.qbb.upload.UploadYapi;
 
 import java.awt.*;
@@ -46,6 +46,7 @@ public class UploadToYapi extends AnAction {
     @Override
     public void actionPerformed(AnActionEvent e) {
         Editor editor = (Editor) e.getDataContext().getData(CommonDataKeys.EDITOR);
+
         Project project = editor.getProject();
         String projectToken = null;
         String projectId = null;
@@ -55,51 +56,21 @@ public class UploadToYapi extends AnAction {
         String attachUpload = null;
         // 获取配置
         try {
-            String projectConfig = new String(editor.getProject().getProjectFile().contentsToByteArray(), "utf-8");
-            String[] modules = projectConfig.split("moduleList\">");
-            if (modules.length > 1) {
-                String[] moduleList = modules[1].split("</")[0].split(",");
-                PsiFile psiFile = (PsiFile) e.getDataContext().getData(CommonDataKeys.PSI_FILE);
-                String virtualFile = psiFile.getVirtualFile().getPath();
-                for (int i = 0; i < moduleList.length; i++) {
-                    if (virtualFile.contains(moduleList[i])) {
-                        projectToken = projectConfig.split(moduleList[i] + "\\.projectToken\">")[1].split("</")[0];
-                        projectId = projectConfig.split(moduleList[i] + "\\.projectId\">")[1].split("</")[0];
-                        yapiUrl = projectConfig.split(moduleList[i] + "\\.yapiUrl\">")[1].split("</")[0];
-                        projectType = projectConfig.split(moduleList[i] + "\\.projectType\">")[1].split("</")[0];
-                        if (projectConfig.split(moduleList[i] + "\\.returnClass\">").length > 1) {
-                            returnClass = projectConfig.split(moduleList[i] + "\\.returnClass\">")[1].split("</")[0];
-                        }
-                        String[] attachs = projectConfig.split(moduleList[i] + "\\.attachUploadUrl\">");
-                        if (attachs.length > 1) {
-                            attachUpload = attachs[1].split("</")[0];
-                        }
-                        break;
-                    }
-                }
-            } else {
-                projectToken = projectConfig.split("projectToken\">")[1].split("</")[0];
-                projectId = projectConfig.split("projectId\">")[1].split("</")[0];
-                yapiUrl = projectConfig.split("yapiUrl\">")[1].split("</")[0];
-                projectType = projectConfig.split("projectType\">")[1].split("</")[0];
-                if (projectConfig.split("returnClass\">").length > 1) {
-                    returnClass = projectConfig.split("returnClass\">")[1].split("</")[0];
-                }
-
-                String[] attachs = projectConfig.split("attachUploadUrl\">");
-                if (attachs.length > 1) {
-                    attachUpload = attachs[1].split("</")[0];
-                }
+            ConfigDTO configDTO= ServiceManager.getService(ConfigPersistence.class).getConfigDTO();
+            if(configDTO == null){
+                Messages.showErrorDialog("请先去配置界面配置yapi配置","获取配置失败！");
             }
+            projectToken=configDTO.getProjectToken();
+            projectId=configDTO.getProjectId();
+            yapiUrl=configDTO.getYapiUrl();
+            projectType=configDTO.getProjectType();
         } catch (Exception e2) {
-            Notification error = notificationGroup.createNotification("get config error:" + e2.getMessage(), NotificationType.ERROR);
-            Notifications.Bus.notify(error, project);
+            Messages.showErrorDialog("获取配置失败，异常:  " + e2.getMessage(),"获取配置失败！");
             return;
         }
         // 配置校验
         if (Strings.isNullOrEmpty(projectToken) || Strings.isNullOrEmpty(projectId) || Strings.isNullOrEmpty(yapiUrl) || Strings.isNullOrEmpty(projectType)) {
-            Notification error = notificationGroup.createNotification("please check config,[projectToken,projectId,yapiUrl,projectType]", NotificationType.ERROR);
-            Notifications.Bus.notify(error, project);
+            Messages.showErrorDialog("请在项目的.idea目录下的misc.xml中配置[projectToken,projectId,yapiUrl,projectType] " ,"获取配置失败！");
             return;
         }
         // 判断项目类型
@@ -119,17 +90,14 @@ public class UploadToYapi extends AnAction {
                         // 上传
                         YapiResponse yapiResponse = new UploadYapi().uploadSave(yapiSaveParam, null, project.getBasePath());
                         if (yapiResponse.getErrcode() != 0) {
-                            Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + yapiResponse.getErrmsg(), NotificationType.ERROR);
-                            Notifications.Bus.notify(error, project);
+                            Messages.showErrorDialog("上传失败！异常:  " + yapiResponse.getErrmsg(),"上传失败！");
                         } else {
                             String url = yapiUrl + "/project/" + projectId + "/interface/api/cat_" + yapiResponse.getCatId();
                             this.setClipboard(url);
-                            Notification error = notificationGroup.createNotification("success ,url: " + url, NotificationType.INFORMATION);
-                            Notifications.Bus.notify(error, project);
+                            Messages.showInfoMessage("上传成功！接口文档url地址:  " + url,"上传成功！");
                         }
                     } catch (Exception e1) {
-                        Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + e1, NotificationType.ERROR);
-                        Notifications.Bus.notify(error, project);
+                        Messages.showErrorDialog("上传失败！异常:  " + e1,"上传失败！");
                     }
                 }
             }
@@ -152,17 +120,14 @@ public class UploadToYapi extends AnAction {
                         // 上传
                         YapiResponse yapiResponse = new UploadYapi().uploadSave(yapiSaveParam, attachUpload, project.getBasePath());
                         if (yapiResponse.getErrcode() != 0) {
-                            Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + yapiResponse.getErrmsg(), NotificationType.ERROR);
-                            Notifications.Bus.notify(error, project);
+                            Messages.showInfoMessage("上传失败，原因:  " + yapiResponse.getErrmsg(),"上传失败！");
                         } else {
                             String url = yapiUrl + "/project/" + projectId + "/interface/api/cat_" + yapiResponse.getCatId();
                             this.setClipboard(url);
-                            Notification error = notificationGroup.createNotification("success ,url:  " + url, NotificationType.INFORMATION);
-                            Notifications.Bus.notify(error, project);
+                            Messages.showInfoMessage("上传成功！接口文档url地址:  " + url,"上传成功！");
                         }
                     } catch (Exception e1) {
-                        Notification error = notificationGroup.createNotification("sorry ,upload api error cause:" + e1, NotificationType.ERROR);
-                        Notifications.Bus.notify(error, project);
+                        Messages.showErrorDialog("上传失败！异常:  " + e1,"上传失败！");
                     }
                 }
             }

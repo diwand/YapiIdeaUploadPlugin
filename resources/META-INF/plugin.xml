@@ -1,15 +1,15 @@
 <idea-plugin>
-  <id>YapiUpload</id>
-  <name>YapiUpload</name>
-  <version>1.8.2</version>
-  <vendor email="chengsheng@qbb6.com" url="http://www.qbb6.com">QBB</vendor>
+<id>YapiUpload</id>
+<name>YapiUpload</name>
+<version>1.8.2</version>
+<vendor email="chengsheng@qbb6.com" url="http://www.qbb6.com">QBB</vendor>
 
-  <description><![CDATA[
+<description><![CDATA[
       upload api to yapi<br>
       <em>support dubbo api and api upload</em>
     ]]></description>
 
-  <change-notes><![CDATA[
+<change-notes><![CDATA[
       <a href="https://github.com/diwand/YapiIdeaUploadPlugin">how to use</a> <br>
       1.8.2:<br> java type convert to json type <br>
       1.8.1:<br> support idea 2020 <br>
@@ -185,34 +185,41 @@
       - Support user-defined classification < br >
 
     ]]>
-  </change-notes>
+</change-notes>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="145.0"/>
+<!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+<idea-version since-build="145.0"/>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-       on how to target different products -->
-  <!-- uncomment to enable plugin in all products
-  <depends>com.intellij.modules.lang</depends>
-  -->
+<!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+     on how to target different products -->
+<!-- uncomment to enable plugin in all products
+<depends>com.intellij.modules.lang</depends>
+-->
 
-  <depends>com.intellij.modules.platform</depends>
-  <depends>com.intellij.modules.lang</depends>
-  <depends>com.intellij.modules.java</depends>
+<depends>com.intellij.modules.platform</depends>
+<depends>com.intellij.modules.lang</depends>
+<depends>com.intellij.modules.java</depends>
+
+<extensions defaultExtensionNs="com.intellij">
+  <!-- Add your extensions here -->
+</extensions>
+
 
   <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
+    <applicationConfigurable instance="com.qbb.component.ConfigComponent"/>
+    <applicationService serviceImplementation="com.qbb.component.ConfigPersistence"
+                        serviceInterface="com.qbb.component.ConfigPersistence"/>
   </extensions>
 
-  <actions>
-    <!-- Add your actions here -->
-    <action id="UploadToYapi" class="com.qbb.interaction.UploadToYapi" text="UploadToYapi"
-            description="UploadToYapi">
-      <add-to-group group-id="EditorLangPopupMenu" anchor="first"/>
-      <keyboard-shortcut keymap="$default" first-keystroke="alt u"/>
-    </action>
-  </actions>
+<actions>
+  <!-- Add your actions here -->
+  <action id="UploadToYapi" class="com.qbb.interaction.UploadToYapi" text="UploadToYapi"
+          description="UploadToYapi">
+    <add-to-group group-id="EditorLangPopupMenu" anchor="first"/>
+    <keyboard-shortcut keymap="$default" first-keystroke="alt u"/>
+  </action>
+</actions>
 
-  <depends>com.intellij.modules.java</depends>
+<depends>com.intellij.modules.java</depends>
 
 </idea-plugin>
