@@ -1,4 +1,7 @@
-#### 变更历史
+# Changelog
+
+## [Unreleased]
+### 中文
 - 1.8.2: 将java 类型转为json
 - 1.8.1: 支持idea 2020
 - 1.7.9: fixbug
@@ -23,4 +26,61 @@
 - 1.6.0: 支持请求参数和响应参数的Java 类下载
 - 1.5:支持{@link} 的常量定义显示在备注
 - 1.4:fixbug,备注中新增接口定义。 
-
+### ENGLISH
+- 1.8.2: java type convert to json type
+- 1.8.1: support idea 2020
+- 1.7.9: fixbug
+- 1.7.8: support method @path，fix remark bug
+- 1.7.7: support swagger & swagger mock- fixbug
+- 1.7.6: support base mock power 
+- 1.7.5:
+  - Response complete support map
+  - Support deprecated do not upload
+  - Dealing with loop calls
+  - Support path missing / complete
+- 1.7.4:
+  - Compatible with older versions
+  - Support unified return value setting
+  - Class name upload by default
+  - Enumeration field resolution
+  - Unify multi module parameters to solve enumeration packing problem,
+- 1.7.3:
+  - Support map, solve the same package problem, remove cache, support notblank, support package menu
+- 1.7.2:
+  - New support for localdata, Localtime, localdatatime < br >
+- 1.7.1:
+  - Support for custom description not to be overwritten (crazy branch)
+  - Menu acquisition process modification (crazy branch)
+  - Support status @ status annotation
+  - Support multi-level classification (crazy branch)
+- 1.7.0:
+  - In @ menu: questions, Dubbo support
+  - Support for multi link Download
+  - Upload results to the clipboard
+  - Link same package problem
+- 1.6.9:
+  - fix deleteMapping and patchMapping
+  - fix menu bug
+  - Support get entity class receiving
+- 1.6.8:
+  - Support class level path reference
+  - Support multiple entity reception
+  - Support response < list < user > > generics
+- 1.6.7:
+  - Supplementary support for a, B, e, K, V generic writing
+  - Support for pathvariable
+- 1.6.6:
+  - Support xxxmapping without writing value
+  - Solve the problem that response < > displays in the comments
+  - Support request param comments to get from comments
+- 1.6.5:
+  - Fixbug request is list < long > and other bugs
+  - Fix code.zip the same problem of probability
+  - The req? Body? Type problem exists in fix HttpServletRequest & httpservletresponse
+- 1.6.4:
+  - Support class level classification definition
+- 1.6.3: Fix multilevel generic problems
+  - Support @ notnull annotation
+  - Support putmapping, deletemapping,
+  - Support model receiving parameters and application / x-www-form-urlencoded
+  - Support user-defined classification < br >
