@@ -1,4 +1,4 @@
-package com.qbb.build;
+package com.qbb.builder;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -17,7 +17,6 @@ import com.intellij.psi.util.PsiTypesUtil;
 import com.intellij.psi.util.PsiUtil;
 import com.qbb.dto.YapiDubboDTO;
 import com.qbb.util.DesUtil;
-import org.codehaus.jettison.json.JSONException;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -108,7 +107,7 @@ public class BuildJsonForDubbo{
             try {
                 // 获得响应
                 yapiDubboDTO.setResponse(BuildJsonForYapi.getResponse(project,psiMethodTarget.getReturnType(), null));
-            } catch (JSONException e1) {
+            } catch (RuntimeException e1) {
                 e1.printStackTrace();
             }
             PsiParameter[] psiParameters= psiMethodTarget.getParameterList().getParameters();

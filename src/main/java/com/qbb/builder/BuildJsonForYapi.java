@@ -1,4 +1,4 @@
-package com.qbb.build;
+package com.qbb.builder;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
@@ -46,7 +46,6 @@ import com.qbb.util.FileToZipUtil;
 import com.qbb.util.FileUnZipUtil;
 import com.qbb.util.PsiAnnotationSearchUtil;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jettison.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
@@ -364,7 +363,7 @@ public class BuildJsonForYapi {
      * @author: chengsheng@qbb6.com
      * @date: 2019/2/19
      */
-    public static void getRequest(Project project, YapiApiDTO yapiApiDTO, PsiMethod psiMethodTarget) throws JSONException {
+    public static void getRequest(Project project, YapiApiDTO yapiApiDTO, PsiMethod psiMethodTarget) throws RuntimeException {
         PsiParameter[] psiParameters = psiMethodTarget.getParameterList().getParameters();
         if (psiParameters.length > 0) {
             ArrayList yapiParamList = new ArrayList<YapiQueryDTO>();
@@ -593,7 +592,7 @@ public class BuildJsonForYapi {
      * @author: chengsheng@qbb6.com
      * @date: 2019/2/19
      */
-    public static String getResponse(Project project, PsiType psiType, String returnClass) throws JSONException {
+    public static String getResponse(Project project, PsiType psiType, String returnClass) throws RuntimeException {
         String response = null;
         /** 最外层的包装类只会有一个泛型对应接口返回值 */
         if (!Strings.isNullOrEmpty(returnClass) && !psiType.getCanonicalText().split("<")[0].equals(returnClass)) {
@@ -625,7 +624,7 @@ public class BuildJsonForYapi {
     }
 
 
-    public static KV getPojoJson(Project project, PsiType psiType) throws JSONException {
+    public static KV getPojoJson(Project project, PsiType psiType) throws RuntimeException {
         if (psiType instanceof PsiPrimitiveType) {
             //如果是基本类型
             KV kvClass = KV.create();

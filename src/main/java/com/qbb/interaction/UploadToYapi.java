@@ -1,13 +1,8 @@
 package com.qbb.interaction;
 
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
-import com.intellij.notification.NotificationType;
-import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -15,9 +10,8 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.psi.PsiFile;
-import com.qbb.build.BuildJsonForDubbo;
-import com.qbb.build.BuildJsonForYapi;
+import com.qbb.builder.BuildJsonForDubbo;
+import com.qbb.builder.BuildJsonForYapi;
 import com.qbb.component.ConfigPersistence;
 import com.qbb.constant.ProjectTypeConstant;
 import com.qbb.constant.YapiConstant;

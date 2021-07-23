@@ -1,4 +1,4 @@
-package com.qbb.build;
+package com.qbb.builder;
 
 import com.google.gson.JsonObject;
 import org.apache.commons.lang.StringUtils;
