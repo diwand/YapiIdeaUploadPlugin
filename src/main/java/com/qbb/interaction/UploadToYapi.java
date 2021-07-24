@@ -10,6 +10,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.psi.PsiFile;
 import com.qbb.builder.BuildJsonForDubbo;
 import com.qbb.builder.BuildJsonForYapi;
 import com.qbb.component.ConfigPersistence;
@@ -21,7 +22,10 @@ import com.qbb.upload.UploadYapi;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @description: 入口
@@ -50,23 +54,39 @@ public class UploadToYapi extends AnAction {
         String attachUpload = null;
         // 获取配置
         try {
-            ConfigDTO configDTO= ServiceManager.getService(ConfigPersistence.class).getConfigDTO();
-            if(configDTO == null){
+            final java.util.List<ConfigDTO> configs = ServiceManager.getService(ConfigPersistence.class).getConfigs();
+            if(configs == null || configs.size() == 0){
                 Messages.showErrorDialog("请先去配置界面配置yapi配置","获取配置失败！");
+                return;
             }
-            projectToken=configDTO.getProjectToken();
-            projectId=configDTO.getProjectId();
-            yapiUrl=configDTO.getYapiUrl();
-            projectType=configDTO.getProjectType();
+            PsiFile psiFile = e.getDataContext().getData(CommonDataKeys.PSI_FILE);
+            String virtualFile = psiFile.getVirtualFile().getPath();
+            final List<ConfigDTO> collect = configs.stream()
+                    .filter(it -> {
+                        if (!it.getProjectName().equals(project.getName())) {
+                            return false;
+                        }
+                        final String str = (File.separator + it.getProjectName() + File.separator) + (it.getModuleName().equals(it.getProjectName()) ? "" : (it.getModuleName() + File.separator));
+                        return virtualFile.contains(str);
+                    }).collect(Collectors.toList());
+            if (collect.isEmpty()) {
+                Messages.showErrorDialog("没有找到对应的yapi配置，请在菜单 > Preferences > Other setting > YapiUpload 添加", "Error");
+                return;
+            }
+            final ConfigDTO configDTO = collect.get(0);
+            projectToken = configDTO.getProjectToken();
+            projectId = configDTO.getProjectId();
+            yapiUrl = configDTO.getYapiUrl();
+            projectType = configDTO.getProjectType();
         } catch (Exception e2) {
             Messages.showErrorDialog("获取配置失败，异常:  " + e2.getMessage(),"获取配置失败！");
             return;
         }
-        // 配置校验
-        if (Strings.isNullOrEmpty(projectToken) || Strings.isNullOrEmpty(projectId) || Strings.isNullOrEmpty(yapiUrl) || Strings.isNullOrEmpty(projectType)) {
-            Messages.showErrorDialog("请在项目的.idea目录下的misc.xml中配置[projectToken,projectId,yapiUrl,projectType] " ,"获取配置失败！");
-            return;
-        }
+//        // 配置校验
+//        if (Strings.isNullOrEmpty(projectToken) || Strings.isNullOrEmpty(projectId) || Strings.isNullOrEmpty(yapiUrl) || Strings.isNullOrEmpty(projectType)) {
+//            Messages.showErrorDialog("请在项目的.idea目录下的misc.xml中配置[projectToken,projectId,yapiUrl,projectType] " ,"获取配置失败！");
+//            return;
+//        }
         // 判断项目类型
         if (ProjectTypeConstant.dubbo.equals(projectType)) {
             // 获得dubbo需上传的接口列表 参数对象
