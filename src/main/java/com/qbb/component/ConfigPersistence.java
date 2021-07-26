@@ -8,7 +8,7 @@ import com.qbb.dto.ConfigDTO;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.lang.model.element.Element;
+import java.util.List;
 
 /**
  * @author zhangyunfan
@@ -17,19 +17,19 @@ import javax.lang.model.element.Element;
  * @Description: 配置持久化
  * @date 2020/12/25
  */
-@State(name = "yapiUpload", storages = {@Storage(value = "$APP_CONFIG$/yapiUpload.xml")})
-public class ConfigPersistence implements PersistentStateComponent<ConfigDTO> {
+@State(name = "yapiUploads", storages = {@Storage(value = "$APP_CONFIG$/yapiUploads.xml")})
+public class ConfigPersistence implements PersistentStateComponent<List<ConfigDTO>> {
 
 
-    public ConfigDTO getConfigDTO() {
-        return configDTO;
+    public List<ConfigDTO> getConfigs() {
+        return configs;
     }
 
-    public void setConfigDTO(ConfigDTO configDTO) {
-        this.configDTO = configDTO;
+    public void setConfigs(List<ConfigDTO> configs) {
+        this.configs = configs;
     }
 
-    private ConfigDTO configDTO;
+    private List<ConfigDTO> configs;
 
     public static ConfigPersistence getInstance(){
         return ServiceManager.getService(ConfigPersistence.class);
@@ -38,12 +38,12 @@ public class ConfigPersistence implements PersistentStateComponent<ConfigDTO> {
 
     @Nullable
     @Override
-    public ConfigDTO getState() {
-        return this.configDTO;
+    public List<ConfigDTO> getState() {
+        return this.configs;
     }
 
     @Override
-    public void loadState(@NotNull ConfigDTO element) {
-        this.configDTO = element;
+    public void loadState(@NotNull List<ConfigDTO> element) {
+        this.configs = element;
     }
 }

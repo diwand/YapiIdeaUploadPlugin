@@ -1,0 +1,36 @@
+<idea-plugin>
+<id>YapiUpload</id>
+<name>YapiUpload</name>
+<vendor email="chengsheng@qbb6.com" url="http://www.qbb6.com">QBB</vendor>
+
+<!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+     on how to target different products -->
+<!-- uncomment to enable plugin in all products
+<depends>com.intellij.modules.lang</depends>
+-->
+
+<depends>com.intellij.modules.platform</depends>
+<depends>com.intellij.modules.lang</depends>
+<depends>com.intellij.modules.java</depends>
+
+<extensions defaultExtensionNs="com.intellij">
+  <!-- Add your extensions here -->
+</extensions>
+
+
+  <extensions defaultExtensionNs="com.intellij">
+    <applicationConfigurable instance="com.qbb.component.ConfigComponent"/>
+    <applicationService serviceImplementation="com.qbb.component.ConfigPersistence"
+                        serviceInterface="com.qbb.component.ConfigPersistence"/>
+  </extensions>
+
+<actions>
+  <!-- Add your actions here -->
+  <action id="UploadToYapi" class="com.qbb.interaction.UploadToYapi" text="UploadToYapi"
+          description="UploadToYapi">
+    <add-to-group group-id="EditorLangPopupMenu" anchor="first"/>
+    <keyboard-shortcut keymap="$default" first-keystroke="alt u"/>
+  </action>
+</actions>
+
+</idea-plugin>

@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+    id "org.jetbrains.intellij" version "0.6.5"
+    id 'org.jetbrains.changelog' version '1.1.2'
+}
+apply plugin: 'org.jetbrains.changelog'
+
+group 'com.dbb'
+version '1.8.2'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+// See https://github.com/JetBrains/gradle-intellij-plugin/
+intellij {
+    plugins = ["java"]
+    version '2020.1'
+}
+patchPluginXml {
+    sinceBuild('1')
+    untilBuild('203.*')
+
+    pluginDescription = {
+        def lines = rootProject.file('README.md').readLines()
+        // README中插件描述开始的标签
+//        def start = lines.indexOf('<!--plugin-desc-->')
+        // README中插件描述结束的标签
+//        def end = lines.indexOf('<!--/plugin-desc-->')
+//        def description = lines.subList(start + 1, end).join('\n')
+        org.jetbrains.changelog.ExtensionsKt.markdownToHTML(lines.join('\n'))
+    }
+    changeNotes = changelog.getUnreleased().toHTML()
+}
+test {
+    useJUnitPlatform()
+}
+repositories {
+    gradlePluginPortal()
+}
