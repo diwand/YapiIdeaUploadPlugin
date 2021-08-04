@@ -20,8 +20,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <applicationConfigurable instance="com.qbb.component.ConfigComponent"/>
-    <applicationService serviceImplementation="com.qbb.component.ConfigPersistence"
-                        serviceInterface="com.qbb.component.ConfigPersistence"/>
+    <applicationService serviceImplementation="com.qbb.component.ConfigPersistence"/>
   </extensions>
 
 <actions>

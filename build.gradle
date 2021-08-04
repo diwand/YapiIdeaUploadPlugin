@@ -21,10 +21,11 @@ dependencies {
 intellij {
     plugins = ["java"]
     version '2020.1'
+    updateSinceUntilBuild false
 }
 patchPluginXml {
-    sinceBuild('1')
-    untilBuild('203.*')
+//    sinceBuild('1')
+//    untilBuild('203.*')
 
     pluginDescription = {
         def lines = rootProject.file('README.md').readLines()
