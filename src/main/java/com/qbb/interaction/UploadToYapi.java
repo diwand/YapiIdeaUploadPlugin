@@ -22,7 +22,6 @@ import com.qbb.upload.UploadYapi;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,13 +61,9 @@ public class UploadToYapi extends AnAction {
             PsiFile psiFile = e.getDataContext().getData(CommonDataKeys.PSI_FILE);
             String virtualFile = psiFile.getVirtualFile().getPath();
             final List<ConfigDTO> collect = configs.stream()
-                    .filter(it -> {
-                        if (!it.getProjectName().equals(project.getName())) {
-                            return false;
-                        }
-                        final String str = (File.separator + it.getProjectName() + File.separator) + (it.getModuleName().equals(it.getProjectName()) ? "" : (it.getModuleName() + File.separator));
-                        return virtualFile.contains(str);
-                    }).collect(Collectors.toList());
+                    .filter(it -> virtualFile.startsWith(it.getModulePath()))
+                    .sorted((o1, o2) -> Integer.compare(o2.getModulePath().length(), o1.getModulePath().length()))
+                    .collect(Collectors.toList());
             if (collect.isEmpty()) {
                 Messages.showErrorDialog("没有找到对应的yapi配置，请在菜单 > Preferences > Other setting > YapiUpload 添加", "Error");
                 return;

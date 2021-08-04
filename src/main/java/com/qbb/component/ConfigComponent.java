@@ -80,7 +80,7 @@ public class ConfigComponent implements SearchableConfigurable {
                     continue;
                 }
                 final ConfigDTO dto = defaultListModel.get(i);
-                if (dto.getProjectName().equals(config.getProjectName()) && dto.getModuleName().equals(config.getModuleName())) {
+                if (dto.getModulePath().equals(config.getModulePath())) {
                     Messages.showErrorDialog("编辑出错了，已添加该模块配置！", "Error");
                     return;
                 }
@@ -104,7 +104,7 @@ public class ConfigComponent implements SearchableConfigurable {
             final Enumeration<ConfigDTO> elements = defaultListModel.elements();
             while (elements.hasMoreElements()) {
                 final ConfigDTO dto = elements.nextElement();
-                if (dto.getProjectName().equals(config.getProjectName()) && dto.getModuleName().equals(config.getModuleName())) {
+                if (dto.getModulePath().equals(config.getModulePath())) {
                     Messages.showErrorDialog("添加出错了，已添加该模块配置！", "Error");
                     return;
                 }

@@ -190,11 +190,7 @@ public class ItemComponent extends JPanel implements ListCellRenderer<ConfigDTO>
         setFont(list.getFont());
         setOpaque(isSelected);
 
-        if (value.getProjectName().equals(value.getModuleName())) {
-            title.setText(value.getProjectName());
-        } else {
-            title.setText(value.getProjectName() + " - " + value.getModuleName());
-        }
+        title.setText(value.getModulePath());
         yapiTextArea.setText(value.getYapiUrl());
         projectTokenTextArea.setText(value.getProjectToken());
         projectIdTextArea.setText(value.getProjectId());
