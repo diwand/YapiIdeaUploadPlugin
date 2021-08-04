@@ -22,6 +22,7 @@ import com.qbb.upload.UploadYapi;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,7 +60,7 @@ public class UploadToYapi extends AnAction {
                 return;
             }
             PsiFile psiFile = e.getDataContext().getData(CommonDataKeys.PSI_FILE);
-            String virtualFile = psiFile.getVirtualFile().getPath();
+            String virtualFile = new File(psiFile.getVirtualFile().getPath()).getAbsolutePath();
             final List<ConfigDTO> collect = configs.stream()
                     .filter(it -> virtualFile.startsWith(it.getModulePath()))
                     .sorted((o1, o2) -> Integer.compare(o2.getModulePath().length(), o1.getModulePath().length()))
