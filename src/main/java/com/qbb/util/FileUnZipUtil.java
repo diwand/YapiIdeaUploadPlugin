@@ -33,6 +33,9 @@ public class FileUnZipUtil {
             while (enumEntry.hasMoreElements()) {
                 JarEntry jarEntry = (JarEntry)enumEntry.nextElement();
                 File tarFile = new File(tarDir, jarEntry.getName());
+                if (!tarFile.toPath().normalize().startsWith(tarDir.toPath().normalize())) {
+                    throw new IOException("Bad zip entry");
+                }
                 if(jarEntry.getName().contains("META-INF")){
                     File miFile = new File(tarDir, "META-INF");
                     if(!miFile.exists()){
