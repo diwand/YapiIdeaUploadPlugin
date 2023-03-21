@@ -27,12 +27,22 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: '11'
+    - name: 缓存gradle
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-gradle-yapiideaplugin
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-build-${{ env.cache-name }}
     - name: Build with Gradle
       run: ./gradlew buildPlugin
     - name: 归档
       env:
         GITHUB_TOKEN: ${{ secrets.GIT_RELEASE_YAPI_IDEA_UPLOAD_PLUGIN }}
       run: |
-        version=`cat build.gradle | grep -P "version '\\S+'" -o | sed "s/version '\(\S*\)'/\1/g"`
-        hub release create -m "v${version}" "v${version}"
-        hub release edit -a "build/libs/YapiIdeaUploadPlugin-${version}.jar" -m "v${version}" "v${version}"
+        version=`cat build.gradle | grep -P "version '\\S+'" -o | sed "s/version '\(\S*\)'/\1/g"` \
+        && echo "version=${version}" \
+        && hub release create -m "v${version}" "v${version}" \
+        && hub release edit -a "build/libs/YapiIdeaUploadPlugin-${version}.jar" -m "v${version}" "v${version}"
