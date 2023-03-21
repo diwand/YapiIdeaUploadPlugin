@@ -27,8 +27,8 @@ intellij {
     plugins = ["java"]
 }
 patchPluginXml {
-//    sinceBuild('1')
-//    untilBuild('203.*')
+    sinceBuild = "221"
+    untilBuild = "231.*"
 
     pluginDescription = ExtensionsKt.markdownToHTML(
             rootProject.file('README.md').readLines().join('\n')
