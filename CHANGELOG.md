@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 ### 中文
+- 1.8.3: 重构为gradle项目；增加同项目多模块配置
 - 1.8.2: 将java 类型转为json
 - 1.8.1: 支持idea 2020
 - 1.7.9: fixbug

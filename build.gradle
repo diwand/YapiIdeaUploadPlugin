@@ -6,7 +6,7 @@ plugins {
 apply plugin: 'org.jetbrains.changelog'
 
 group 'com.dbb'
-version '1.8.2'
+version '1.8.3'
 
 repositories {
     mavenCentral()
@@ -28,7 +28,7 @@ patchPluginXml {
 //    untilBuild('203.*')
 
     pluginDescription = {
-        def lines = rootProject.file('README.md').readLines()
+        def lines = rootProject.file('CHANGELOG.md').readLines()
         // README中插件描述开始的标签
 //        def start = lines.indexOf('<!--plugin-desc-->')
         // README中插件描述结束的标签
