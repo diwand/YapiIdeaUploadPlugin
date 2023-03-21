@@ -1,6 +1,8 @@
+import org.jetbrains.changelog.ExtensionsKt
+
 plugins {
     id 'java'
-    id "org.jetbrains.intellij" version "0.6.5"
+    id "org.jetbrains.intellij" version "1.13.2"
     id 'org.jetbrains.changelog' version '1.1.2'
 }
 apply plugin: 'org.jetbrains.changelog'
@@ -17,25 +19,20 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
-// See https://github.com/JetBrains/gradle-intellij-plugin/
+// Configure Gradle IntelliJ Plugin
+// Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
+    version = '2022.2'
+    type = "IC"
     plugins = ["java"]
-    version '2020.1'
-    updateSinceUntilBuild false
 }
 patchPluginXml {
 //    sinceBuild('1')
 //    untilBuild('203.*')
 
-    pluginDescription = {
-        def lines = rootProject.file('CHANGELOG.md').readLines()
-        // README中插件描述开始的标签
-//        def start = lines.indexOf('<!--plugin-desc-->')
-        // README中插件描述结束的标签
-//        def end = lines.indexOf('<!--/plugin-desc-->')
-//        def description = lines.subList(start + 1, end).join('\n')
-        org.jetbrains.changelog.ExtensionsKt.markdownToHTML(lines.join('\n'))
-    }
+    pluginDescription = ExtensionsKt.markdownToHTML(
+            rootProject.file('README.md').readLines().join('\n')
+    )
     changeNotes = changelog.getUnreleased().toHTML()
 }
 test {
