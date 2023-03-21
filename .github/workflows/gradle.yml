@@ -31,6 +31,9 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew assemble
     - name: 归档
+      env:
+        GITHUB_TOKEN: ${{ secrets.GIT_RELEASE_YAPI_IDEA_UPLOAD_PLUGIN}}
       run: |
-        hub release create -m "v1.8.3" "v1.8.3"
-        hub release edit -a "build\libs\YapiIdeaUploadPlugin-1.8.3.jar" -m "v1.8.3" "v1.8.3"
+        version=`cat build.gradle | grep -P "version '\\S+'" -o | sed "s/version '\(\S*\)'/\1/g"`
+        hub release create -m "v$version" "v$version"
+        hub release edit -a "build/libs/YapiIdeaUploadPlugin-$version.jar" -m "v$version" "v$version"
