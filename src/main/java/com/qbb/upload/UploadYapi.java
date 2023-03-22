@@ -35,7 +35,7 @@ public class UploadYapi {
      * @return: com.qbb.dto.YapiResponse
      * @author: chengsheng@qbb6.com
      * @date: 2019/5/15
-     */ 
+     */
     public YapiResponse  uploadSave(YapiSaveParam yapiSaveParam,String attachUpload,String path) throws IOException {
         if(Strings.isNullOrEmpty(yapiSaveParam.getTitle())){
             yapiSaveParam.setTitle(yapiSaveParam.getPath());
@@ -93,7 +93,7 @@ public class UploadYapi {
      * @return: java.lang.String
      * @author: chengsheng@qbb6.com
      * @date: 2019/5/15
-     */ 
+     */
     public String uploadFile(String url,String filePath){
         HttpPost httpPost = null;
         try {
@@ -121,26 +121,26 @@ public class UploadYapi {
      * @return: com.qbb.dto.YapiResponse
      * @author: chengsheng@qbb6.com
      * @date: 2019/7/28
-     */ 
-    public void changeDesByPath(YapiSaveParam yapiSaveParam){
-        try{
-            String response = HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpGet(yapiSaveParam.getYapiUrl()+ YapiConstant.yapiGetByPath+"?token="+yapiSaveParam.getToken()+"&path="+yapiSaveParam.getPath())),"utf-8");
-            YapiResponse yapiResponse=gson.fromJson(response,YapiResponse.class);
-            if(yapiResponse.getErrcode()==0) {
-                YapiInterfaceResponse yapiInterfaceResponse=gson.fromJson(gson.toJson(yapiResponse.getData()),YapiInterfaceResponse.class);
-                if(!Strings.isNullOrEmpty(yapiInterfaceResponse.getDesc())){
+     */
+    public void changeDesByPath(YapiSaveParam yapiSaveParam) {
+        try {
+            String response = HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpGet(yapiSaveParam.getYapiUrl() + YapiConstant.yapiGetByPath + "?token=" + yapiSaveParam.getToken() + "&path=" + yapiSaveParam.getPath())), "utf-8");
+            YapiResponse<YapiInterfaceResponse> yapiResponse = gson.fromJson(response, new TypeToken<YapiResponse<YapiInterfaceResponse>>() {}.getType());
+            if (yapiResponse.getErrcode() == 0) {
+                YapiInterfaceResponse yapiInterfaceResponse = yapiResponse.getData();
+                if (!Strings.isNullOrEmpty(yapiInterfaceResponse.getDesc())) {
                     //如果原来描述不为空，那么就将当前描述+上一个版本描述的自定义部分
-                    if(yapiInterfaceResponse.getDesc().contains("java类")){
-                        yapiSaveParam.setDesc(yapiInterfaceResponse.getDesc().substring(0,yapiInterfaceResponse.getDesc().indexOf("java类"))+yapiSaveParam.getDesc()+yapiInterfaceResponse.getDesc().substring(yapiInterfaceResponse.getDesc().indexOf("</pre>"),yapiInterfaceResponse.getDesc().length()));
-                    }else{
-                        yapiSaveParam.setDesc(yapiInterfaceResponse.getDesc().substring(0,yapiInterfaceResponse.getDesc().indexOf("<pre>"))+yapiSaveParam.getDesc()+yapiInterfaceResponse.getDesc().substring(yapiInterfaceResponse.getDesc().indexOf("</pre>"),yapiInterfaceResponse.getDesc().length()));
+                    if (yapiInterfaceResponse.getDesc().contains("java类")) {
+                        yapiSaveParam.setDesc(yapiInterfaceResponse.getDesc().substring(0, yapiInterfaceResponse.getDesc().indexOf("java类")) + yapiSaveParam.getDesc() + yapiInterfaceResponse.getDesc().substring(yapiInterfaceResponse.getDesc().indexOf("</pre>"), yapiInterfaceResponse.getDesc().length()));
+                    } else {
+                        yapiSaveParam.setDesc(yapiInterfaceResponse.getDesc().substring(0, yapiInterfaceResponse.getDesc().indexOf("<pre>")) + yapiSaveParam.getDesc() + yapiInterfaceResponse.getDesc().substring(yapiInterfaceResponse.getDesc().indexOf("</pre>"), yapiInterfaceResponse.getDesc().length()));
                     }
                 }
-                if(Objects.nonNull(yapiInterfaceResponse.getCatid())){
+                if (Objects.nonNull(yapiInterfaceResponse.getCatid())) {
                     yapiSaveParam.setCatid(yapiInterfaceResponse.getCatid().toString());
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -151,7 +151,7 @@ public class UploadYapi {
      * @return: com.qbb.dto.YapiResponse
      * @author: chengsheng@qbb6.com
      * @date: 2019/5/15
-     */ 
+     */
     public YapiResponse getCatIdOrCreate(YapiSaveParam yapiSaveParam){
         // 如果缓存不存在，切自定义菜单为空，则使用默认目录
         if(Strings.isNullOrEmpty(yapiSaveParam.getMenu())){
@@ -160,11 +160,9 @@ public class UploadYapi {
         String response= null;
         try {
             response = HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpGet(yapiSaveParam.getYapiUrl()+ YapiConstant.yapiCatMenu+"?project_id="+yapiSaveParam.getProjectId()+"&token="+yapiSaveParam.getToken())),"utf-8");
-            YapiResponse yapiResponse=gson.fromJson(response,YapiResponse.class);
+            YapiResponse<List<YapiCatResponse>> yapiResponse = gson.fromJson(response, new TypeToken<YapiResponse<List<YapiCatResponse>>>() {}.getType());
             if(yapiResponse.getErrcode()==0) {
-                List<YapiCatResponse> list = (List<YapiCatResponse>) yapiResponse.getData();
-                list=gson.fromJson(gson.toJson(list),new TypeToken<List<YapiCatResponse>>() {
-                }.getType());
+                List<YapiCatResponse> list = yapiResponse.getData();
                 String[] menus=yapiSaveParam.getMenu().split("/");
                 // 循环多级菜单，判断是否存在，如果不存在就创建
                 //  解决多级菜单创建问题
@@ -212,12 +210,12 @@ public class UploadYapi {
      * @return: java.lang.Integer
      * @author: chengsheng@qbb6.com
      * @date: 2019/7/28
-     */ 
+     */
     private Integer addMenu(YapiSaveParam yapiSaveParam,Integer parent_id,String menu) throws IOException{
         YapiCatMenuParam  yapiCatMenuParam=new YapiCatMenuParam(menu,yapiSaveParam.getProjectId(),yapiSaveParam.getToken(),parent_id);
         String responseCat=HttpClientUtil.ObjectToString(HttpClientUtil.getHttpclient().execute(this.getHttpPost(yapiSaveParam.getYapiUrl()+YapiConstant.yapiAddCat,gson.toJson(yapiCatMenuParam))),"utf-8");
-        YapiCatResponse yapiCatResponse=gson.fromJson(gson.fromJson(responseCat,YapiResponse.class).getData().toString(),YapiCatResponse.class);
-        return yapiCatResponse.get_id();
+        YapiResponse<YapiCatResponse> response = gson.fromJson(responseCat, new TypeToken<YapiResponse<YapiCatResponse>>() {}.getType());
+        return response.getData().get_id();
     }
 
 

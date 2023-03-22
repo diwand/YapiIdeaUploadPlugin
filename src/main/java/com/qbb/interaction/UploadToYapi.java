@@ -137,6 +137,7 @@ public class UploadToYapi extends AnAction {
                             Messages.showInfoMessage("上传成功！接口文档url地址:  " + url,"上传成功！");
                         }
                     } catch (Exception e1) {
+                        e1.printStackTrace();
                         Messages.showErrorDialog("上传失败！异常:  " + e1,"上传失败！");
                     }
                 }
