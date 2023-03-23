@@ -14,6 +14,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.qbb.constant.YapiStatusEnum;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -63,17 +64,33 @@ public class DesUtil {
      * @author: chengsheng@qbb6.com
      * @date: 2019/2/2
      */
-    public static String getDescription(PsiMethod psiMethodTarget){
-        if(psiMethodTarget.getDocComment()!=null) {
-            PsiDocTag[] psiDocTags = psiMethodTarget.getDocComment().getTags();
-            for (PsiDocTag psiDocTag : psiDocTags) {
-                if (psiDocTag.getText().contains("@description") || psiDocTag.getText().contains("@Description")) {
-                    return trimFirstAndLastChar(psiDocTag.getText().replace("@description", "").replace("@Description", "").replace(":", "").replace("*", "").replace("\n", " "), ' ');
-                }
-            }
-            return trimFirstAndLastChar(psiMethodTarget.getDocComment().getText().split("@")[0].replace("@description", "").replace("@Description", "").replace(":", "").replace("*", "").replace("/", "").replace("\n", " "), ' ').trim();
+    public static String getDescription(PsiMethod psiMethodTarget) {
+        if (psiMethodTarget.getDocComment() == null) {
+            return null;
         }
-        return null;
+        PsiDocTag[] psiDocTags = psiMethodTarget.getDocComment().getTags();
+        for (PsiDocTag psiDocTag : psiDocTags) {
+            if (psiDocTag.getText().contains("@description") || psiDocTag.getText().contains("@Description")) {
+                return trimFirstAndLastChar(
+                    psiDocTag.getText()
+                        .replace("@description", "")
+                        .replace("@Description", "")
+                        .replace(":", "")
+                        .replace("*", "")
+                        .replace("\n", " "),
+                    ' ');
+            }
+        }
+        return trimFirstAndLastChar(
+            psiMethodTarget.getDocComment().getText()
+                .split("@")[0]
+                .replace("@description", "")
+                .replace("@Description", "")
+                .replace(":", "")
+                .replace("*", "")
+                .replace("/", "")
+                .replace("\n", " "),
+            ' ').trim();
     }
 
     /**
@@ -82,14 +99,16 @@ public class DesUtil {
      * @return: java.lang.String
      * @author: chengsheng@qbb6.com
      * @date: 2019/5/22
-     */ 
-    public static String getParamDesc(PsiMethod psiMethodTarget,String paramName){
-        if(psiMethodTarget.getDocComment()!=null) {
-            PsiDocTag[] psiDocTags = psiMethodTarget.getDocComment().getTags();
-            for (PsiDocTag psiDocTag : psiDocTags) {
-                if ((psiDocTag.getText().contains("@param") || psiDocTag.getText().contains("@Param")) && (!psiDocTag.getText().contains("[")) && psiDocTag.getText().contains(paramName)) {
-                    return trimFirstAndLastChar(psiDocTag.getText().replace("@param", "").replace("@Param", "").replace(paramName,"").replace(":", "").replace("*", "").replace("\n", " "), ' ').trim();
-                }
+     */
+    public static String getParamDesc(PsiMethod psiMethodTarget,String paramName) {
+        if (psiMethodTarget.getDocComment() == null) {
+            return "";
+        }
+        PsiDocTag[] psiDocTags = psiMethodTarget.getDocComment().getTags();
+        for (PsiDocTag psiDocTag : psiDocTags) {
+            // 包含@param或@Param，但不包含[
+            if (psiDocTag.getText().matches("[\\S\\s]*@[pP]aram[\\S\\s]*" + paramName + "[^\\[]*")) {
+                return psiDocTag.getText().replaceAll("(@[pP]aram:*\\s*)" + paramName + "|([*\n])", "").trim();
             }
         }
         return "";
@@ -117,7 +136,7 @@ public class DesUtil {
      * @return: java.lang.String
      * @author: chengsheng@qbb6.com
      * @date: 2019/5/18
-     */ 
+     */
     public static String getUrlReFerenceRDesc(String text){
         if(Strings.isNullOrEmpty(text)){
             return text;
@@ -127,7 +146,7 @@ public class DesUtil {
         }
         return DesUtil.trimFirstAndLastChar(text.split("\\*/")[0].replace("@description","").replace("@Description","").split("@")[0].replace(":","").replace("*","").replace("/","").replace("\n"," "),' ');
     }
-    
+
     /**
      * @description: 获得菜单
      * @param: [text]
@@ -257,7 +276,7 @@ public class DesUtil {
      * @return: java.util.List<java.lang.String>
      * @author: chengsheng@qbb6.com
      * @date: 2019/7/2
-     */ 
+     */
     public static List<PsiClass> getFieldLinks(Project project,PsiField field){
         if(Objects.isNull(field.getDocComment())){
             return new ArrayList<>();
@@ -301,14 +320,14 @@ public class DesUtil {
        }
        return result;
     }
-    
+
     /**
      * @description: 组装路径
      * @param: [path, subPath]
      * @return: void
      * @author: chengsheng@qbb6.com
      * @date: 2019/9/25
-     */ 
+     */
     public static void addPath(StringBuilder path,String subPath){
         if(subPath.startsWith("/")){
             path.append(subPath);

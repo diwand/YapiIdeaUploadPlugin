@@ -7,7 +7,7 @@ plugins {
 }
 apply plugin: 'org.jetbrains.changelog'
 
-group 'com.dbb'
+group 'com.xujiaji'
 version '1.8.4'
 
 repositories {
@@ -35,6 +35,11 @@ patchPluginXml {
     )
     changeNotes = changelog.getUnreleased().toHTML()
 }
+
+publishPlugin {
+    token = System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken")
+}
+
 test {
     useJUnitPlatform()
 }

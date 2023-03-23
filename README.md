@@ -1,10 +1,12 @@
+# YapiUploadPro
+重构自：https://github.com/diwand/YapiIdeaUploadPlugin
+
 #### 目的
 减少yapi 录入时间，通过工具反向规范代码注释，和代码整洁
 
 #### 下载地址
-1:<a href="https://github.com/diwand/YapiIdeaUploadPlugin/tree/master/disk" >github</a><br>
-2:idea 插件库 <br>
-更新速度 github>idea 插件库
+1:<a href="https://github.com/xujiaji/YapiIdeaUploadPlugin/releases" >github</a><br>
+2:idea 插件库 搜索：YapiUploadPro
 
 #### 支持语言
 java,spring

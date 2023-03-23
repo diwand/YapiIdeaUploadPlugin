@@ -1,7 +1,7 @@
 <idea-plugin>
-<id>YapiUpload</id>
-<name>YapiUpload</name>
-<vendor email="chengsheng@qbb6.com" url="http://www.qbb6.com">QBB</vendor>
+<id>YapiUploadPro</id>
+<name>YapiUploadPro</name>
+<vendor email="github@xujiaji.com" url="https://github.com/xujiaji/YapiIdeaUploadPlugin">YapiUploadPro</vendor>
 
 <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
      on how to target different products -->
