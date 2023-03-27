@@ -1,40 +1,55 @@
 # YapiUploadPro
-重构自：https://github.com/diwand/YapiIdeaUploadPlugin
+https://github.com/xujiaji/YapiIdeaUploadPlugin
 
-#### 目的
-减少yapi 录入时间，通过工具反向规范代码注释，和代码整洁
+En: Upload the interface of the spring boot project to the yapi server through the plug-in.
 
-#### 下载地址
-1:<a href="https://github.com/xujiaji/YapiIdeaUploadPlugin/releases" >github</a><br>
-2:idea 插件库 搜索：YapiUploadPro
+Zh: 将SpringBoot项目的接口通过该插件上传到yapi服务器
 
-#### 支持语言
-java,spring
+#### Purpose（目的）
+En: Reduce yapi entry time, reverse standardize code comments through tools, and code cleanliness.
 
-#### 单个&批量
+Zh: 减少yapi 录入时间，通过工具反向规范代码注释，和代码整洁
 
-单个上传选中方法名称 <br>
-批量上传选中类名 <br>
+#### How to use（使用方式）
+En: 1. Find "YapiUpload" in idea settings and configure ypai.
 
-#### 支持接口
-目前 dubbo 接口/api
+Zh: 1、在idea设置中找到“YapiUpload”配置ypai
 
-#### 支持yapi 的版本
-1.5.0+
+![config](img.png)
 
-#### 支持idea 版本
-2017+
+En: 2. Add configuration (note: the module is an absolute path, and the path is used to determine which project to upload to yapi).
 
+Zn: 2、添加配置（注意：模块是绝对路径，通过路径判断上传到yapi哪个项目）
 
-#### 使用方式
+![config](img_1.png)
 
-查看 <a href="https://github.com/diwand/YapiIdeaUploadPlugin/wiki/%E5%BF%AB%E9%80%9F%E4%BD%BF%E7%94%A8">wiki</a> 
+En: 3. Right-click the controller interface file, and after the pop-up menu, click '点击UploadToYapi'.
 
+Zn: 3、右键controller接口文件，弹窗菜单后，点击UploadToYapi
 
-#### 感谢
-感谢以下同学提交的代码(排名不分先后）
- - @24kpure
- - @sun7132568 
- - @zouzou6321
- - @zhanyao
- - @Planeswalker23
+> En: Some comment configuration
+
+|Show Effects|Tags|Location|
+|--|--|--|
+|Main Category|@menu:|Add on Category|
+|Subcategory|@menu:|Add on method|
+|Interface Status Mark|@status under development (or undone)<br/>&emsp;&emsp;&emsp;&emsp;released(done)<br/>&emsp;&emsp;&emsp;&emsp;design(design)<br/ >&emsp;&emsp;&emsp;&emsp;testing<br/>&emsp;&emsp;&emsp;&emsp;deprecated<br/>&emsp;&emsp;&emsp;&emsp;stopping< br/>&emsp;&emsp;&emsp;&emsp; (Note: do not write the default development)|Add on the method|
+|Specify the interface path |@path| add on the method|
+
+Other see: https://github.com/diwand/YapiIdeaUploadPlugin/wiki/%E5%BF%AB%E9%80%9F%E4%BD%BF%E7%94%A8
+
+> Zn: 一些注释配置
+
+|显示效果|标记|位置|
+|--|--|--|
+|主分类|@menu:|类上添加|
+|子分类|@menu:|方法上添加|
+|接口状态标记|@status 开发中 (或者 undone)<br/>&emsp;&emsp;&emsp;&emsp;已发布(done)<br/>&emsp;&emsp;&emsp;&emsp;设计中(design)<br/>&emsp;&emsp;&emsp;&emsp;已提测(testing)<br/>&emsp;&emsp;&emsp;&emsp;已过时(deprecated)<br/>&emsp;&emsp;&emsp;&emsp;暂停开发(stoping)<br/>&emsp;&emsp;&emsp;&emsp;（注：不写默认开发中）|方法上添加|
+|指定接口路径|@path|方法上添加|
+
+其它见：https://github.com/diwand/YapiIdeaUploadPlugin/wiki/%E5%BF%AB%E9%80%9F%E4%BD%BF%E7%94%A8
+
+#### About （关于）
+En: Refactored from：https://github.com/diwand/YapiIdeaUploadPlugin
+
+Zn: 重构自：https://github.com/diwand/YapiIdeaUploadPlugin
