@@ -1,5 +1,6 @@
 package com.qbb.component;
 
+import com.google.gson.Gson;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
@@ -29,6 +30,7 @@ import java.util.UUID;
 public class ConfigComponent implements SearchableConfigurable {
 
     private ConfigPersistence configPersistence = ConfigPersistence.getInstance();
+    private Gson gson = new Gson();
 
     @NotNull
     @Override
@@ -80,7 +82,7 @@ public class ConfigComponent implements SearchableConfigurable {
                     continue;
                 }
                 final ConfigDTO dto = defaultListModel.get(i);
-                if (dto.getProjectName().equals(config.getProjectName()) && dto.getModuleName().equals(config.getModuleName())) {
+                if (dto.getModulePath().equals(config.getModulePath())) {
                     Messages.showErrorDialog("编辑出错了，已添加该模块配置！", "Error");
                     return;
                 }
@@ -104,7 +106,7 @@ public class ConfigComponent implements SearchableConfigurable {
             final Enumeration<ConfigDTO> elements = defaultListModel.elements();
             while (elements.hasMoreElements()) {
                 final ConfigDTO dto = elements.nextElement();
-                if (dto.getProjectName().equals(config.getProjectName()) && dto.getModuleName().equals(config.getModuleName())) {
+                if (dto.getModulePath().equals(config.getModulePath())) {
                     Messages.showErrorDialog("添加出错了，已添加该模块配置！", "Error");
                     return;
                 }
@@ -122,11 +124,16 @@ public class ConfigComponent implements SearchableConfigurable {
 
     @Override
     public boolean isModified() {
-        if (configPersistence.getConfigs() == null) {
-            return true;
+        if (configPersistence.stateValue == null) {
+            return defaultListModel.size() != 0;
+        }
+        final Enumeration<ConfigDTO> elements = defaultListModel.elements();
+        List<ConfigDTO> list = new ArrayList<>();
+        while (elements.hasMoreElements()) {
+            list.add(elements.nextElement());
         }
         //当用户修改配置参数后，在点击“OK”“Apply”按钮前，框架会自动调用该方法，判断是否有修改，进而控制按钮“OK”“Apply”的是否可用。
-        return defaultListModel.size() == configPersistence.getConfigs().size();
+        return !configPersistence.stateValue.equals(gson.toJson(list));
     }
 
     @Override

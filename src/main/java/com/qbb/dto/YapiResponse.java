@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @author chengsheng@qbb6.com
  * @date 2019/1/31 12:08 PM
  */
-public class YapiResponse implements Serializable {
+public class YapiResponse<T> implements Serializable {
     /**
      * 状态码
      */
@@ -20,7 +20,7 @@ public class YapiResponse implements Serializable {
     /**
      * 返回结果
      */
-    private Object data;
+    private T data;
     /**
      * 分类
      */
@@ -42,11 +42,11 @@ public class YapiResponse implements Serializable {
         this.errmsg = errmsg;
     }
 
-    public Object getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 
@@ -63,7 +63,7 @@ public class YapiResponse implements Serializable {
         this.errmsg="success";
     }
 
-    public YapiResponse(Object data) {
+    public YapiResponse(T data) {
         this.errcode=0;
         this.errmsg="success";
         this.data = data;

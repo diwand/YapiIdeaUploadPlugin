@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 ### 中文
+- 1.8.4: 修复崩溃问题，优化代码
+- 1.8.3: 重构为gradle项目；增加同项目多模块配置
 - 1.8.2: 将java 类型转为json
 - 1.8.1: 支持idea 2020
 - 1.7.9: fixbug
@@ -27,6 +29,8 @@
 - 1.5:支持{@link} 的常量定义显示在备注
 - 1.4:fixbug,备注中新增接口定义。 
 ### ENGLISH
+- 1.8.4 Fix the crash problem and optimize the code
+- 1.8.3 Refactor to gradle project; add multi-module configuration of the same project
 - 1.8.2: java type convert to json type
 - 1.8.1: support idea 2020
 - 1.7.9: fixbug

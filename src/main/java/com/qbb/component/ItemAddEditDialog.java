@@ -1,7 +1,5 @@
 package com.qbb.component;
 
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.qbb.dto.ConfigDTO;
@@ -10,15 +8,15 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.File;
 
 public class ItemAddEditDialog extends DialogWrapper {
 
     private final boolean isAdd;
     private final ConfigDTO configDTO;
-    private final String[] moduleArr;
+    private final String projectPath;
     private JComboBox comboBox;
     private ItemComponent itemComponent;
 
@@ -27,9 +25,7 @@ public class ItemAddEditDialog extends DialogWrapper {
         isAdd = configDTO == null;
         setTitle((configDTO == null ? "Add " : "Edit ") + project.getName() + " Project");
         this.configDTO = isAdd ? new ConfigDTO() : configDTO;
-        List<String> modules = Arrays.stream(ModuleManager.getInstance(project).getModules()).map(Module::getName).collect(Collectors.toList());
-        moduleArr = modules.toArray(new String[]{});
-        this.configDTO.setProjectName(project.getName());
+        projectPath = project.getBasePath();
         init();
     }
 
@@ -50,8 +46,44 @@ public class ItemAddEditDialog extends DialogWrapper {
         label.setAlignmentY(JComponent.LEFT_ALIGNMENT);
 
         comboBox = new JComboBox();
-        comboBox.setModel(new DefaultComboBoxModel(moduleArr));
+//        comboBox.setModel(new DefaultComboBoxModel(moduleArr));
         comboBox.setBounds(15, 15, 100, 35);
+        comboBox.setEnabled(false);
+        comboBox.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JFileChooser fc = new JFileChooser();
+                fc.setDialogTitle("选择当前配置的对应目录");
+                fc.setSelectedFile(new File(projectPath));
+                fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                int option = fc.showOpenDialog(comboBox);
+                if(option == JFileChooser.APPROVE_OPTION){
+                    File file = fc.getSelectedFile();
+                    comboBox.setModel(new DefaultComboBoxModel(new String[]{file.getAbsolutePath()}));
+                    comboBox.setSelectedItem(file.getAbsolutePath());
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
 
         itemComponent = new ItemComponent(configDTO, true);
         itemComponent.setPreferredSize(new Dimension(0, 230));
@@ -99,7 +131,7 @@ public class ItemAddEditDialog extends DialogWrapper {
     }
 
     public ConfigDTO getConfigDTO() {
-        configDTO.setModuleName((String) comboBox.getSelectedItem());
+        configDTO.setModulePath((String) comboBox.getSelectedItem());
         configDTO.setYapiUrl(itemComponent.yapiTextArea.getText());
         configDTO.setProjectToken(itemComponent.projectTokenTextArea.getText());
         configDTO.setProjectId(itemComponent.projectIdTextArea.getText());

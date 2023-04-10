@@ -60,15 +60,11 @@ public class UploadToYapi extends AnAction {
                 return;
             }
             PsiFile psiFile = e.getDataContext().getData(CommonDataKeys.PSI_FILE);
-            String virtualFile = psiFile.getVirtualFile().getPath();
+            String virtualFile = new File(psiFile.getVirtualFile().getPath()).getAbsolutePath();
             final List<ConfigDTO> collect = configs.stream()
-                    .filter(it -> {
-                        if (!it.getProjectName().equals(project.getName())) {
-                            return false;
-                        }
-                        final String str = (File.separator + it.getProjectName() + File.separator) + (it.getModuleName().equals(it.getProjectName()) ? "" : (it.getModuleName() + File.separator));
-                        return virtualFile.contains(str);
-                    }).collect(Collectors.toList());
+                    .filter(it -> virtualFile.startsWith(it.getModulePath()))
+                    .sorted((o1, o2) -> Integer.compare(o2.getModulePath().length(), o1.getModulePath().length()))
+                    .collect(Collectors.toList());
             if (collect.isEmpty()) {
                 Messages.showErrorDialog("没有找到对应的yapi配置，请在菜单 > Preferences > Other setting > YapiUpload 添加", "Error");
                 return;
@@ -141,6 +137,7 @@ public class UploadToYapi extends AnAction {
                             Messages.showInfoMessage("上传成功！接口文档url地址:  " + url,"上传成功！");
                         }
                     } catch (Exception e1) {
+                        e1.printStackTrace();
                         Messages.showErrorDialog("上传失败！异常:  " + e1,"上传失败！");
                     }
                 }

@@ -11,9 +11,7 @@ import java.io.Serializable;
  */
 public class ConfigDTO implements Serializable {
 
-    String projectName;
-
-    String moduleName;
+    String modulePath;
 
     String projectToken;
 
@@ -27,20 +25,12 @@ public class ConfigDTO implements Serializable {
 
     String attachUpload;
 
-    public String getProjectName() {
-        return projectName;
+    public String getModulePath() {
+        return modulePath;
     }
 
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
-    }
-
-    public String getModuleName() {
-        return moduleName;
-    }
-
-    public void setModuleName(String moduleName) {
-        this.moduleName = moduleName;
+    public void setModulePath(String modulePath) {
+        this.modulePath = modulePath;
     }
 
     public String getProjectToken() {
