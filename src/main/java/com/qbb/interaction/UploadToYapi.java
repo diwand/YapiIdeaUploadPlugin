@@ -18,6 +18,8 @@ import com.qbb.constant.ProjectTypeConstant;
 import com.qbb.constant.YapiConstant;
 import com.qbb.dto.*;
 import com.qbb.upload.UploadYapi;
+import org.apache.commons.lang3.RegExUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -66,7 +68,10 @@ public class UploadToYapi extends AnAction {
                         if (!it.getProjectName().equals(project.getName())) {
                             return false;
                         }
-                        final String str = (File.separator + it.getProjectName() + File.separator) + (it.getModuleName().equals(it.getProjectName()) ? "" : (it.getModuleName() + File.separator));
+                        String str = (File.separator + it.getProjectName() + File.separator) + (it.getModuleName().equals(it.getProjectName()) ? "" : (it.getModuleName() + File.separator));
+                        if (StringUtils.contains(str, "\\")) {
+                            str = RegExUtils.replaceAll(str, "\\\\", "/");
+                        }
                         return virtualFile.contains(str);
                     }).collect(Collectors.toList());
             if (collect.isEmpty()) {
